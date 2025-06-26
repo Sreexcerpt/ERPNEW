@@ -1,4 +1,163 @@
+// import React, { useState, useEffect } from 'react';
+// import axios from 'axios';
 
+// function VendorForm() {
+//   const [formData, setFormData] = useState({
+//     categoryId: '',
+//     name1: '',
+//     name2: '',
+//     search: '',
+//     address1: '',
+//     address2: '',
+//     city: '',
+//     pincode: '',
+//     region: '',
+//     country: '',
+//     contactNo: '',
+//     email: ''
+//   });
+
+//   const [categories, setCategories] = useState([]);
+//   const [vendors, setVendors] = useState([]);
+//   const [vnNo, setVnNo] = useState('');
+//   const [editingId, setEditingId] = useState(null);
+
+//   useEffect(() => {
+//     fetchCategories();
+//     fetchVendors();
+//   }, []);
+
+//   const fetchCategories = async () => {
+//     const res = await axios.get('http://localhost:8080/api/vendor-categories');
+//     setCategories(res.data);
+//   };
+
+//   const fetchVendors = async () => {
+//     const res = await axios.get('http://localhost:8080/api/vendors');
+//     setVendors(res.data);
+//   };
+
+//   const handleChange = (e) => {
+//     const { name, value } = e.target;
+//     setFormData(prev => ({ ...prev, [name]: value }));
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+
+//     try {
+//       if (editingId) {
+//         const res = await axios.put(`http://localhost:8080/api/vendors/${editingId}`, formData);
+//         alert('Vendor updated!');
+//       } else {
+//         const res = await axios.post('http://localhost:8080/api/vendors', formData);
+//         setVnNo(res.data.vnNo);
+//         alert(`Vendor saved! VNNo: ${res.data.vnNo}`);
+//       }
+
+//       fetchVendors();
+//       setFormData({
+//         categoryId: '',
+//         name1: '',
+//         name2: '',
+//         search: '',
+//         address1: '',
+//         address2: '',
+//         city: '',
+//         pincode: '',
+//         region: '',
+//         country: '',
+//         contactNo: '',
+//         email: ''
+//       });
+//       setEditingId(null);
+//     } catch (error) {
+//       console.error(error);
+//       alert('Error saving vendor');
+//     }
+//   };
+
+//   const handleEdit = (vendor) => {
+//     setFormData({
+//       categoryId: vendor.categoryId?._id,
+//       name1: vendor.name1,
+//       name2: vendor.name2,
+//       search: vendor.search,
+//       address1: vendor.address1,
+//       address2: vendor.address2,
+//       city: vendor.city,
+//       pincode: vendor.pincode,
+//       region: vendor.region,
+//       country: vendor.country,
+//       contactNo: vendor.contactNo,
+//       email: vendor.email
+//     });
+//     setEditingId(vendor._id);
+//     setVnNo(vendor.vnNo);
+//   };
+
+//   return (
+//     <div style={{ maxWidth: '800px', margin: 'auto', padding: '1rem' }}>
+//       <h2>{editingId ? 'Edit Vendor' : 'Add Vendor'}</h2>
+
+//       <form onSubmit={handleSubmit}>
+//         <select name="categoryId" value={formData.categoryId} onChange={handleChange} required>
+//           <option value="">Select Category</option>
+//           {categories.map(cat => (
+//             <option key={cat._id} value={cat._id}>
+//               {cat.categoryName} ({cat.prefix})
+//             </option>
+//           ))}
+//         </select><br />
+
+//         <input type="text" name="name1" placeholder="Name 1" value={formData.name1} onChange={handleChange} required /><br />
+//         <input type="text" name="name2" placeholder="Name 2" value={formData.name2} onChange={handleChange} /><br />
+//         <input type="text" name="search" placeholder="Search Term" value={formData.search} onChange={handleChange} /><br />
+
+//         <input type="text" name="address1" placeholder="Address 1" value={formData.address1} onChange={handleChange} /><br />
+//         <input type="text" name="address2" placeholder="Address 2" value={formData.address2} onChange={handleChange} /><br />
+//         <input type="text" name="city" placeholder="City" value={formData.city} onChange={handleChange} /><br />
+//         <input type="text" name="pincode" placeholder="Pincode" value={formData.pincode} onChange={handleChange} /><br />
+//         <input type="text" name="region" placeholder="Region" value={formData.region} onChange={handleChange} /><br />
+//         <input type="text" name="country" placeholder="Country" value={formData.country} onChange={handleChange} /><br />
+//         <input type="text" name="contactNo" placeholder="Contact No" value={formData.contactNo} onChange={handleChange} /><br />
+//         <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} /><br />
+
+//         <button type="submit">{editingId ? 'Update' : 'Save'} Vendor</button>
+//       </form>
+
+//       {vnNo && <p><strong>Generated VNNo:</strong> {vnNo}</p>}
+
+//       <hr />
+
+//       <h3>All Vendors</h3>
+//       <table border="1" width="100%">
+//         <thead>
+//           <tr>
+//             <th>VNNo</th>
+//             <th>Name1</th>
+//             <th>Category</th>
+//             <th>Contact</th>
+//             <th>Action</th>
+//           </tr>
+//         </thead>
+//         <tbody>
+//           {vendors.map(v => (
+//             <tr key={v._id}>
+//               <td>{v.vnNo}</td>
+//               <td>{v.name1}</td>
+//               <td>{v.categoryId?.categoryName}</td>
+//               <td>{v.contactNo}</td>
+//               <td><button onClick={() => handleEdit(v)}>Edit</button></td>
+//             </tr>
+//           ))}
+//         </tbody>
+//       </table>
+//     </div>
+//   );
+// }
+
+// export default VendorForm;
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -22,14 +181,9 @@ function VendorForm() {
   const [vendors, setVendors] = useState([]);
   const [vnNo, setVnNo] = useState('');
   const [editingId, setEditingId] = useState(null);
-  const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
 
-  const regions = ['North', 'South', 'East', 'West', 'Central'];
+  const regions = ['Karnataka', 'Kerala', 'Tamil Nadu', 'Andhra Pradesh', 'Telangana', 'Maharashtra', 'Gujarat', 'Rajasthan', 'Punjab', 'Haryana'];
   const countries = ['India', 'USA', 'Germany', 'France', 'UK'];
-
-  // Mandatory fields as specified
-  const mandatoryFields = ['categoryId', 'name1', 'search', 'address1', 'contactNo', 'region', 'country'];
 
   useEffect(() => {
     fetchCategories();
@@ -37,341 +191,192 @@ function VendorForm() {
   }, []);
 
   const fetchCategories = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get('http://localhost:8080/api/vendor-categories');
-      setCategories(response.data);
-    } catch (error) {
-      console.error('Error fetching categories:', error);
-      alert('Error fetching categories: ' + (error.response?.data?.message || error.message));
-    } finally {
-      setLoading(false);
-    }
+    const res = await axios.get('http://localhost:8080/api/vendor-categories');
+    setCategories(res.data);
   };
 
   const fetchVendors = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get('http://localhost:8080/api/vendors');
-      setVendors(response.data);
-    } catch (error) {
-      console.error('Error fetching vendors:', error);
-      alert('Error fetching vendors: ' + (error.response?.data?.message || error.message));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-
-    // Check mandatory fields
-    mandatoryFields.forEach(field => {
-      if (!formData[field] || formData[field].toString().trim() === '') {
-        newErrors[field] = `${getFieldLabel(field)} is required`;
-      }
-    });
-
-    // Additional validations
-    if (formData.email && formData.email.trim() !== '') {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email)) {
-        newErrors.email = 'Please enter a valid email address';
-      }
-    }
-
-    if (formData.contactNo) {
-      const contactRegex = /^\d{10}$/;
-      if (!contactRegex.test(formData.contactNo.replace(/\s/g, ''))) {
-        newErrors.contactNo = 'Contact number must be exactly 10 digits';
-      }
-    }
-
-    if (formData.pincode && formData.pincode.trim() !== '') {
-      const pincodeRegex = /^\d{6}$/;
-      if (!pincodeRegex.test(formData.pincode)) {
-        newErrors.pincode = 'Pincode must be exactly 6 digits';
-      }
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const getFieldLabel = (fieldName) => {
-    const labels = {
-      categoryId: 'Category',
-      name1: 'Name 1',
-      name2: 'Name 2',
-      search: 'Search Term',
-      address1: 'Address 1',
-      address2: 'Address 2',
-      city: 'City',
-      pincode: 'Pincode',
-      region: 'Region',
-      country: 'Country',
-      contactNo: 'Contact No',
-      email: 'Email'
-    };
-    return labels[fieldName] || fieldName;
+    const res = await axios.get('http://localhost:8080/api/vendors');
+    setVendors(res.data);
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-
-    // Clear error for this field when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
-    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validateForm()) {
-      alert('Please fill all mandatory fields correctly');
-      return;
-    }
-
     try {
-      setLoading(true);
-
       if (editingId) {
-        // Update existing vendor
-        const response = await axios.put(`http://localhost:8080/api/vendors/${editingId}`, formData);
-        alert('Vendor updated successfully!');
-        setVnNo(response.data.vnNo || vnNo);
+        await axios.put(`http://localhost:8080/api/vendors/${editingId}`, formData);
+        alert('Vendor updated!');
       } else {
-        // Create new vendor
-        const response = await axios.post('http://localhost:8080/api/vendors', formData);
-        setVnNo(response.data.vnNo);
-        alert(`Vendor saved successfully! VNNo: ${response.data.vnNo}`);
+        const res = await axios.post('http://localhost:8080/api/vendors', formData);
+        setVnNo(res.data.vnNo);
+        alert(`Vendor saved! VNNo: ${res.data.vnNo}`);
       }
 
-      // Refresh vendors list
-      await fetchVendors();
-      resetForm();
-
+      fetchVendors();
+      setFormData({
+        categoryId: '',
+        name1: '',
+        name2: '',
+        search: '',
+        address1: '',
+        address2: '',
+        city: '',
+        pincode: '',
+        region: '',
+        country: '',
+        contactNo: '',
+        contactname: '',
+        email: ''
+      });
+      setEditingId(null);
     } catch (error) {
-      console.error('Error saving vendor:', error);
-      alert('Error saving vendor: ' + (error.response?.data?.message || error.message));
-    } finally {
-      setLoading(false);
+      console.error(error);
+      alert('Error saving vendor');
     }
-  };
-
-  const resetForm = () => {
-    setFormData({
-      categoryId: '',
-      name1: '',
-      name2: '',
-      search: '',
-      address1: '',
-      address2: '',
-      city: '',
-      pincode: '',
-      region: '',
-      country: '',
-      contactNo: '',
-      email: ''
-    });
-    setEditingId(null);
-    setErrors({});
-    setVnNo('');
   };
 
   const handleEdit = (vendor) => {
     setFormData({
-      categoryId: vendor.categoryId?._id || '',
-      name1: vendor.name1 || '',
-      name2: vendor.name2 || '',
-      search: vendor.search || '',
-      address1: vendor.address1 || '',
-      address2: vendor.address2 || '',
-      city: vendor.city || '',
-      pincode: vendor.pincode || '',
-      region: vendor.region || '',
-      country: vendor.country || '',
-      contactNo: vendor.contactNo || '',
-      email: vendor.email || ''
+      categoryId: vendor.categoryId?._id,
+      name1: vendor.name1,
+      name2: vendor.name2,
+      search: vendor.search,
+      address1: vendor.address1,
+      address2: vendor.address2,
+      city: vendor.city,
+      pincode: vendor.pincode,
+      region: vendor.region,
+      country: vendor.country,
+      contactNo: vendor.contactNo,
+      contactname: vendor.contactname,
+      email: vendor.email
     });
     setEditingId(vendor._id);
     setVnNo(vendor.vnNo);
-    setErrors({});
   };
 
-  const handleDelete = async (vendorId) => {
-    if (window.confirm('Are you sure you want to delete this vendor?')) {
-      try {
-        setLoading(true);
-        await axios.delete(`http://localhost:8080/api/vendors/${vendorId}`);
-        alert('Vendor deleted successfully!');
-        await fetchVendors();
-      } catch (error) {
-        console.error('Error deleting vendor:', error);
-        alert('Error deleting vendor: ' + (error.response?.data?.message || error.message));
-      } finally {
-        setLoading(false);
-      }
-    }
+  const inputStyle = {
+    width: '100%',
+    padding: '8px',
+    margin: '6px 0',
+    borderRadius: '4px',
+    border: '1px solid #ccc',
+    boxSizing: 'border-box'
   };
 
-
-  const renderField = (name, type = 'text', placeholder = '', options = null) => {
-    const isMandatory = mandatoryFields.includes(name);
-    const hasError = errors[name];
-
-    return (
-      <div key={name} >
-        <label >
-          {getFieldLabel(name)} {isMandatory && <span style={{ color: '#d32f2f' }}>*</span>}
-        </label>
-
-        {options ? (
-          <select
-            name={name}
-            value={formData[name]}
-            onChange={handleChange}
-
-            disabled={loading}
-          >
-            <option value="">Select {getFieldLabel(name)}</option>
-            {options.map(option => (
-              <option key={option.value || option} value={option.value || option}>
-                {option.label || option}
-              </option>
-            ))}
-          </select>
-        ) : (
-          <input
-            type={type}
-            name={name}
-            placeholder={placeholder}
-            value={formData[name]}
-            onChange={handleChange}
-
-            disabled={loading}
-          />
-        )}
-
-        {hasError && <span style={errorStyle}>{hasError}</span>}
-      </div>
-    );
+  const labelStyle = {
+    fontWeight: 'bold',
+    marginTop: '10px',
+    display: 'block'
   };
 
   return (
-    <div className='me-10'>
-      <h2>
-        {editingId ? 'Edit Vendor' : 'Add New Vendor'}
-      </h2>
+    <div style={{ maxWidth: '800px', margin: 'auto', padding: '1.5rem', background: '#f9f9f9', borderRadius: '10px' }}>
+      <h2 style={{ textAlign: 'center', color: '#333' }}>{editingId ? 'Edit Vendor' : 'Add Vendor'}</h2>
 
       <form onSubmit={handleSubmit}>
-        <div >
-          <div>
-            {renderField('categoryId', 'select', '', categories.map(cat => ({
-              value: cat._id,
-              label: `${cat.categoryName} (${cat.prefix})`
-            })))}
+        <label style={labelStyle}>Category</label>
+        <select name="categoryId" value={formData.categoryId} onChange={handleChange} required style={inputStyle}>
+          <option value="">Select Category</option>
+          {categories.map(cat => (
+            <option key={cat._id} value={cat._id}>
+              {cat.categoryName} ({cat.prefix})
+            </option>
+          ))}
+        </select>
 
-            {renderField('name1', 'text', 'Enter vendor name')}
-            {renderField('name2', 'text', 'Enter alternate name (optional)')}
-            {renderField('search', 'text', 'Enter search keywords')}
-            {renderField('address1', 'text', 'Enter primary address')}
-            {renderField('address2', 'text', 'Enter additional address (optional)')}
-          </div>
+        <label style={labelStyle}>Name 1</label>
+        <input type="text" name="name1" placeholder="Name 1" value={formData.name1} onChange={handleChange} required style={inputStyle} />
 
-          <div>
-            {renderField('city', 'text', 'Enter city (optional)')}
-            {renderField('pincode', 'text', 'Enter 6-digit pincode (optional)')}
-            {renderField('region', 'select', '', regions)}
-            {renderField('country', 'select', '', countries)}
-            {renderField('contactNo', 'text', 'Enter 10-digit contact number')}
-            {renderField('email', 'email', 'Enter email address (optional)')}
-          </div>
-        </div>
+        <label style={labelStyle}>Name 2</label>
+        <input type="text" name="name2" placeholder="Name 2" value={formData.name2} onChange={handleChange} style={inputStyle} />
 
-        <div >
-          <button
-            type="submit"
-            disabled={loading}
-          >
-            {loading ? '⏳ Processing...' : (editingId ? ' Update' : ' Save')} Vendor
-          </button>
+        <label style={labelStyle}>Search Term</label>
+        <input type="text" name="search" placeholder="Search Term" value={formData.search} onChange={handleChange} style={inputStyle} />
 
-          {editingId && (
-            <button
-              type="button"
-              onClick={resetForm}
-              disabled={loading}
+        <label style={labelStyle}>Address 1</label>
+        <input type="text" name="address1" placeholder="Address 1" value={formData.address1} onChange={handleChange} style={inputStyle} />
 
+        <label style={labelStyle}>Address 2</label>
+        <input type="text" name="address2" placeholder="Address 2" value={formData.address2} onChange={handleChange} style={inputStyle} />
 
-            >
-              Cancel Edit
-            </button>
-          )}
-        </div>
+        <label style={labelStyle}>City</label>
+        <input type="text" name="city" placeholder="City" value={formData.city} onChange={handleChange} style={inputStyle} />
+
+        <label style={labelStyle}>Pincode</label>
+        <input type="text" name="pincode" placeholder="Pincode" value={formData.pincode} onChange={handleChange} style={inputStyle} />
+
+        <label style={labelStyle}>Region</label>
+        <select name="region" value={formData.region} onChange={handleChange} style={inputStyle}>
+          <option value="">Select Region</option>
+          {regions.map(region => (
+            <option key={region} value={region}>{region}</option>
+          ))}
+        </select>
+
+        <label style={labelStyle}>Country</label>
+        <select name="country" value={formData.country} onChange={handleChange} style={inputStyle}>
+          <option value="">Select Country</option>
+          {countries.map(c => (
+            <option key={c} value={c}>{c}</option>
+          ))}
+        </select>
+
+        <label style={labelStyle}>Contact No</label>
+        <input type="text" name="contactNo" placeholder="Contact No" value={formData.contactNo} onChange={handleChange} style={inputStyle} />
+        <label style={labelStyle}>Contact Name</label>
+        <input type="text" name="contactname" placeholder="Contact Name" value={formData.contactName} onChange={handleChange} style={inputStyle} />
+        <label style={labelStyle}>Email</label>
+        <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} style={inputStyle} />
+
+        <button type="submit" style={{
+          backgroundColor: '#4CAF50',
+          color: 'white',
+          padding: '10px 20px',
+          marginTop: '15px',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer'
+        }}>
+          {editingId ? 'Update' : 'Save'} Vendor
+        </button>
       </form>
 
+      {vnNo && <p style={{ marginTop: '10px', fontWeight: 'bold' }}>Generated VNNo: {vnNo}</p>}
 
+      <hr style={{ margin: '2rem 0' }} />
 
-
-
-      <h3 > All Vendors</h3>
-
-
-
-      <div>
-        <table >
-          <thead >
-            <tr>
-              <th>VNNo</th>
-              <th>Name</th>
-              <th>Category</th>
-              <th>Contact</th>
-              <th>Region</th>
-              <th>Country</th>
-              <th>Actions</th>
+      <h3 style={{ textAlign: 'center', color: '#444' }}>All Vendors</h3>
+      <table border="1" width="100%" style={{ borderCollapse: 'collapse', textAlign: 'left' }}>
+        <thead style={{ backgroundColor: '#ddd' }}>
+          <tr>
+            <th style={{ padding: '8px' }}>VNNo</th>
+            <th style={{ padding: '8px' }}>Name1</th>
+            <th style={{ padding: '8px' }}>Category</th>
+            <th style={{ padding: '8px' }}>Contact</th>
+            <th style={{ padding: '8px' }}>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {vendors.map(v => (
+            <tr key={v._id}>
+              <td style={{ padding: '8px' }}>{v.vnNo}</td>
+              <td style={{ padding: '8px' }}>{v.name1}</td>
+              <td style={{ padding: '8px' }}>{v.categoryId?.categoryName}</td>
+              <td style={{ padding: '8px' }}>{v.contactNo}</td>
+              <td style={{ padding: '8px' }}>
+                <button onClick={() => handleEdit(v)} style={{ padding: '5px 10px', cursor: 'pointer' }}>Edit</button>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {vendors.length === 0 ? (
-              <tr>
-                <td colSpan="7" >
-                  {loading ? '⏳ Loading vendors...' : '📭 No vendors found. Add your first vendor using the form above.'}
-                </td>
-              </tr>
-            ) : (
-              vendors.map((vendor, index) => (
-                <tr key={vendor._id} >
-                  <td>{vendor.vnNo}</td>
-                  <td>{vendor.name1}</td>
-                  <td>{vendor.categoryId?.categoryName || 'N/A'}</td>
-                  <td>{vendor.contactNo}</td>
-                  <td>{vendor.region || 'N/A'}</td>
-                  <td>{vendor.country || 'N/A'}</td>
-                  <td>
-                    <button
-                      onClick={() => handleEdit(vendor)}
-                      disabled={loading}
-
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(vendor._id)}
-                      disabled={loading}
-
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

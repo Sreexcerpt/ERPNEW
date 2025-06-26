@@ -13,8 +13,13 @@ const MaterialPage = () => {
     baseUnit: '',
     orderUnit: '',
     conversionValue: '',
-    dimension: ''
+    dimension: '',
+    mnp:"",
+    location:""
   });
+
+  // Modal state
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     fetchCategories();
@@ -44,7 +49,9 @@ const MaterialPage = () => {
       baseUnit: material.baseUnit,
       orderUnit: material.orderUnit,
       conversionValue: material.conversionValue || '',
-      dimension: material.dimension || ''
+      dimension: material.dimension || '',
+      mnp:material.mnp||'',
+      location:material.location||''
     });
   };
 
@@ -56,7 +63,9 @@ const MaterialPage = () => {
       baseUnit: '',
       orderUnit: '',
       conversionValue: '',
-      dimension: ''
+      dimension: '',
+      mnp:"",
+      location:""
     });
   };
 
@@ -65,11 +74,9 @@ const MaterialPage = () => {
 
     try {
       if (editingMaterial) {
-        // Edit mode: update material
         await axios.put(`http://localhost:8080/api/material/${editingMaterial._id}`, formData);
         alert('Material updated!');
       } else {
-        // Add mode: generate materialId
         const idRes = await axios.post('http://localhost:8080/api/material/generate-id', {
           categoryId: formData.categoryId
         });
@@ -86,109 +93,172 @@ const MaterialPage = () => {
 
       fetchMaterials();
       cancelEdit();
+     handleCloseModal()
     } catch (err) {
       console.error(err);
       alert('Operation failed!');
     }
   };
 
+  // Modal show/hide functions
+  const handleOpenModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
+
   return (
-    <div className="container mt-4">
-      <h3>{editingMaterial ? 'Edit Material' : 'Add New Material'}</h3>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label>Category</label>
-          <select name="categoryId" value={formData.categoryId} onChange={handleChange} className="form-control" required>
-            <option value="">-- Select --</option>
-            {categories.map((cat) => (
-              <option key={cat._id} value={cat._id}>
-                {cat.categoryName}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="mb-3">
-          <label>Description</label>
-          <input name="description" value={formData.description} onChange={handleChange} className="form-control" required />
-        </div>
-
-        <div className="mb-3">
-          <label>Base Unit</label>
-          <select name="baseUnit" value={formData.baseUnit} onChange={handleChange} className="form-control" required>
-            <option value="">-- Select --</option>
-            {baseUnits.map((unit) => (
-              <option key={unit} value={unit}>{unit}</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="mb-3">
-          <label>Order Unit</label>
-          <select name="orderUnit" value={formData.orderUnit} onChange={handleChange} className="form-control" required>
-            <option value="">-- Select --</option>
-            {baseUnits.map((unit) => (
-              <option key={unit} value={unit}>{unit}</option>
-            ))}
-          </select>
-        </div>
-
-        {formData.baseUnit && formData.orderUnit && formData.baseUnit !== formData.orderUnit && (
-          <div className="mb-3">
-            <label>1 {formData.orderUnit} = how many {formData.baseUnit}?</label>
-            <input name="conversionValue" value={formData.conversionValue} onChange={handleChange} className="form-control" required />
+    <div className="main-wrapper">
+      <div className="page-wrapper"  >
+        <div className="content">
+          <div class="d-flex d-block align-items-center justify-content-between flex-wrap gap-3 mb-3">
+            <div>
+              <h6>Material Master</h6>
+            </div>
+            <div class="d-flex my-xl-auto right-content align-items-center flex-wrap gap-2">
+              {/* <div class="dropdown">
+                <a href="#" class="btn btn-outline-white d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                  <i class="isax isax-export-1 me-1"></i>Export
+                </a>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a class="dropdown-item" href="#">Download as PDF</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#">Download as Excel</a>
+                  </li>
+                </ul>
+              </div> */}
+              <div>
+                <a onClick={()=>{handleOpenModal();cancelEdit()}} class="btn btn-primary d-flex align-items-center"><i class="isax isax-add-circle5 me-1"></i>New Material</a>
+              </div>
+            </div>
           </div>
-        )}
 
-        <div className="mb-3">
-          <label>Dimension</label>
-          <input name="dimension" value={formData.dimension} onChange={handleChange} className="form-control" />
+          <div className='table-responsive'>
+            <table className="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Material ID</th>
+                  <th>Description</th>
+                  <th>Base</th>
+                  <th>Order</th>
+                  <th>Conversion</th>
+                  <th>Dimension</th>
+                  <th>MNP</th>
+                  <th>Location</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {materials.map((mat) => (
+                  <tr key={mat._id}>
+                    <td>{mat.materialId}</td>
+                    <td>{mat.description}</td>
+                    <td>{mat.baseUnit}</td>
+                    <td>{mat.orderUnit}</td>
+                    <td>{mat.conversionValue || '-'}</td>
+                    <td>{mat.dimension || '-'}</td>
+                    <td>{mat.mnp || '_'}</td>
+                    <td>{mat.location || '_'}</td>
+                    <td>
+                      <button className="btn btn-sm btn-primary" onClick={() => { startEdit(mat); handleOpenModal(); }}>
+                        Edit
+                      </button>
+
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Modal */}
+          {showModal && (
+            <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1" aria-labelledby="myLargeModalLabel" aria-modal="true" role="dialog">
+              <div className="modal-dialog modal-lg">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h4 className="modal-title" id="myLargeModalLabel"> {editingMaterial ? 'Edit Material' : 'Add New Material'}</h4>
+                    <button type="button" className="btn-close" onClick={handleCloseModal} aria-label="Close"></button>
+                  </div>
+                  <div className="modal-body">
+                    
+                    <form onSubmit={handleSubmit}>
+                      <div className="mb-3">
+                        <label>Category</label>
+                        <select name="categoryId" value={formData.categoryId} onChange={handleChange} className="form-control" required>
+                          <option value="">-- Select --</option>
+                          {categories.map((cat) => (
+                            <option key={cat._id} value={cat._id}>
+                              {cat.categoryName}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="mb-3">
+                        <label>Description</label>
+                        <input name="description" value={formData.description} onChange={handleChange} className="form-control" required />
+                      </div>
+
+                      <div className="mb-3">
+                        <label>Base Unit</label>
+                        <select name="baseUnit" value={formData.baseUnit} onChange={handleChange} className="form-control" required>
+                          <option value="">-- Select --</option>
+                          {baseUnits.map((unit) => (
+                            <option key={unit} value={unit}>{unit}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="mb-3">
+                        <label>Order Unit</label>
+                        <select name="orderUnit" value={formData.orderUnit} onChange={handleChange} className="form-control" required>
+                          <option value="">-- Select --</option>
+                          {baseUnits.map((unit) => (
+                            <option key={unit} value={unit}>{unit}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {formData.baseUnit && formData.orderUnit && formData.baseUnit !== formData.orderUnit && (
+                        <div className="mb-3">
+                          <label>1 {formData.orderUnit} = how many {formData.baseUnit}?</label>
+                          <input name="conversionValue" value={formData.conversionValue} onChange={handleChange} className="form-control" required />
+                        </div>
+                      )}
+
+                      <div className="mb-3">
+                        <label>Dimension</label>
+                        <input name="dimension" value={formData.dimension} onChange={handleChange} className="form-control" />
+                      </div>
+                      <div className='mb-3'>
+                        <label >MNP</label>
+                        <input name='mnp' value={formData.mnp} onChange={handleChange} className='form-control'/>
+                      </div>
+                      <div className='mb-3'>
+                        <label >Location</label>
+                        <input name='location' value={formData.location} onChange={handleChange} className='form-control'/>
+                      </div>
+
+                      <button type="submit" className="btn btn-primary">
+                        {editingMaterial ? 'Update Material' : 'Add Material'}
+                      </button>
+
+                      {editingMaterial && (
+                        <button type="button" onClick={cancelEdit} className="btn btn-secondary ms-2">
+                          Cancel
+                        </button>
+                      )}
+                    </form>
+                  </div>
+                </div>
+              </div>
+              {/* Modal backdrop */}
+              {/* <div className="modal-backdrop fade "></div> */}
+            </div>
+          )}
+
         </div>
-
-        <button type="submit" className="btn btn-primary">
-          {editingMaterial ? 'Update Material' : 'Add Material'}
-        </button>
-
-        {editingMaterial && (
-          <button type="button" onClick={cancelEdit} className="btn btn-secondary ms-2">
-            Cancel
-          </button>
-        )}
-      </form>
-
-      <hr />
-
-      <h4>Material List</h4>
-      <table className="table table-bordered">
-        <thead>
-          <tr>
-            <th>Material ID</th>
-            <th>Description</th>
-            <th>Base</th>
-            <th>Order</th>
-            <th>Conversion</th>
-            <th>Dimension</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {materials.map((mat) => (
-            <tr key={mat._id}>
-              <td>{mat.materialId}</td>
-              <td>{mat.description}</td>
-              <td>{mat.baseUnit}</td>
-              <td>{mat.orderUnit}</td>
-              <td>{mat.conversionValue || '-'}</td>
-              <td>{mat.dimension || '-'}</td>
-              <td>
-                <button className="btn btn-sm btn-primary" onClick={() => startEdit(mat)}>
-                  Edit
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      </div>
     </div>
   );
 };

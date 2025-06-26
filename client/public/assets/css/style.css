@@ -24079,6 +24079,7 @@ p:last-child {
 .sidebar .sidebar-inner,
 .sidebars .sidebar-inner {
     width: 100%;
+    overflow-y: scroll;
 }
 
 .sidebar .sidebar-menu,

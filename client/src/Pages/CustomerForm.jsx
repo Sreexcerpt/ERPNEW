@@ -289,6 +289,7 @@ function CustomerForm() {
     region: '',
     country: '',
     contactNo: '',
+    name: '',
     email: ''
   });
 
@@ -298,7 +299,7 @@ function CustomerForm() {
   const [editingId, setEditingId] = useState(null);
   const [errors, setErrors] = useState({});
 
-  const regions = ['North', 'South', 'East', 'West', 'Central'];
+  const regions = ['Karnataka', 'Kerala', 'Tamil Nadu', 'Andhra Pradesh', 'Telangana','West Bengal', 'Odisha', 'Bihar', 'Jharkhand','Madhya Pradesh', 'Chhattisgarh', 'Uttar Pradesh'];
   const countries = ['India', 'USA', 'Germany', 'France', 'UK'];
 
   // Define mandatory fields
@@ -409,6 +410,7 @@ function CustomerForm() {
       region: '',
       country: '',
       contactNo: '',
+      name: '',
       email: ''
     });
     setEditingId(null);
@@ -429,6 +431,7 @@ function CustomerForm() {
       region: customer.region || '',
       country: customer.country || '',
       contactNo: customer.contactNo || '',
+      name: customer.name || '',
       email: customer.email || ''
     });
     setEditingId(customer._id);
@@ -680,6 +683,18 @@ function CustomerForm() {
               style={errors.email ? errorInputStyle : inputStyle} 
             />
             {errors.email && <div style={errorStyle}>{errors.email}</div>}
+          </div>
+          <div>
+            <label style={labelStyle}>Name</label>
+            <input 
+              type="name" 
+              name="name" 
+              placeholder="Enter name (Optional)" 
+              value={formData.name} 
+              onChange={handleChange} 
+              style={errors.name ? errorInputStyle : inputStyle} 
+            />
+            {errors.name && <div style={errorStyle}>{errors.name}</div>}
           </div>
         </div>
 
