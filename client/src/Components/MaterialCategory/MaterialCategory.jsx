@@ -122,6 +122,7 @@ const MaterialCategory = () => {
       fetchCategories();
       setFormData({ categoryName: '', prefix: '', rangeStart: '', rangeEnd: '' });
       setEditingId(null);
+      handleCloseModal();
     } catch (err) {
       console.error(err);
       alert('Failed to save category.');
@@ -137,66 +138,116 @@ const MaterialCategory = () => {
     });
     setEditingId(cat._id);
   };
+  const [showModal, setShowModal] = useState(false);
+  const handleOpenModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
+  const [showdropdown, setShowdropdown] = useState(false);
 
+  const handleOpendropdown = () => setShowdropdown(true);
+  const handleClosedropdown = () => setShowdropdown(false);
   return (
-    <div className="container mt-4">
-      <h3>{editingId ? 'Edit' : 'Create'} Material Category</h3>
-      <form onSubmit={handleSubmit}>
-        {['categoryName', 'prefix', 'rangeStart', 'rangeEnd'].map((field) => (
-          <div className="mb-3" key={field}>
-            <label className="form-label">
-              {field === 'categoryName'
-                ? 'Category Name'
-                : field === 'prefix'
-                ? 'Prefix'
-                : field === 'rangeStart'
-                ? 'Range Start'
-                : 'Range End'}
-            </label>
-            <input
-              type={field.includes('range') ? 'number' : 'text'}
-              name={field}
-              value={formData[field]}
-              onChange={handleChange}
-              className={`form-control ${errors[field] ? 'is-invalid' : ''}`}
-            />
-            {errors[field] && <div className="invalid-feedback">{errors[field]}</div>}
+    <div className="main-wrapper">
+      <div>
+        <div className="content">
+          <div >
+
+            <div className="d-flex d-block align-items-center justify-content-between flex-wrap gap-3 mb-3">
+              <div>
+                <h6>Material Category</h6>
+              </div>
+              <div className="d-flex my-xl-auto right-content align-items-center flex-wrap gap-2">
+                <div className="dropdown">
+                  <a href="#" onClick={handleOpendropdown} className="btn btn-outline-white d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                    <i className="isax isax-export-1 me-1"></i>Export
+                  </a>
+                  <ul className={showdropdown ? `dropdown-menu show` : "dropdown-menu"}>
+                    <li>
+                      <a className="dropdown-item" href="#" onClick={handleClosedropdown}>Download as PDF</a>
+                    </li>
+                    <li>
+                      <a className="dropdown-item" href="#" onClick={handleClosedropdown}>Download as Excel</a>
+                    </li>
+                  </ul>
+                </div>
+                <div>
+                  <a onClick={() => { handleOpenModal() }} className="btn btn-primary d-flex align-items-center"><i className="isax isax-add-circle5 me-1"></i>Material Category</a>
+                </div>
+              </div>
+            </div>
+
+            <div className='table-responsive'>
+              <table className="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Prefix</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {categories.map((cat) => (
+                    <tr key={cat._id}>
+                      <td>{cat.categoryName}</td>
+                      <td>{cat.prefix}</td>
+                      <td>{cat.rangeStart}</td>
+                      <td>{cat.rangeEnd}</td>
+                      <td>
+                        <button className="btn btn-sm btn-warning" onClick={() => {handleEdit(cat),handleOpenModal()}}>
+                          Edit
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {showModal && (<>
+              <div className="modal-backdrop fade show"></div>
+              <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1" aria-labelledby="myLargeModalLabel" aria-modal="true" role="dialog">
+                <div className="modal-dialog modal-lg">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h4 className="modal-title" id="myLargeModalLabel"> {editingId ? 'Edit' : 'Create'} Material Category</h4>
+                      <button type="button" className="btn-close" onClick={() => { handleCloseModal(),  setEditingId(null),setFormData({ categoryName: '', prefix: '', rangeStart: '', rangeEnd: '' }); }} aria-label="Close"></button>
+                    </div>
+                    <div className="modal-body">
+                      <form onSubmit={handleSubmit}>
+                        <div className="row">
+                          {['categoryName', 'prefix', 'rangeStart', 'rangeEnd'].map((field) => (
+                            <div className="mb-3 col-xl-3" key={field}>
+                              <label className="form-label">
+                                {field === 'categoryName'
+                                  ? 'Category Name'
+                                  : field === 'prefix'
+                                    ? 'Prefix'
+                                    : field === 'rangeStart'
+                                      ? 'Range Start'
+                                      : 'Range End'}
+                              </label>
+                              <input
+                                type={field.includes('range') ? 'number' : 'text'}
+                                name={field}
+                                value={formData[field]}
+                                onChange={handleChange}
+                                className={`form-control ${errors[field] ? 'is-invalid' : ''}`}
+                              />
+                              {errors[field] && <div className="invalid-feedback">{errors[field]}</div>}
+                            </div>
+                          ))}</div>
+                        <button type="submit" className="btn btn-primary" disabled={!isFormValid()}>
+                          {editingId ? 'Update' : 'Save'}
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div></>
+            )}
           </div>
-        ))}
-        <button type="submit" className="btn btn-primary" disabled={!isFormValid()}>
-          {editingId ? 'Update' : 'Save'}
-        </button>
-      </form>
-
-      <hr />
-
-      <h4>Material Categories</h4>
-      <table className="table table-bordered">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Prefix</th>
-            <th>Start</th>
-            <th>End</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {categories.map((cat) => (
-            <tr key={cat._id}>
-              <td>{cat.categoryName}</td>
-              <td>{cat.prefix}</td>
-              <td>{cat.rangeStart}</td>
-              <td>{cat.rangeEnd}</td>
-              <td>
-                <button className="btn btn-sm btn-warning" onClick={() => handleEdit(cat)}>
-                  Edit
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        </div>
+      </div>
     </div>
   );
 };

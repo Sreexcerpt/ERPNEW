@@ -101,6 +101,7 @@ const TaxForm = () => {
       setErrors({});
       setEditId(null);
       fetchTaxes();
+      handleCloseModal()
     } catch (err) {
       console.error(err);
       alert('Failed to save');
@@ -117,64 +118,106 @@ const TaxForm = () => {
     });
     setEditId(tax._id);
   };
+  const [showModal, setShowModal] = useState(false);
+  const handleOpenModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
+  const [showdropdown, setShowdropdown] = useState(false);
 
+  const handleOpendropdown = () => setShowdropdown(true);
+  const handleClosedropdown = () => setShowdropdown(false);
   return (
-        <div className="main-wrapper">
-      <div className="page-wrapper"  >
+    <div className="main-wrapper">
+    <div>
         <div className="content">
-    <div className="container mt-4">
-      <h4>{editId ? 'Edit' : 'Add'} Tax</h4>
-      <form onSubmit={handleSubmit}>
-        {['taxCode', 'taxName', 'cgst', 'sgst', 'igst'].map((field) => (
-          <div className="mb-3" key={field}>
-            <label className="form-label text-capitalize">{field}</label>
-            <input
-              type="text"
-              name={field}
-              value={formData[field]}
-              onChange={handleChange}
-              className={`form-control ${errors[field] ? 'is-invalid' : ''}`}
-            />
-            {errors[field] && <div className="invalid-feedback">{errors[field]}</div>}
+          <div className="d-flex d-block align-items-center justify-content-between flex-wrap gap-3 mb-3">
+            <div>
+              <h6>Taxes Master</h6>
+            </div>
+            <div className="d-flex my-xl-auto right-content align-items-center flex-wrap gap-2">
+              <div className="dropdown">
+                <a href="#" onClick={handleOpendropdown} className="btn btn-outline-white d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                  <i className="isax isax-export-1 me-1"></i>Export
+                </a>
+                <ul className={showdropdown ? `dropdown-menu show` : "dropdown-menu"}>
+                  <li>
+                    <a className="dropdown-item" href="#" onClick={handleClosedropdown}>Download as PDF</a>
+                  </li>
+                  <li>
+                    <a className="dropdown-item" href="#" onClick={handleClosedropdown}>Download as Excel</a>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <a onClick={() => { handleOpenModal() }} className="btn btn-primary d-flex align-items-center"><i className="isax isax-add-circle5 me-1"></i>New Tax</a>
+              </div>
+            </div>
           </div>
-        ))}
-        <button className="btn btn-primary" type="submit" disabled={!isFormValid()}>
-          {editId ? 'Update Tax' : 'Save Tax'}
-        </button>
-      </form>
-
-      <hr />
-
-      <h5>Saved Taxes</h5>
-      <table className="table table-bordered">
-        <thead>
-          <tr>
-            <th>Code</th>
-            <th>Name</th>
-            <th>CGST</th>
-            <th>SGST</th>
-            <th>IGST</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {taxes.map((tax) => (
-            <tr key={tax._id}>
-              <td>{tax.taxCode}</td>
-              <td>{tax.taxName}</td>
-              <td>{tax.cgst}</td>
-              <td>{tax.sgst}</td>
-              <td>{tax.igst}</td>
-              <td>
-                <button className="btn btn-sm btn-warning" onClick={() => handleEdit(tax)}>
-                  Edit
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div></div></div></div>
+          <div className="table-responsive">
+            <table className="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Name</th>
+                  <th>CGST</th>
+                  <th>SGST</th>
+                  <th>IGST</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {taxes.map((tax) => (
+                  <tr key={tax._id}>
+                    <td>{tax.taxCode}</td>
+                    <td>{tax.taxName}</td>
+                    <td>{tax.cgst}</td>
+                    <td>{tax.sgst}</td>
+                    <td>{tax.igst}</td>
+                    <td>
+                      <button className="btn btn-sm btn-warning" onClick={() => {handleEdit(tax),handleOpenModal()}}>
+                        Edit
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {showModal && (
+            <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1" aria-labelledby="myLargeModalLabel" aria-modal="true" role="dialog">
+              <div className="modal-dialog modal-lg">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h4 className="modal-title" id="myLargeModalLabel"> {editId ? 'Edit' : 'Add'} Tax</h4>
+                    <button type="button" className="btn-close" onClick={() => { handleCloseModal(), resetForm() }} aria-label="Close"></button>
+                  </div>
+                  <div className="modal-body">
+                    <form onSubmit={handleSubmit}>
+                      <div className="row">
+                      {['taxCode', 'taxName', 'cgst', 'sgst', 'igst'].map((field) => (
+                        <div className="mb-3 col-xl-2" key={field}>
+                          <label className="form-label text-uppercase">{field === "taxCode" || field === "taxName" ? field : `${field} %`}</label>
+                          <input
+                            type="text"
+                            name={field}
+                            value={formData[field]}
+                            onChange={handleChange}
+                            className={`form-control ${errors[field] ? 'is-invalid' : ''}`}
+                          />
+                          {errors[field] && <div className="invalid-feedback">{errors[field]}</div>}
+                        </div>
+                      ))}</div>
+                      <button className="btn btn-primary" type="submit" disabled={!isFormValid()}>
+                        {editId ? 'Update Tax' : 'Save Tax'}
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
 

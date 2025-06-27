@@ -11,6 +11,10 @@ const customerRoutes = require('./routes/customerRoutes');
 const vendorPriceRoutes = require('./routes/vendorPriceListRoutes');
 const taxRoutes = require('./routes/Tax');
 const customerPriceRoutes = require('./routes/customerPriceListRoutes');
+const purchaserequest=require('./routes/purchaserequest') // Ensure this is the correct path
+const indentRoutes = require('./routes/indentRoutes');
+const rfqCategoryRoutes = require('./routes/quotationCategoryRoutes');
+const quotationRoutes = require('./routes/quotationRoutes');
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -28,6 +32,13 @@ app.use('/api/tax', taxRoutes);
 app.use('/api/vendor-price-lists', vendorPriceRoutes);
 
 app.use('/api/customer-price-lists', customerPriceRoutes);
+app.use('/api/purchasecategory',purchaserequest);
+app.use('/api/rfq-categories', rfqCategoryRoutes);
+app.use('/api/quotations', quotationRoutes);
+
+app.use('/api/indent', indentRoutes);
+
+
 const PORT = 8080;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

@@ -9,6 +9,7 @@ const materialSchema = new mongoose.Schema({
   conversionValue: { type: Number }, // optional when base = order
   dimension: { type: String },
   mnp:String,
+  materialgroup: String, // New field for Material Group
   location:String,
 }, { timestamps: true });
 

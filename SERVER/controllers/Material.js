@@ -69,3 +69,21 @@ exports.updateMaterial = async (req, res) => {
     res.status(500).json({ error: 'Failed to update material' });
   }
 };
+// Get material by materialId (not _id)
+exports.getMaterialByMaterialId = async (req, res) => {
+  try {
+    console.log('Fetching material by materialId:', req.params.materialId);
+    const material = await Material.findOne({ materialId: req.params.materialId })
+ 
+
+    if (!material) {
+      return res.status(404).json({ error: 'Material not found' });
+    }
+
+    res.json(material);
+    console.log('Material fetched successfully:', material);
+  } catch (err) {
+    console.error('Error fetching material by materialId:', err);
+    res.status(500).json({ error: 'Failed to fetch material by ID' });
+  }
+};

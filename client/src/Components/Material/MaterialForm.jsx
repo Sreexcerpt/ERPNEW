@@ -14,8 +14,8 @@ const MaterialPage = () => {
     orderUnit: '',
     conversionValue: '',
     dimension: '',
-    mnp:"",
-    location:""
+    mnp: "",
+    location: ""
   });
 
   // Modal state
@@ -50,8 +50,8 @@ const MaterialPage = () => {
       orderUnit: material.orderUnit,
       conversionValue: material.conversionValue || '',
       dimension: material.dimension || '',
-      mnp:material.mnp||'',
-      location:material.location||''
+      mnp: material.mnp || '',
+      location: material.location || ''
     });
   };
 
@@ -64,8 +64,8 @@ const MaterialPage = () => {
       orderUnit: '',
       conversionValue: '',
       dimension: '',
-      mnp:"",
-      location:""
+      mnp: "",
+      location: ""
     });
   };
 
@@ -93,7 +93,7 @@ const MaterialPage = () => {
 
       fetchMaterials();
       cancelEdit();
-     handleCloseModal()
+      handleCloseModal()
     } catch (err) {
       console.error(err);
       alert('Operation failed!');
@@ -103,31 +103,34 @@ const MaterialPage = () => {
   // Modal show/hide functions
   const handleOpenModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
+  const [showdropdown, setShowdropdown] = useState(false);
 
+  const handleOpendropdown = () => setShowdropdown(true);
+  const handleClosedropdown = () => setShowdropdown(false);
   return (
     <div className="main-wrapper">
-      <div className="page-wrapper"  >
+      <div>
         <div className="content">
-          <div class="d-flex d-block align-items-center justify-content-between flex-wrap gap-3 mb-3">
+          <div className="d-flex d-block align-items-center justify-content-between flex-wrap gap-3 mb-3">
             <div>
               <h6>Material Master</h6>
             </div>
-            <div class="d-flex my-xl-auto right-content align-items-center flex-wrap gap-2">
-              {/* <div class="dropdown">
-                <a href="#" class="btn btn-outline-white d-inline-flex align-items-center" data-bs-toggle="dropdown">
-                  <i class="isax isax-export-1 me-1"></i>Export
+            <div className="d-flex my-xl-auto right-content align-items-center flex-wrap gap-2">
+              <div className="dropdown">
+                <a href="#" onClick={handleOpendropdown} className="btn btn-outline-white d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                  <i className="isax isax-export-1 me-1"></i>Export
                 </a>
-                <ul class="dropdown-menu">
+                <ul className={showdropdown ? `dropdown-menu show` : "dropdown-menu"}>
                   <li>
-                    <a class="dropdown-item" href="#">Download as PDF</a>
+                    <a className="dropdown-item" href="#" onClick={handleClosedropdown}>Download as PDF</a>
                   </li>
                   <li>
-                    <a class="dropdown-item" href="#">Download as Excel</a>
+                    <a className="dropdown-item" href="#" onClick={handleClosedropdown}>Download as Excel</a>
                   </li>
                 </ul>
-              </div> */}
+              </div>
               <div>
-                <a onClick={()=>{handleOpenModal();cancelEdit()}} class="btn btn-primary d-flex align-items-center"><i class="isax isax-add-circle5 me-1"></i>New Material</a>
+                <a onClick={() => { handleOpenModal(); cancelEdit() }} className="btn btn-primary d-flex align-items-center"><i className="isax isax-add-circle5 me-1"></i>New Material</a>
               </div>
             </div>
           </div>
@@ -180,65 +183,77 @@ const MaterialPage = () => {
                     <button type="button" className="btn-close" onClick={handleCloseModal} aria-label="Close"></button>
                   </div>
                   <div className="modal-body">
-                    
+
                     <form onSubmit={handleSubmit}>
-                      <div className="mb-3">
-                        <label>Category</label>
-                        <select name="categoryId" value={formData.categoryId} onChange={handleChange} className="form-control" required>
-                          <option value="">-- Select --</option>
-                          {categories.map((cat) => (
-                            <option key={cat._id} value={cat._id}>
-                              {cat.categoryName}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div className="mb-3">
-                        <label>Description</label>
-                        <input name="description" value={formData.description} onChange={handleChange} className="form-control" required />
-                      </div>
-
-                      <div className="mb-3">
-                        <label>Base Unit</label>
-                        <select name="baseUnit" value={formData.baseUnit} onChange={handleChange} className="form-control" required>
-                          <option value="">-- Select --</option>
-                          {baseUnits.map((unit) => (
-                            <option key={unit} value={unit}>{unit}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div className="mb-3">
-                        <label>Order Unit</label>
-                        <select name="orderUnit" value={formData.orderUnit} onChange={handleChange} className="form-control" required>
-                          <option value="">-- Select --</option>
-                          {baseUnits.map((unit) => (
-                            <option key={unit} value={unit}>{unit}</option>
-                          ))}
-                        </select>
-                      </div>
-
-                      {formData.baseUnit && formData.orderUnit && formData.baseUnit !== formData.orderUnit && (
-                        <div className="mb-3">
-                          <label>1 {formData.orderUnit} = how many {formData.baseUnit}?</label>
-                          <input name="conversionValue" value={formData.conversionValue} onChange={handleChange} className="form-control" required />
+                      <div className="row">
+                        <div className="col-xl-3">
+                          <div className="mb-3">
+                            <label>Category</label>
+                            <select name="categoryId" value={formData.categoryId} onChange={handleChange} className="form-control" required>
+                              <option value="">-- Select --</option>
+                              {categories.map((cat) => (
+                                <option key={cat._id} value={cat._id}>
+                                  {cat.categoryName}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
                         </div>
-                      )}
-
-                      <div className="mb-3">
-                        <label>Dimension</label>
-                        <input name="dimension" value={formData.dimension} onChange={handleChange} className="form-control" />
+                        <div className="col-xl-9">
+                          <div className="mb-3">
+                            <label>Description</label>
+                            <input name="description" value={formData.description} onChange={handleChange} className="form-control" required />
+                          </div>
+                        </div>
+                        <div className="col-xl-3">
+                          <div className="mb-3">
+                            <label>Base Unit</label>
+                            <select name="baseUnit" value={formData.baseUnit} onChange={handleChange} className="form-control" required>
+                              <option value="">-- Select --</option>
+                              {baseUnits.map((unit) => (
+                                <option key={unit} value={unit}>{unit}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                        <div className="col-xl-3">
+                          <div className="mb-3">
+                            <label>Order Unit</label>
+                            <select name="orderUnit" value={formData.orderUnit} onChange={handleChange} className="form-control" required>
+                              <option value="">-- Select --</option>
+                              {baseUnits.map((unit) => (
+                                <option key={unit} value={unit}>{unit}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                        {formData.baseUnit && formData.orderUnit && formData.baseUnit !== formData.orderUnit && (
+                          <div className="col-xl-3">
+                            <div className="mb-3">
+                              <label>1 {formData.orderUnit} = how many {formData.baseUnit}?</label>
+                              <input name="conversionValue" value={formData.conversionValue} onChange={handleChange} className="form-control" required />
+                            </div>
+                          </div>
+                        )}
+                        <div className="col-xl-3">
+                          <div className="mb-3">
+                            <label>Dimension</label>
+                            <input name="dimension" value={formData.dimension} onChange={handleChange} className="form-control" />
+                          </div>
+                        </div>
+                        <div className="col-xl-3">
+                          <div className='mb-3'>
+                            <label >MNP</label>
+                            <input name='mnp' value={formData.mnp} onChange={handleChange} className='form-control' />
+                          </div>
+                        </div>
+                        <div className="col-xl-3">
+                          <div className='mb-3'>
+                            <label >Location</label>
+                            <input name='location' value={formData.location} onChange={handleChange} className='form-control' />
+                          </div>
+                        </div>
                       </div>
-                      <div className='mb-3'>
-                        <label >MNP</label>
-                        <input name='mnp' value={formData.mnp} onChange={handleChange} className='form-control'/>
-                      </div>
-                      <div className='mb-3'>
-                        <label >Location</label>
-                        <input name='location' value={formData.location} onChange={handleChange} className='form-control'/>
-                      </div>
-
                       <button type="submit" className="btn btn-primary">
                         {editingMaterial ? 'Update Material' : 'Add Material'}
                       </button>
@@ -252,8 +267,6 @@ const MaterialPage = () => {
                   </div>
                 </div>
               </div>
-              {/* Modal backdrop */}
-              {/* <div className="modal-backdrop fade "></div> */}
             </div>
           )}
 

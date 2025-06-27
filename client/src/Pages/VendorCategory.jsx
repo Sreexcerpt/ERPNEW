@@ -1,272 +1,3 @@
-// import React, { useState, useEffect } from 'react';
-// import axios from 'axios';
-
-// function VendorCategoryForm() {
-//   const [formData, setFormData] = useState({
-//     categoryName: '',
-//     prefix: '',
-//     rangeFrom: '',
-//     rangeTo: ''
-//   });
-
-//   const [vendorCategories, setVendorCategories] = useState([]);
-
-//   const handleChange = (e) => {
-//     const { name, value } = e.target;
-//     setFormData(prev => ({
-//       ...prev,
-//       [name]: value
-//     }));
-//   };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     try {
-//       const res = await axios.post('http://localhost:8080/api/vendor-categories', formData);
-//       alert('Vendor Category Added!');
-//       setVendorCategories([...vendorCategories, res.data]);
-//       setFormData({ categoryName: '', prefix: '', rangeFrom: '', rangeTo: '' });
-//     } catch (error) {
-//       console.error(error);
-//       alert('Error adding category');
-//     }
-//   };
-
-//   const fetchCategories = async () => {
-//     try {
-//       const res = await axios.get('http://localhost:8080/api/vendor-categories');
-//       setVendorCategories(res.data);
-//     } catch (error) {
-//       console.error(error);
-//     }
-//   };
-
-//   useEffect(() => {
-//     fetchCategories();
-//   }, []);
-
-//   return (
-//     <div style={{ maxWidth: '600px', margin: 'auto', padding: '1rem' }}>
-//       <h2>Add Vendor Category</h2>
-//       <form onSubmit={handleSubmit}>
-//         <input
-//           type="text"
-//           name="categoryName"
-//           placeholder="Category Name"
-//           value={formData.categoryName}
-//           onChange={handleChange}
-//           required
-//         />
-//         <br />
-//         <input
-//           type="text"
-//           name="prefix"
-//           placeholder="Prefix"
-//           value={formData.prefix}
-//           onChange={handleChange}
-//           required
-//         />
-//         <br />
-//         <input
-//           type="number"
-//           name="rangeFrom"
-//           placeholder="Range From"
-//           value={formData.rangeFrom}
-//           onChange={handleChange}
-//           required
-//         />
-//         <br />
-//         <input
-//           type="number"
-//           name="rangeTo"
-//           placeholder="Range To"
-//           value={formData.rangeTo}
-//           onChange={handleChange}
-//           required
-//         />
-//         <br />
-//         <button type="submit">Add Category</button>
-//       </form>
-
-//       <hr />
-
-//       <h3>Vendor Categories</h3>
-//       <ul>
-//         {vendorCategories.map(cat => (
-//           <li key={cat._id}>
-//             <strong>{cat.categoryName}</strong> — Prefix: {cat.prefix}, Range: {cat.rangeFrom} to {cat.rangeTo}
-//           </li>
-//         ))}
-//       </ul>
-//     </div>
-//   );
-// }
-
-// export default VendorCategoryForm;
-// import React, { useState, useEffect } from 'react';
-// import axios from 'axios';
-
-// function VendorCategoryForm() {
-//   const [formData, setFormData] = useState({
-//     categoryName: '',
-//     prefix: '',
-//     rangeFrom: '',
-//     rangeTo: ''
-//   });
-
-//   const [vendorCategories, setVendorCategories] = useState([]);
-
-//   const handleChange = (e) => {
-//     const { name, value } = e.target;
-//     setFormData(prev => ({
-//       ...prev,
-//       [name]: value
-//     }));
-//   };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     try {
-//       const res = await axios.post('http://localhost:8080/api/vendor-categories', formData);
-//       alert('Vendor Category Added!');
-//       setVendorCategories([...vendorCategories, res.data]);
-//       setFormData({ categoryName: '', prefix: '', rangeFrom: '', rangeTo: '' });
-//     } catch (error) {
-//       console.error(error);
-//       alert('Error adding category');
-//     }
-//   };
-
-//   const fetchCategories = async () => {
-//     try {
-//       const res = await axios.get('http://localhost:8080/api/vendor-categories');
-//       setVendorCategories(res.data);
-//     } catch (error) {
-//       console.error(error);
-//     }
-//   };
-
-//   useEffect(() => {
-//     fetchCategories();
-//   }, []);
-
-//   const inputStyle = {
-//     width: '100%',
-//     padding: '10px',
-//     margin: '8px 0',
-//     border: '1px solid #ccc',
-//     borderRadius: '5px',
-//     boxSizing: 'border-box'
-//   };
-
-//   const labelStyle = {
-//     fontWeight: 'bold',
-//     display: 'block',
-//     marginTop: '12px'
-//   };
-
-//   return (
-//     <div style={{
-//       maxWidth: '600px',
-//       margin: 'auto',
-//       padding: '2rem',
-//       backgroundColor: '#f0f8ff',
-//       borderRadius: '10px',
-//       boxShadow: '0 0 8px rgba(0,0,0,0.1)'
-//     }}>
-//       <h2 style={{ textAlign: 'center', color: '#333' }}>Add Vendor Category</h2>
-
-//       <form onSubmit={handleSubmit}>
-//         <label style={labelStyle}>Category Name</label>
-//         <input
-//           type="text"
-//           name="categoryName"
-//           placeholder="e.g., Hardware"
-//           value={formData.categoryName}
-//           onChange={handleChange}
-//           required
-//           style={inputStyle}
-//         />
-
-//         <label style={labelStyle}>Prefix</label>
-//         <input
-//           type="text"
-//           name="prefix"
-//           placeholder="e.g., HW"
-//           value={formData.prefix}
-//           onChange={handleChange}
-//           required
-//           style={inputStyle}
-//         />
-
-//         <label style={labelStyle}>Range From</label>
-//         <input
-//           type="number"
-//           name="rangeFrom"
-//           placeholder="e.g., 100"
-//           value={formData.rangeFrom}
-//           onChange={handleChange}
-//           required
-//           style={inputStyle}
-//         />
-
-//         <label style={labelStyle}>Range To</label>
-//         <input
-//           type="number"
-//           name="rangeTo"
-//           placeholder="e.g., 999"
-//           value={formData.rangeTo}
-//           onChange={handleChange}
-//           required
-//           style={inputStyle}
-//         />
-
-//         <button
-//           type="submit"
-//           style={{
-//             width: '100%',
-//             padding: '12px',
-//             marginTop: '20px',
-//             backgroundColor: '#4CAF50',
-//             color: 'white',
-//             border: 'none',
-//             borderRadius: '6px',
-//             fontWeight: 'bold',
-//             cursor: 'pointer'
-//           }}
-//         >
-//           Add Category
-//         </button>
-//       </form>
-
-//       <hr style={{ margin: '2rem 0' }} />
-
-//       <h3 style={{ textAlign: 'center' }}>Vendor Categories</h3>
-//       <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
-//         {vendorCategories.map(cat => (
-//           <li
-//             key={cat._id}
-//             style={{
-//               backgroundColor: '#fff',
-//               padding: '10px',
-//               marginBottom: '10px',
-//               border: '1px solid #ddd',
-//               borderRadius: '5px'
-//             }}
-//           >
-//             <strong>{cat.categoryName}</strong> &nbsp;
-//             <span style={{ color: '#777' }}>
-//               [Prefix: <strong>{cat.prefix}</strong> | Range: {cat.rangeFrom} - {cat.rangeTo}]
-//             </span>
-//           </li>
-//         ))}
-//       </ul>
-//     </div>
-//   );
-// }
-
-// export default VendorCategoryForm;
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -336,134 +67,149 @@ function VendorCategoryForm() {
     });
     setEditingId(category._id);
   };
+  const [showModal, setShowModal] = useState(false);
+  const handleOpenModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
+  const [showdropdown, setShowdropdown] = useState(false);
 
-  const inputStyle = {
-    width: '100%',
-    padding: '10px',
-    margin: '8px 0',
-    border: '1px solid #ccc',
-    borderRadius: '5px',
-    boxSizing: 'border-box'
-  };
-
-  const labelStyle = {
-    fontWeight: 'bold',
-    display: 'block',
-    marginTop: '12px'
-  };
-
+  const handleOpendropdown = () => setShowdropdown(true);
+  const handleClosedropdown = () => setShowdropdown(false);
   return (
-    <div style={{
-      maxWidth: '600px',
-      margin: 'auto',
-      padding: '2rem',
-      backgroundColor: '#f0f8ff',
-      borderRadius: '10px',
-      boxShadow: '0 0 8px rgba(0,0,0,0.1)'
-    }}>
-      <h2 style={{ textAlign: 'center', color: '#333' }}>
-        {editingId ? 'Edit Vendor Category' : 'Add Vendor Category'}
-      </h2>
+    <div className="main-wrapper">
+      <div>
+        <div className="content">
+          <div className="d-flex d-block align-items-center justify-content-between flex-wrap gap-3 mb-3">
+            <div>
+              <h6>Vendor Category</h6>
+            </div>
+            <div className="d-flex my-xl-auto right-content align-items-center flex-wrap gap-2">
+              <div className="dropdown">
+                <a href="#" onClick={handleOpendropdown} className="btn btn-outline-white d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                  <i className="isax isax-export-1 me-1"></i>Export
+                </a>
+                <ul className={showdropdown ? `dropdown-menu show` : "dropdown-menu"}>
+                  <li>
+                    <a className="dropdown-item" href="#" onClick={handleClosedropdown}>Download as PDF</a>
+                  </li>
+                  <li>
+                    <a className="dropdown-item" href="#" onClick={handleClosedropdown}>Download as Excel</a>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <a onClick={() => { handleOpenModal() }} className="btn btn-primary d-flex align-items-center"><i className="isax isax-add-circle5 me-1"></i>Vendor Category</a>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h2>
 
-      <form onSubmit={handleSubmit}>
-        <label style={labelStyle}>Category Name</label>
-        <input
-          type="text"
-          name="categoryName"
-          placeholder="e.g., Hardware"
-          value={formData.categoryName}
-          onChange={handleChange}
-          required
-          style={inputStyle}
-        />
+            </h2>
+            {showModal && (
+              <>
+                <div className="modal-backdrop fade show"></div>
+                <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1" aria-labelledby="myLargeModalLabel" aria-modal="true" role="dialog">
+                  <div className="modal-dialog modal-lg">
+                    <div className="modal-content">
+                      <div className="modal-header">
+                        <h4 className="modal-title" id="myLargeModalLabel">  {editingId ? 'Edit Vendor Category' : 'Add Vendor Category'}</h4>
+                        <button type="button" className="btn-close" onClick={() => { setEditingId(null); handleCloseModal(), setFormData({ categoryName: '', prefix: '', rangeFrom: '', rangeTo: '' }); }} aria-label="Close"></button>
+                      </div>
+                      <div className="modal-body">
+                        <form onSubmit={handleSubmit}>
+                          <div className="row">
+                            <div className="col-xl-3 mb-2">
+                              <label>Category Name</label>
+                              <input
+                                type="text"
+                                name="categoryName"
+                                placeholder="e.g., Hardware"
+                                value={formData.categoryName}
+                                onChange={handleChange}
+                                required
+                                className='form-control'
+                              />
+                            </div>
+                            <div className="col-xl-3 mb-2">
+                              <label>Prefix</label>
+                              <input
+                                type="text"
+                                name="prefix"
+                                placeholder="e.g., HW"
+                                value={formData.prefix}
+                                onChange={handleChange}
+                                required
+                                className='form-control'
+                              />
+                            </div>
+                            <div className="col-xl-3 mb-2">
+                              <label>Range From</label>
+                              <input
+                                type="number"
+                                name="rangeFrom"
+                                placeholder="e.g., 100"
+                                value={formData.rangeFrom}
+                                onChange={handleChange}
+                                required
+                                className='form-control'
+                              /></div>
+                            <div className="col-xl-3 mb-2">
+                              <label>Range To</label>
+                              <input
+                                type="number"
+                                name="rangeTo"
+                                placeholder="e.g., 999"
+                                value={formData.rangeTo}
+                                onChange={handleChange}
+                                required
+                                className='form-control'
+                              /></div>
+                          </div>
+                          <button type="submit" className='btn btn-success'>
+                            {editingId ? 'Update Category' : 'Add Category'}
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
 
-        <label style={labelStyle}>Prefix</label>
-        <input
-          type="text"
-          name="prefix"
-          placeholder="e.g., HW"
-          value={formData.prefix}
-          onChange={handleChange}
-          required
-          style={inputStyle}
-        />
-
-        <label style={labelStyle}>Range From</label>
-        <input
-          type="number"
-          name="rangeFrom"
-          placeholder="e.g., 100"
-          value={formData.rangeFrom}
-          onChange={handleChange}
-          required
-          style={inputStyle}
-        />
-
-        <label style={labelStyle}>Range To</label>
-        <input
-          type="number"
-          name="rangeTo"
-          placeholder="e.g., 999"
-          value={formData.rangeTo}
-          onChange={handleChange}
-          required
-          style={inputStyle}
-        />
-
-        <button
-          type="submit"
-          style={{
-            width: '100%',
-            padding: '12px',
-            marginTop: '20px',
-            backgroundColor: editingId ? '#FFA500' : '#4CAF50',
-            color: 'white',
-            border: 'none',
-            borderRadius: '6px',
-            fontWeight: 'bold',
-            cursor: 'pointer'
-          }}
-        >
-          {editingId ? 'Update Category' : 'Add Category'}
-        </button>
-      </form>
-
-      <hr style={{ margin: '2rem 0' }} />
-
-      <h3 style={{ textAlign: 'center' }}>Vendor Categories</h3>
-      <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
-        {vendorCategories.map(cat => (
-          <li
-            key={cat._id}
-            style={{
-              backgroundColor: '#fff',
-              padding: '10px',
-              marginBottom: '10px',
-              border: '1px solid #ddd',
-              borderRadius: '5px'
-            }}
-          >
-            <strong>{cat.categoryName}</strong> &nbsp;
-            <span style={{ color: '#777' }}>
-              [Prefix: <strong>{cat.prefix}</strong> | Range: {cat.rangeFrom} - {cat.rangeTo}]
-            </span>
-            <button
-              onClick={() => handleEdit(cat)}
-              style={{
-                float: 'right',
-                backgroundColor: '#007bff',
-                color: '#fff',
-                border: 'none',
-                padding: '5px 10px',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              Edit
-            </button>
-          </li>
-        ))}
-      </ul>
+            <div className='table-responsive'>
+              <table className='table table-bordered'>
+                <thead>
+                  <tr>
+                    <th>Category Name</th>
+                    <th>Prefix</th>
+                    <th>Range From</th>
+                    <th>Range To</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {vendorCategories.map(cat => (
+                    <tr key={cat._id} >
+                      <td>{cat.categoryName}</td>
+                      <td>{cat.prefix}</td>
+                      <td>{cat.rangeFrom}</td>
+                      <td>{cat.rangeTo}</td>
+                      <td>
+                        <button
+                          onClick={() => { handleEdit(cat), handleOpenModal() }}
+                          className='btn btn-sm btn-primary'
+                        >
+                          Edit
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

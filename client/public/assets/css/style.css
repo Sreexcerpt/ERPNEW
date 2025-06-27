@@ -22780,7 +22780,7 @@ svg.feather-14 {
 
 .page-wrapper {
     transition: all 0.5s ease;
-    margin: 0 0 0 276px;
+    margin: 0 0 0  216px;
     padding: 56px 0 0;
     position: relative;
     left: 0;
@@ -23102,7 +23102,7 @@ p:last-child {
 
 @media (min-width: 992px) {
     .header {
-        left: 276px;
+        left: 216px;
     }
     .header #toggle_btn {
         display: -webkit-box;
@@ -24838,7 +24838,7 @@ p:last-child {
 }
 
 .two-col-sidebar {
-    width: 276px;
+    width:  216px;
     z-index: 99;
     transition: all 0.5s ease;
     background: var(--cf-menu-bg);
@@ -24911,7 +24911,7 @@ p:last-child {
 }
 
 .two-col-sidebar .sidebar {
-    left: 60px;
+    /* left: 60px; */
     width: 216px;
 }
 
@@ -34296,7 +34296,9 @@ table.table.dataTable>thead>tr th {
 table td a {
     color: var(--cf-gray-900);
 }
-
+table td {
+    font-size: 12px !important;
+}
 table td a:hover {
     color: #7539FF;
 }
