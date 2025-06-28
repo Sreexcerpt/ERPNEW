@@ -142,7 +142,7 @@ const Sidebar = () => {
                           <span>Indent</span>
                         </a>
                       </li>
-                       <li>
+                      <li>
                         <a href="/PurchaseIndentsummary">
 
                           <span>Purchase Indent summary</span>
@@ -166,6 +166,10 @@ const Sidebar = () => {
                           <span>Quotations Display</span>
                         </a>
                       </li>
+                      <li><a href="POCategory"><span>POCategory</span></a></li>
+                      <li><a href="PurchaseOrderForm"><span>PurchaseOrderForm</span></a></li>
+
+                      <li><a href="/POList"><span>POList</span></a></li>
 
                     </ul>
                   </li>
@@ -210,7 +214,9 @@ const Sidebar = () => {
                           <span>Quotations Display</span>
                         </a>
                       </li>
-
+                      <li><a href="/SalesOrderForm"><span>SalesOrderForm</span></a></li>
+                      <li><a href="/SalesOrderDisplay"><span>SalesOrderDisplay</span></a></li>
+                      <li><a href="SalesOrderCategoryForm"><span>SalesOrderCategoryForm</span></a></li>
                     </ul>
                   </li>
                 </ul>

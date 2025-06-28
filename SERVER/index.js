@@ -19,6 +19,12 @@ const salecategoryRoutes = require('./routes/Salecategory');
 const salesRequestRoutes = require('./routes/Salesrequest');  
 const saleQuotationCategoryRoutes = require('./routes/saleQuotationCategoryRoutes'); 
 const salesQuotationRoutes = require('./routes/salesQuotationRoutes');
+
+const poCategoryRoutes = require('./routes/poCategoryRoutes');
+const purchaseOrderRoutes = require('./routes/purchaseOrderRoutes');
+const salesOrderCategoryRoutes = require('./routes/salesOrderCategoryRoutes');
+const salesOrderRoutes = require('./routes/salesOrderRoutes');
+
 const app = express();
 app.use(cors());
 
@@ -45,7 +51,11 @@ app.use('/api/salerequest', salesRequestRoutes);
 app.use('/api/sale-quotation-categories', saleQuotationCategoryRoutes);
 app.use('/api/salesquotations', salesQuotationRoutes);
 app.use('/api/indent', indentRoutes);
+app.use('/api/po-categories', poCategoryRoutes);
 
+app.use('/api/purchase-orders', purchaseOrderRoutes);
+app.use('/api/sales-order-categories', salesOrderCategoryRoutes);
+app.use('/api', salesOrderRoutes);
 
 const PORT = 8080;
 app.listen(PORT, () => {

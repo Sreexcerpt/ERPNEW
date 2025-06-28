@@ -23,6 +23,12 @@ import Purchaserequestcat from "./Components/PurchaseRequest/Purchaserequestacte
 import IndentRequest from "./Components/PurchaseRequest/PurchaseRequestForm/PurchaseRequestForm";
 import SalesIndentsummary from "./Components/Sales/salesIndentsummary";
 import PurchaseIndentsummary from "./Components/PurchaseRequest/PurchaseRequestForm/PurchaseIndentSummary";
+import POCategoryForm from './Pages/POCategoryForm';
+import PurchaseOrderForm from './Pages/PurchaseOrderForm';
+import SalesOrderCategoryForm from './Pages/SalesOrderCategoryForm';
+import POList from './Pages/POList';
+import SalesOrderForm from './Pages/SalesOrderForm';
+import SalesOrderDisplay from './Pages/SalesOrderDisplay';
 function App() {
   return (
     <Router>
@@ -51,6 +57,12 @@ function App() {
           <Route path="/SalesCategory" element={<SalesCategory />} />
           <Route path='/SalesIndentsummary' element={<SalesIndentsummary/>}/>
           <Route path='/PurchaseIndentsummary' element={<PurchaseIndentsummary/>}/>
+          <Route path="/POCategory" element={<POCategoryForm/>} />
+        <Route path="/PurchaseOrderForm" element={<PurchaseOrderForm/>} />
+        <Route path="/SalesOrderCategoryForm" element={<SalesOrderCategoryForm/>} />
+        <Route path="/POList" element={<POList/>} />
+        <Route path="/SalesOrderDisplay" element={<SalesOrderDisplay/>} />
+        <Route path="/SalesOrderForm" element={<SalesOrderForm/>} />
         </Routes>
       </div>
     </Router>
