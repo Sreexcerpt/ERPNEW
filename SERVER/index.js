@@ -15,8 +15,13 @@ const purchaserequest=require('./routes/purchaserequest') // Ensure this is the 
 const indentRoutes = require('./routes/indentRoutes');
 const rfqCategoryRoutes = require('./routes/quotationCategoryRoutes');
 const quotationRoutes = require('./routes/quotationRoutes');
+const salecategoryRoutes = require('./routes/Salecategory');
+const salesRequestRoutes = require('./routes/Salesrequest');  
+const saleQuotationCategoryRoutes = require('./routes/saleQuotationCategoryRoutes'); 
+const salesQuotationRoutes = require('./routes/salesQuotationRoutes');
 const app = express();
 app.use(cors());
+
 app.use(express.json());
 
 connectDB();
@@ -35,7 +40,10 @@ app.use('/api/customer-price-lists', customerPriceRoutes);
 app.use('/api/purchasecategory',purchaserequest);
 app.use('/api/rfq-categories', rfqCategoryRoutes);
 app.use('/api/quotations', quotationRoutes);
-
+app.use('/api/salecategory', salecategoryRoutes);
+app.use('/api/salerequest', salesRequestRoutes);
+app.use('/api/sale-quotation-categories', saleQuotationCategoryRoutes);
+app.use('/api/salesquotations', salesQuotationRoutes);
 app.use('/api/indent', indentRoutes);
 
 

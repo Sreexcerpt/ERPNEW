@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import Select from 'react-select';
-
+const PAGE_SIZE = 10; // You can adjust this value
 function QuotationsDisplay() {
   const [quotations, setQuotations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -171,9 +171,9 @@ function QuotationsDisplay() {
             <tr class="total-row">
               <td colspan="6" style="text-align: right;"><strong>Grand Total:</strong></td>
               <td><strong>₹${quotation.items.reduce((total, item) => {
-                const itemTotal = item.price && item.qty ? parseFloat(item.price) * parseFloat(item.qty) : 0;
-                return total + itemTotal;
-              }, 0).toFixed(2)}</strong></td>
+      const itemTotal = item.price && item.qty ? parseFloat(item.price) * parseFloat(item.qty) : 0;
+      return total + itemTotal;
+    }, 0).toFixed(2)}</strong></td>
             </tr>
           </tfoot>
         </table>
@@ -191,11 +191,46 @@ function QuotationsDisplay() {
     printWindow.focus();
     printWindow.print();
   };
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
 
+  // Filter by search term
+  const filteredQuotations = useMemo(() => {
+    if (!searchTerm) return quotations;
+    return quotations.filter((quotation) =>
+      [
+        quotation.quotationNumber,
+        quotation.indentId,
+        quotation.vendorName,
+        quotation.vnNo,
+        quotation.note,
+      ]
+        .join(' ')
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, quotations]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredQuotations.length / PAGE_SIZE);
+  const paginatedQuotations = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return filteredQuotations.slice(start, start + PAGE_SIZE);
+  }, [filteredQuotations, currentPage]);
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1); // Reset to first page on search
+  };
+
+  const goToPage = (n) => {
+    if (n < 1 || n > totalPages) return;
+    setCurrentPage(n);
+  };
   if (loading) {
     return (
-      <div style={{ padding: '20px', marginLeft: '300px', textAlign: 'center' }}>
-        <h2>Loading Quotations...</h2>
+      <div class="d-flex justify-content-center">
+        <div class="spinner-border" role="status"></div>
       </div>
     );
   }
@@ -274,10 +309,10 @@ function QuotationsDisplay() {
                   <th>Base Unit</th>
                   <th>MaterialGroup</th>
                   <th>
-                  BuyerGroup</th>
-                    <th>DeliveryDate</th>
+                    BuyerGroup</th>
+                  <th>DeliveryDate</th>
                   <th>ValidityDate</th>
-                  
+
                   <th>Price</th>
                   <th>Total</th>
                 </tr>
@@ -293,10 +328,8 @@ function QuotationsDisplay() {
                     <td>{item.materialgroup}</td>
                     <td>{item.buyerGroup}</td>
                     <td>{item.
-                    deliveryDate}</td>
-                    <td>{item.
-                    
-validityDate}</td>
+                      deliveryDate}</td>
+                    <td>{item.validityDate}</td>
                     <td>
                       <input
                         type="number"
@@ -320,152 +353,153 @@ validityDate}</td>
   }
 
   return (
-    <div style={{ padding: '20px', marginLeft: '300px', marginBottom: '50px' }}>
+    <div className='content'>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h2>All Quotations ({quotations.length})</h2>
-        <button onClick={fetchQuotations} style={{ padding: '8px 16px' }}>Refresh</button>
+        <h6>All Quotations</h6>
+        <div style={{ marginBottom: 10 }}>
+          <input
+            type="text"
+            placeholder="Search quotations..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className="form-control"
+            style={{ width: 300, display: 'inline-block' }}
+          />
+        </div>
+        <button onClick={fetchQuotations} className='btn btn-sm btn-soft-primary'>Refresh</button>
       </div>
 
-      {quotations.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
-          <h3>No quotations found</h3>
-          <p>Create your first quotation to see it here.</p>
-        </div>
-      ) : (
-        <div>
-          {quotations.map((quotation, index) => (
-            <div key={quotation._id || index} style={{ 
-              border: '1px solid #ddd', 
-              borderRadius: '8px', 
-              padding: '20px', 
-              marginBottom: '20px',
-              backgroundColor: '#f9f9f9'
-            }}>
-              {/* Quotation Header with Action Buttons */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px', borderBottom: '2px solid #eee', paddingBottom: '10px' }}>
-                <div style={{ flex: 1 }}>
-                  <h3 style={{ margin: '0 0 10px 0', color: '#333' }}>
-                    Quotation ID: {quotation.
-quotationNumber}
-                  </h3>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
-                    <div><strong>Indent ID:</strong> {quotation.indentId}</div>
-                    <div><strong>Category ID:</strong> {quotation.categoryId}</div>
-                    <div><strong>RFQ Category:</strong> {quotation.rfqCategoryId}</div>
-                    <div><strong>Vendor:</strong> {quotation.vendorName}</div>
-                    <div><strong>Unit:</strong> {quotation.unit}</div>
-                    <div><strong>Created:</strong> {new Date(quotation.createdAt).toLocaleDateString()}</div>
-                  </div>
-                  {quotation.note && (
-                    <div style={{ marginTop: '10px' }}>
-                      <strong>Note:</strong> {quotation.note}
-                    </div>
-                  )}
-                </div>
-                
-                {/* Action Buttons */}
-                <div style={{ display: 'flex', gap: '10px', marginLeft: '20px' }}>
-                  <button 
-                    onClick={() => handleEdit(quotation._id)}
-                    style={{ 
-                      padding: '8px 16px', 
-                      backgroundColor: '#2196F3', 
-                      color: 'white', 
-                      border: 'none', 
-                      borderRadius: '4px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Edit
-                  </button>
-                  <button 
+
+      <div class="table-responsive">
+        <table class="table table-nowrap datatable dataTable no-footer" id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info" >
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Quotation ID</th>
+              <th>Indent ID</th>
+              {/* <th>Category ID</th>
+                <th>RFQ Category</th> */}
+              <th>Vendor</th>
+              <th>Vendor NO</th>
+              <th>Validity Date</th>
+              <th>Created</th>
+              <th>Note</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedQuotations.map((quotation, index) => (
+              <tr key={quotation._id || index}>
+                <td>{index + 1}</td>
+                <td>{quotation.quotationNumber}</td>
+                <td>{quotation.indentId}</td>
+                {/* <td>{quotation.categoryId}</td>
+                  <td>{quotation.rfqCategoryId}</td> */}
+                <td>{quotation.vendorName}</td>
+                <td>{quotation.vnNo || "-"}</td>
+                <td>{quotation.validityDate}</td>
+                <td>{new Date(quotation.createdAt).toLocaleDateString()}</td>
+                <td>{quotation.note || '-'}</td>
+                <td>
+                  <button
                     onClick={() => handlePrint(quotation)}
-                    style={{ 
-                      padding: '8px 16px', 
-                      backgroundColor: '#FF9800', 
-                      color: 'white', 
-                      border: 'none', 
-                      borderRadius: '4px',
-                      cursor: 'pointer'
-                    }}
+                    className='btn btn-sm btn-warning'
                   >
                     Print
                   </button>
-                </div>
-              </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-              {/* Items Table */}
-              <div>
-                <h4 style={{ marginBottom: '10px' }}>Items ({quotation.items?.length || 0})</h4>
-                {quotation.items && quotation.items.length > 0 ? (
-                  <div style={{ overflowX: 'auto' }}>
-                    <table border="1" cellPadding="8" style={{ width: '100%', borderCollapse: 'collapse' }}>
-                      <thead style={{ backgroundColor: '#f5f5f5' }}>
-                        <tr>
-                          <th>#</th>
-                          <th>Material ID</th>
-                          <th>Description</th>
-                          <th>Quantity</th>
-                          <th>Base Unit</th>
-                          <th>Order Unit</th>
-                          <th>Location</th>
-                          <th>MaterialGroup</th>
-                  <th>
-                  BuyerGroup</th>
-                  <th>Unit</th>
-                    <th>DeliveryDate</th>
-                  <th>ValidityDate</th>
-                          <th>Price</th>
-                          <th>Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {quotation.items.map((item, itemIndex) => (
-                          <tr key={itemIndex}>
-                            <td>{itemIndex + 1}</td>
-                            <td>{item.materialId}</td>
-                            <td>{item.description}</td>
-                            <td>{item.qty}</td>
-                            <td>{item.baseUnit}</td>
-                            <td>{item.orderUnit}</td>
-                            <td>{item.location}</td>
-                            <td>{item.materialgroup}</td>
-                    <td>{item.buyerGroup}</td>
-                    <td>{item.unit}</td>
-                    <td>{item.deliveryDate}</td>
-                    <td>{item.validityDate}</td>
-                            <td>{item.price ? `₹${parseFloat(item.price).toFixed(2)}` : '-'}</td>
-                            <td>
-                              {item.price && item.qty ? 
-                                `₹${(parseFloat(item.price) * parseFloat(item.qty)).toFixed(2)}` : 
-                                '-'
-                              }
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                      <tfoot style={{ backgroundColor: '#f0f0f0', fontWeight: 'bold' }}>
-                        <tr>
-                          <td colSpan="9" style={{ textAlign: 'right' }}>Grand Total:</td>
-                          <td>
-                            ₹{quotation.items.reduce((total, item) => {
-                              const itemTotal = item.price && item.qty ? 
-                                parseFloat(item.price) * parseFloat(item.qty) : 0;
-                              return total + itemTotal;
-                            }, 0).toFixed(2)}
-                          </td>
-                        </tr>
-                      </tfoot>
-                    </table>
-                  </div>
-                ) : (
-                  <p style={{ color: '#666', fontStyle: 'italic' }}>No items found for this quotation.</p>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      <div className="d-flex justify-content-center mt-2">
+        <nav>
+          <ul className="pagination pagination-sm mb-0">
+            <li className={`page-item${currentPage === 1 ? ' disabled' : ''}`}>
+              <button className="page-link" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1}>
+          <i class="bi bi-chevron-double-left"></i>
+              </button>
+            </li>
+            {/* Page Numbers */}
+            {(() => {
+              const pageButtons = [];
+              const totalToShow = 7; // first 2, last 2, and 3 around current
+              let startPages = [1, 2];
+              let endPages = [totalPages - 1, totalPages].filter(n => n > 2);
+              let middlePages = [];
+
+              if (currentPage <= 4) {
+                // Show first 5 pages
+                startPages = [1, 2, 3, 4, 5].filter(n => n <= totalPages);
+                endPages = [totalPages - 1, totalPages].filter(n => n > 5);
+              } else if (currentPage >= totalPages - 3) {
+                // Show last 5 pages
+                startPages = [1, 2].filter(n => n < totalPages - 4);
+                endPages = [totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages]
+                  .filter(n => n > 2 && n <= totalPages);
+              } else {
+                // Middle window
+                startPages = [1, 2];
+                middlePages = [currentPage - 1, currentPage, currentPage + 1];
+                endPages = [totalPages - 1, totalPages];
+              }
+
+              // Helper to render a set of page numbers
+              const renderPages = (pages) =>
+                pages.map((n) => (
+                  <li key={n} className={`page-item${currentPage === n ? ' active' : ''}`}>
+                    <button className="page-link" onClick={() => goToPage(n)}>
+                      {n}
+                    </button>
+                  </li>
+                ));
+
+              // Render first pages
+              pageButtons.push(...renderPages(startPages));
+
+              // Ellipsis if needed before middle
+              if (
+                (middlePages.length > 0 && middlePages[0] > startPages[startPages.length - 1] + 1) ||
+                (middlePages.length === 0 && endPages[0] > startPages[startPages.length - 1] + 1)
+              ) {
+                pageButtons.push(
+                  <li key="start-ellipsis" className="page-item disabled">
+                    <span className="page-link">…</span>
+                  </li>
+                );
+              }
+
+              // Render middle pages
+              pageButtons.push(...renderPages(middlePages));
+
+              // Ellipsis if needed before end
+              if (
+                endPages.length > 0 &&
+                ((middlePages.length > 0 && endPages[0] > middlePages[middlePages.length - 1] + 1) ||
+                  (middlePages.length === 0 && endPages[0] > startPages[startPages.length - 1] + 1))
+              ) {
+                pageButtons.push(
+                  <li key="end-ellipsis" className="page-item disabled">
+                    <span className="page-link">…</span>
+                  </li>
+                );
+              }
+
+              // Render end pages
+              pageButtons.push(...renderPages(endPages));
+
+              return pageButtons;
+            })()}
+            <li className={`page-item${currentPage === totalPages ? ' disabled' : ''}`}>
+              <button className="page-link" onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages}>
+               <i class="bi bi-chevron-double-right"></i>
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
     </div>
   );
 }

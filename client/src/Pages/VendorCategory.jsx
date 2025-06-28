@@ -76,7 +76,7 @@ function VendorCategoryForm() {
   const handleClosedropdown = () => setShowdropdown(false);
   return (
     <div className="main-wrapper">
-      <div>
+    
         <div className="content">
           <div className="d-flex d-block align-items-center justify-content-between flex-wrap gap-3 mb-3">
             <div>
@@ -102,9 +102,6 @@ function VendorCategoryForm() {
             </div>
           </div>
           <div>
-            <h2>
-
-            </h2>
             {showModal && (
               <>
                 <div className="modal-backdrop fade show"></div>
@@ -175,7 +172,6 @@ function VendorCategoryForm() {
                 </div>
               </>
             )}
-
             <div className='table-responsive'>
               <table className='table table-bordered'>
                 <thead>
@@ -209,7 +205,6 @@ function VendorCategoryForm() {
             </div>
           </div>
         </div>
-      </div>
     </div>
   );
 }

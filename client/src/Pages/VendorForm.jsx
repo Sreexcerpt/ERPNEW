@@ -138,17 +138,17 @@ function VendorForm() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const filteredVendors = vendors.filter((v) => {
-  const vnNo = v.vnNo?.toLowerCase() || "";
-  const name1 = v.name1?.toLowerCase() || "";
-  const category = v.categoryId?.categoryName?.toLowerCase() || "";
-  const keyword = searchTerm.toLowerCase();
+    const vnNo = v.vnNo?.toLowerCase() || "";
+    const name1 = v.name1?.toLowerCase() || "";
+    const category = v.categoryId?.categoryName?.toLowerCase() || "";
+    const keyword = searchTerm.toLowerCase();
 
-  return (
-    vnNo.includes(keyword) ||
-    name1.includes(keyword) ||
-    category.includes(keyword)
-  );
-});
+    return (
+      vnNo.includes(keyword) ||
+      name1.includes(keyword) ||
+      category.includes(keyword)
+    );
+  });
 
 
   return (
@@ -381,7 +381,7 @@ function VendorForm() {
                 placeholder="Search"
                 className="form-control"
                 value={searchTerm}
-  onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
           </div>
@@ -552,9 +552,8 @@ function VendorForm() {
         >
           <ul className="pagination">
             <li
-              className={`paginate_button page-item previous ${
-                currentPage === 1 ? "disabled" : ""
-              }`}
+              className={`paginate_button page-item previous ${currentPage === 1 ? "disabled" : ""
+                }`}
             >
               <a
                 href="#"
@@ -571,9 +570,8 @@ function VendorForm() {
             {Array.from({ length: totalPages }, (_, i) => (
               <li
                 key={i}
-                className={`paginate_button page-item ${
-                  currentPage === i + 1 ? "active" : ""
-                }`}
+                className={`paginate_button page-item ${currentPage === i + 1 ? "active" : ""
+                  }`}
               >
                 <a
                   href="#"
@@ -589,9 +587,8 @@ function VendorForm() {
             ))}
 
             <li
-              className={`paginate_button page-item next ${
-                currentPage === totalPages ? "disabled" : ""
-              }`}
+              className={`paginate_button page-item next ${currentPage === totalPages ? "disabled" : ""
+                }`}
             >
               <a
                 href="#"

@@ -11,6 +11,7 @@ const QuotationItemSchema = new mongoose.Schema({
   vendorId: String,  
   vendorName: String ,
   
+
 materialgroup: String,
 
 buyerGroup: String,
@@ -25,6 +26,7 @@ const QuotationSchema = new mongoose.Schema({
   rfqCategoryId: String,
   vendor: String,
   vendorName: String,
+  vnNo: String,
   validityDate:Date,
   note: String,
   items: [QuotationItemSchema]

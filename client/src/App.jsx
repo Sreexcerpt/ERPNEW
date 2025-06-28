@@ -14,7 +14,15 @@ import TaxForm from "./Pages/Tax/Tax";
 import RFQCategoryForm from "./Pages/RFQCategoryForm";
 import QuotationForm from "./Pages/QuatationForm";
 import QuotationsDisplay from "./Pages/QuotationsDisplay";
-
+import QuotationListPage from "./Pages/QuotationListPage"
+import SaleQuotationCategoryForm from "./Pages/SaleQuotationCategoryForm"
+import SalesQuotationForm from "./Pages/SalesQuotationForm";
+import SalesCategory from "./Components/Sales/SalesCategory/SalesCategory";
+import Salesrequest from "./Components/Sales/SalesRequest/Salesrequest";
+import Purchaserequestcat from "./Components/PurchaseRequest/Purchaserequestactegory/Purchaserequestcat";
+import IndentRequest from "./Components/PurchaseRequest/PurchaseRequestForm/PurchaseRequestForm";
+import SalesIndentsummary from "./Components/Sales/salesIndentsummary";
+import PurchaseIndentsummary from "./Components/PurchaseRequest/PurchaseRequestForm/PurchaseIndentSummary";
 function App() {
   return (
     <Router>
@@ -34,6 +42,15 @@ function App() {
           <Route path="/rfq-category-form" element={<RFQCategoryForm />} />
           <Route path="/quotation-form" element={<QuotationForm />} />
           <Route path="/quotations-display" element={<QuotationsDisplay />} />
+          <Route path="/quotation-list" element={<QuotationListPage />} />
+          <Route path="/sale-quotation-category-form" element={<SaleQuotationCategoryForm />} />
+          <Route path="/sales-quotation-form" element={<SalesQuotationForm />} />
+          <Route path="/IndentRequest" element={<IndentRequest />} />
+          <Route path="/Purchaserequestcat" element={<Purchaserequestcat />} />
+          <Route path="/Salesrequest" element={<Salesrequest />} />
+          <Route path="/SalesCategory" element={<SalesCategory />} />
+          <Route path='/SalesIndentsummary' element={<SalesIndentsummary/>}/>
+          <Route path='/PurchaseIndentsummary' element={<PurchaseIndentsummary/>}/>
         </Routes>
       </div>
     </Router>

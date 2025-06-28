@@ -28,6 +28,7 @@ function RFQCategoryForm() {
       setFormData({ categoryName: '', prefix: '', rangeFrom: '', rangeTo: '' });
       setEditingId(null);
       fetchCategories();
+      handleClosedropdown();
     } catch (err) {
       console.error('Error submitting category:', err);
     }
@@ -60,105 +61,149 @@ function RFQCategoryForm() {
   useEffect(() => {
     fetchCategories();
   }, []);
+  const [showModal, setShowModal] = useState(false);
+  const handleOpenModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
+  const [showdropdown, setShowdropdown] = useState(false);
 
+  const handleOpendropdown = () => setShowdropdown(true);
+  const handleClosedropdown = () => setShowdropdown(false);
   return (
-    <div style={{ padding: '40px', maxWidth: '800px', margin: '0 auto', fontFamily: 'Arial' }}>
-      <h2 style={{ marginBottom: '20px', color: '#333' }}>RFQ Category Setup</h2>
-
-      <form onSubmit={handleSubmit} style={{ marginBottom: '30px', border: '1px solid #ccc', padding: '20px', borderRadius: '8px' }}>
-        <div style={{ display: 'flex', gap: '20px', marginBottom: '15px' }}>
-          <input
-            name="categoryName"
-            placeholder="Category Name"
-            value={formData.categoryName}
-            onChange={handleChange}
-            required
-            style={{ flex: 1, padding: '8px' }}
-          />
-          <input
-            name="prefix"
-            placeholder="Prefix"
-            value={formData.prefix}
-            onChange={handleChange}
-            required
-            style={{ flex: 1, padding: '8px' }}
-          />
-        </div>
-        <div style={{ display: 'flex', gap: '20px', marginBottom: '15px' }}>
-          <input
-            name="rangeFrom"
-            placeholder="Range From"
-            value={formData.rangeFrom}
-            onChange={handleChange}
-            required
-            type="number"
-            style={{ flex: 1, padding: '8px' }}
-          />
-          <input
-            name="rangeTo"
-            placeholder="Range To"
-            value={formData.rangeTo}
-            onChange={handleChange}
-            required
-            type="number"
-            style={{ flex: 1, padding: '8px' }}
-          />
-        </div>
+    <div className='content'>
+      <div className="d-flex d-block align-items-center justify-content-between flex-wrap gap-3 mb-3">
         <div>
-          <button type="submit" style={{ padding: '10px 16px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', marginRight: '10px' }}>
-            {editingId ? 'Update Category' : 'Add Category'}
-          </button>
-          {editingId && (
-            <button type="button" onClick={handleCancelEdit} style={{ padding: '10px 16px', backgroundColor: '#6c757d', color: 'white', border: 'none', borderRadius: '4px' }}>
-              Cancel
-            </button>
-          )}
+          <h6>RFQ Category</h6>
         </div>
-      </form>
+        <div className="d-flex my-xl-auto right-content align-items-center flex-wrap gap-2">
+          <div className="dropdown">
+            <a href="#" onClick={handleOpendropdown} className="btn btn-outline-white d-inline-flex align-items-center" data-bs-toggle="dropdown">
+              <i className="isax isax-export-1 me-1"></i>Export
+            </a>
+            <ul className={showdropdown ? `dropdown-menu show` : "dropdown-menu"}>
+              <li>
+                <a className="dropdown-item" href="#" onClick={handleClosedropdown}>Download as PDF</a>
+              </li>
+              <li>
+                <a className="dropdown-item" href="#" onClick={handleClosedropdown}>Download as Excel</a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <a onClick={() => { handleOpenModal() }} className="btn btn-primary d-flex align-items-center"><i className="isax isax-add-circle5 me-1"></i>Vendor Category</a>
+          </div>
+        </div>
+      </div>
+      <h2></h2>
+      {showModal && (
+        <>
+          <div className="modal-backdrop fade show"></div>
+          <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1" aria-labelledby="myLargeModalLabel" aria-modal="true" role="dialog">
+            <div className="modal-dialog modal-lg">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h4 className="modal-title" id="myLargeModalLabel">  {editingId ? 'Edit Vendor Category' : 'Add Vendor Category'}</h4>
+                  <button type="button" className="btn-close" onClick={() => { setEditingId(null); handleCloseModal(), setFormData({ categoryName: '', prefix: '', rangeFrom: '', rangeTo: '' }); }} aria-label="Close"></button>
+                </div>
+                <div className="modal-body">
+                  <form onSubmit={handleSubmit} >
+                    <div className='row'>
+                      <div className="col-xl-3 mb-2">
+                        <label htmlFor="categoryName">Category Name</label>
+                        <input
+                          name="categoryName"
+                          placeholder="Category Name"
+                          value={formData.categoryName}
+                          onChange={handleChange}
+                          required
+                          className='form-control'
+                        />
+                      </div>
+                      <div className="col-xl-3 mb-2">
+                        <label htmlFor="prefix">Prefix</label>
+                        <input
+                          name="prefix"
+                          placeholder="Prefix"
+                          value={formData.prefix}
+                          onChange={handleChange}
+                          required
+                          className='form-control'
+                        /></div>
+                      <div className="col-xl-3 mb-2">
+                        <label htmlFor="rangeFrom">Range From</label>
 
-      <h3 style={{ marginBottom: '10px' }}>Existing Categories</h3>
+                        <input
+                          name="rangeFrom"
+                          placeholder="Range From"
+                          value={formData.rangeFrom}
+                          onChange={handleChange}
+                          required
+                          type="number"
+                          className='form-control'
+                        /></div>
+                      <div className="col-xl-3 mb-2">
+                        <label htmlFor="rangeTo">Range To</label>
+                        <input
+                          name="rangeTo"
+                          placeholder="Range To"
+                          value={formData.rangeTo}
+                          onChange={handleChange}
+                          required
+                          type="number"
+                          className='form-control'
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <button type="submit" className='btn btn-sm btn-success'>
+                        {editingId ? 'Update Category' : 'Add Category'}
+                      </button>
+                      {editingId && (
+                        <button type="button" className='btn btn-sm btn-secondary ms-3' onClick={handleCancelEdit}>
+                          Cancel
+                        </button>
+                      )}
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead style={{ backgroundColor: '#f8f9fa' }}>
-          <tr>
-            <th style={thStyle}>#</th>
-            <th style={thStyle}>Category Name</th>
-            <th style={thStyle}>Prefix</th>
-            <th style={thStyle}>Range From</th>
-            <th style={thStyle}>Range To</th>
-            <th style={thStyle}>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {categories.map((cat, index) => (
-            <tr key={cat._id} style={{ textAlign: 'center', borderBottom: '1px solid #ddd' }}>
-              <td style={tdStyle}>{index + 1}</td>
-              <td style={tdStyle}>{cat.categoryName}</td>
-              <td style={tdStyle}>{cat.prefix}</td>
-              <td style={tdStyle}>{cat.rangeFrom}</td>
-              <td style={tdStyle}>{cat.rangeTo}</td>
-              <td style={tdStyle}>
-                <button onClick={() => handleEdit(cat)} style={{ padding: '6px 12px', backgroundColor: '#ffc107', border: 'none', borderRadius: '4px', color: '#333' }}>
-                  Edit
-                </button>
-              </td>
+      <div className="table-responsive">
+        <table className='table table-bordered'>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Category Name</th>
+              <th>Prefix</th>
+              <th>Range From</th>
+              <th>Range To</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {categories.map((cat, index) => (
+              <tr key={cat._id}>
+                <td>{index + 1}</td>
+                <td>{cat.categoryName}</td>
+                <td>{cat.prefix}</td>
+                <td>{cat.rangeFrom}</td>
+                <td>{cat.rangeTo}</td>
+                <td>
+                  <button onClick={() => { handleEdit(cat),handleOpenModal() }} className='btn btn-sm btn-primary'>
+                    Edit
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
-
-const thStyle = {
-  padding: '10px',
-  borderBottom: '2px solid #ccc',
-  textAlign: 'center',
-};
-
-const tdStyle = {
-  padding: '10px',
-};
 
 export default RFQCategoryForm;
 

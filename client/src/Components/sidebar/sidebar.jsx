@@ -130,7 +130,24 @@ const Sidebar = () => {
                       <i className="isax isax-element-45"></i><span>Purchase</span>
                       <span className="menu-arrow"></span>
                     </a> <ul style={{ display: openSubmenus.purchase ? "block" : "none" }}>
+                      <li>
+                        <a href="/Purchaserequestcat">
 
+                          <span>Indent Category</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a href="/IndentRequest">
+
+                          <span>Indent</span>
+                        </a>
+                      </li>
+                       <li>
+                        <a href="/PurchaseIndentsummary">
+
+                          <span>Purchase Indent summary</span>
+                        </a>
+                      </li>
                       <li>
                         <a href="/rfq-category-form">
 
@@ -144,8 +161,52 @@ const Sidebar = () => {
                         </a>
                       </li>
                       <li>
-                        <a href="/quotations-display">
+                        <a href="/quotation-list">
 
+                          <span>Quotations Display</span>
+                        </a>
+                      </li>
+
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li className="menu-title"><span>Sales</span></li>
+              <li>
+                <ul>
+                  <li className="submenu">
+                    <a
+                      href="#"
+                      className={openSubmenus.sales ? "active subdrop" : ""}
+                      onClick={e => {
+                        e.preventDefault();
+                        handleToggle("sales");
+                      }} >
+                      <i className="isax isax-element-45"></i><span>Sales</span>
+                      <span className="menu-arrow"></span>
+                    </a> <ul style={{ display: openSubmenus.sales ? "block" : "none" }}>
+                      <li>
+                        <a href="/SalesCategory">
+                          <span>Indent Category</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a href="/Salesrequest">
+                          <span>Sales Request</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a href="/sale-quotation-category-form">
+                          <span>RFQ Category</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a href="/sales-quotation-form">
+                          <span>Quotation Form</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a href="/quotation-list">
                           <span>Quotations Display</span>
                         </a>
                       </li>

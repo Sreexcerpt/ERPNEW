@@ -14,6 +14,8 @@ function QuotationForm() {
   const [vendor, setVendor] = useState('');
   const [vendorName, setVendorName] = useState('');
   const [note, setNote] = useState('');
+  const [vnNo, setVnNo] = useState('');
+
   const [items, setItems] = useState([]);
   const [validityDate, setValidityDate] = useState('');
 
@@ -49,26 +51,18 @@ function QuotationForm() {
       .then((res) => {
         const options = res.data.map((vendor) => ({
           label: `${vendor.name1} ${vendor.name2}`,
-          value: vendor._id
+          value: vendor._id,
+          vnNo: vendor.vnNo || '' // Assuming vnNo is a field in the vendor object
         }));
         setVendors(options);
       })
       .catch((err) => console.error('Failed to fetch vendors:', err));
   }, []);
 
-//   const handleIndentChange = (selectedOption) => {
-//     setSelectedIndent(selectedOption.value);
-//     const mappedItems = selectedOption.value.items.map((item) => ({
-//       ...item,
-//       unit: '',
-//       price: ''
-//     }));
-//     setItems(mappedItems);
-//   };
-const handleIndentChange = (selectedOption) => {
+  const handleIndentChange = (selectedOption) => {
     setSelectedIndent(selectedOption.value);
     const { buyerGroup, materialGroup, deliveryDate } = selectedOption.value;
-  
+
     const mappedItems = selectedOption.value.items.map((item) => ({
       ...item,
       unit: item.unit || '',
@@ -77,11 +71,11 @@ const handleIndentChange = (selectedOption) => {
       materialGroup: item.materialGroup || materialGroup || '',
       deliveryDate: item.deliveryDate || deliveryDate || ''
     }));
-  
+
     setItems(mappedItems);
   };
-  
-  
+
+
   const handleItemChange = (index, field, value) => {
     const updatedItems = [...items];
     updatedItems[index][field] = value;
@@ -95,9 +89,10 @@ const handleIndentChange = (selectedOption) => {
       indentId: selectedIndent.indentId,
       categoryId: selectedIndent.categoryId,
       rfqCategoryId: selectedCategory?.value,
-      vendor, 
+      vendor,
       vendorName,
-      validityDate,  // vendor ID
+      validityDate,
+      vnNo,  // vendor ID
       note,
       items
     };
@@ -114,110 +109,112 @@ const handleIndentChange = (selectedOption) => {
   };
 
   return (
-    
-        <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto',marginLeft:'300px',marginBottom:'-300px' }}>
-          <h2 style={{ textAlign: 'center', marginBottom: '30px' }}>Create Quotation from Indent</h2>
-      
-          <div style={{ marginBottom: '15px' }}>
-            <label style={{ display: 'block', fontWeight: 'bold' }}>Select Indent:</label>
-            <Select options={indents} onChange={handleIndentChange} placeholder="Select an Indent" />
-          </div>
-      
-          <div style={{ marginBottom: '15px' }}>
-            <label style={{ display: 'block', fontWeight: 'bold' }}>Select RFQ Category:</label>
-            <Select options={categories} onChange={setSelectedCategory} placeholder="Select Category" />
-          </div>
-      
-          <div style={{ marginBottom: '15px' }}>
-            <label style={{ display: 'block', fontWeight: 'bold' }}>Vendor Name:</label>
-            <Select
-              options={vendors}
-              onChange={(selected) => {
-                setVendor(selected?.value);
-                setVendorName(selected?.label);
-              }}
-              placeholder="Select a Vendor"
-            />
-          </div>
-      
-          {selectedIndent && (
-            <form onSubmit={handleSubmit}>
-              
-      
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{ display: 'block', fontWeight: 'bold' }}>Validity Date:</label>
-                <input
-                  type="date"
-                  value={validityDate}
-                  onChange={(e) => setValidityDate(e.target.value)}
-                  style={{ padding: '8px', width: '200px' }}
-                />
-              </div>
-              <div style={{ marginBottom: '15px' }}>
-                <label style={{ display: 'block', fontWeight: 'bold' }}>Note:</label>
-                <textarea
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  rows={2}
-                  style={{ width: '100%', padding: '8px' }}
-                  placeholder="Add any notes (optional)"
-                />
-              </div>
-              <div style={{ maxHeight: '400px', overflowX: 'auto', overflowY: 'scroll', marginBottom: '20px' }}>
-                <table border="1" cellPadding="6" style={{ width: '100%', minWidth: '1200px', borderCollapse: 'collapse' }}>
-                  <thead style={{ backgroundColor: '#f9f9f9', position: 'sticky', top: 0 }}>
-                    <tr>
-                      <th>#</th>
-                      <th>Material ID</th>
-                      <th>Description</th>
-                      <th>Qty</th>
-                      <th>Base Unit</th>
-                      <th>Order Unit</th>
-                      <th>Location</th>
-                      <th>Buyer Group</th>
-                      <th>Unit (Enter)</th>
-                      <th>Material Group</th>
-                      <th>Delivery Date</th>
-                      <th>Vendor Name</th>
-                      <th>Price</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {items.map((item, index) => (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td><input value={item.materialId} onChange={(e) => handleItemChange(index, 'materialId', e.target.value)} /></td>
-                        <td><input value={item.description} onChange={(e) => handleItemChange(index, 'description', e.target.value)} /></td>
-                        <td><input type="number" value={item.qty} onChange={(e) => handleItemChange(index, 'qty', e.target.value)} /></td>
-                        <td><input value={item.baseUnit} onChange={(e) => handleItemChange(index, 'baseUnit', e.target.value)} /></td>
-                        <td><input value={item.orderUnit} onChange={(e) => handleItemChange(index, 'orderUnit', e.target.value)} /></td>
-                        <td><input value={item.location} onChange={(e) => handleItemChange(index, 'location', e.target.value)} /></td>
-                        <td><input value={item.buyerGroup} onChange={(e) => handleItemChange(index, 'buyerGroup', e.target.value)} /></td>
-                        <td><input value={item.unit} onChange={(e) => handleItemChange(index, 'unit', e.target.value)} /></td>
-                        <td><input value={item.materialGroup} onChange={(e) => handleItemChange(index, 'materialGroup', e.target.value)} /></td>
-                        <td>
-                          <input
-                            type="date"
-                            value={item.deliveryDate?.split('T')[0]}
-                            onChange={(e) => handleItemChange(index, 'deliveryDate', e.target.value)}
-                          />
-                        </td>
-                        <td>{vendorName}</td>
-                        <td><input type="number" value={item.price} onChange={(e) => handleItemChange(index, 'price', e.target.value)} /></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-      
-              <button type="submit" style={{ padding: '10px 20px', fontWeight: 'bold', cursor: 'pointer' }}>
-                Submit Quotation
-              </button>
-            </form>
-          )}
+
+    <div className='content'>
+      <h2 style={{ textAlign: 'center', marginBottom: '30px' }}>Create Quotation from Indent</h2>
+      <div className="row">
+        <div className='col-xl-3 mb-2'>
+          <label>Select Indent:</label>
+          <Select options={indents} onChange={handleIndentChange} placeholder="Select an Indent" />
         </div>
-      );
-      
+
+        <div className='col-xl-3 mb-2'>
+          <label>Select RFQ Category:</label>
+          <Select options={categories} onChange={setSelectedCategory} placeholder="Select Category" />
+        </div>
+
+        <div className='col-xl-3 mb-2'>
+          <label>Vendor Name:</label>
+          <Select
+            options={vendors}
+            onChange={(selected) => {
+              setVendor(selected?.value);
+              setVendorName(selected?.label);
+              setVnNo(selected?.vnNo || ''); // Set vnNo from selected vendor
+            }}
+            placeholder="Select a Vendor"
+          />
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit}>
+
+<div className="row">
+        <div className='col-xl-2'>
+          <label>Validity Date:</label>
+          <input
+            type="date"
+            value={validityDate}
+            onChange={(e) => setValidityDate(e.target.value)}
+            className='form-control'
+          />
+        </div>
+        <div className='col-xl-3'> 
+          <label>Note:</label>
+          <textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            rows={2}
+            
+           className='form-control'
+            placeholder="Add any notes (optional)"
+          />
+        </div></div>
+        <div className='table-responsive'>
+          <table className='table p-0'>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Material ID</th>
+                <th>Description</th>
+                <th>Qty</th>
+                <th>Base Unit</th>
+                <th>Order Unit</th>
+                <th>Location</th>
+                <th>Buyer Group</th>
+                <th>Unit (Enter)</th>
+                <th>Material Group</th>
+                <th>Delivery Date</th>
+                <th>Vendor Name</th>
+                <th>Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item, index) => (
+                <tr key={index}>
+                  <td>{index + 1}</td>
+                  <td><input value={item.materialId} onChange={(e) => handleItemChange(index, 'materialId', e.target.value)} /></td>
+                  <td><input value={item.description} onChange={(e) => handleItemChange(index, 'description', e.target.value)} /></td>
+                  <td><input type="number" value={item.qty} onChange={(e) => handleItemChange(index, 'qty', e.target.value)} /></td>
+                  <td><input value={item.baseUnit} onChange={(e) => handleItemChange(index, 'baseUnit', e.target.value)} /></td>
+                  <td><input value={item.orderUnit} onChange={(e) => handleItemChange(index, 'orderUnit', e.target.value)} /></td>
+                  <td><input value={item.location} onChange={(e) => handleItemChange(index, 'location', e.target.value)} /></td>
+                  <td><input value={item.buyerGroup} onChange={(e) => handleItemChange(index, 'buyerGroup', e.target.value)} /></td>
+                  <td><input value={item.unit} onChange={(e) => handleItemChange(index, 'unit', e.target.value)} /></td>
+                  <td><input value={item.materialGroup} onChange={(e) => handleItemChange(index, 'materialGroup', e.target.value)} /></td>
+                  <td>
+                    <input
+                      type="date"
+                      value={item.deliveryDate?.split('T')[0]}
+                      onChange={(e) => handleItemChange(index, 'deliveryDate', e.target.value)}
+                    />
+                  </td>
+                  <td>{vendorName}</td>
+                  <td><input type="number" value={item.price} onChange={(e) => handleItemChange(index, 'price', e.target.value)} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <button type="submit" style={{ padding: '10px 20px', fontWeight: 'bold', cursor: 'pointer' }}>
+          Submit Quotation
+        </button>
+      </form>
+
+    </div>
+  );
+
 }
 
 export default QuotationForm;
