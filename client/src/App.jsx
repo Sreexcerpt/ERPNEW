@@ -29,6 +29,12 @@ import SalesOrderCategoryForm from './Pages/SalesOrderCategoryForm';
 import POList from './Pages/POList';
 import SalesOrderForm from './Pages/SalesOrderForm';
 import SalesOrderDisplay from './Pages/SalesOrderDisplay';
+import GoodsIssueForm from './Pages/Inventory/GoodsIssueForm';
+import GoodsReciept from './Pages/Inventory/GoodsReceipt';
+import GoodsTransfer from './Pages/Inventory/GoodsTransfer';
+import Invoice from './Pages/Accounts/invoice';
+import CustomerBilling from './Pages/Accounts/Billing';
+import EWayBillForm from './Pages/Accounts/EWayBill';
 function App() {
   return (
     <Router>
@@ -55,14 +61,21 @@ function App() {
           <Route path="/Purchaserequestcat" element={<Purchaserequestcat />} />
           <Route path="/Salesrequest" element={<Salesrequest />} />
           <Route path="/SalesCategory" element={<SalesCategory />} />
-          <Route path='/SalesIndentsummary' element={<SalesIndentsummary/>}/>
-          <Route path='/PurchaseIndentsummary' element={<PurchaseIndentsummary/>}/>
-          <Route path="/POCategory" element={<POCategoryForm/>} />
-        <Route path="/PurchaseOrderForm" element={<PurchaseOrderForm/>} />
-        <Route path="/SalesOrderCategoryForm" element={<SalesOrderCategoryForm/>} />
-        <Route path="/POList" element={<POList/>} />
-        <Route path="/SalesOrderDisplay" element={<SalesOrderDisplay/>} />
-        <Route path="/SalesOrderForm" element={<SalesOrderForm/>} />
+          <Route path='/SalesIndentsummary' element={<SalesIndentsummary />} />
+          <Route path='/PurchaseIndentsummary' element={<PurchaseIndentsummary />} />
+          <Route path="/POCategory" element={<POCategoryForm />} />
+          <Route path="/PurchaseOrderForm" element={<PurchaseOrderForm />} />
+          <Route path="/SalesOrderCategoryForm" element={<SalesOrderCategoryForm />} />
+          <Route path="/POList" element={<POList />} />
+          <Route path="/SalesOrderDisplay" element={<SalesOrderDisplay />} />
+          <Route path="/SalesOrderForm" element={<SalesOrderForm />} />
+          {/* <Route path='/GoodsReciept' element={<GoodsReceipt />} /> */}
+          <Route path="/GoodsIssueFormUI" element={<GoodsIssueForm/>} />
+        <Route path="/GoodsReciept" element={<GoodsReciept/>} />
+        <Route path="/GoodsTransfer" element={<GoodsTransfer/>} />
+          <Route path='/invoice' element={<Invoice />} />
+          <Route path='/CustomerBilling' element={<CustomerBilling/>}/>
+          <Route path='/EWayBillForm' element={<EWayBillForm/>}/>
         </Routes>
       </div>
     </Router>

@@ -15,7 +15,8 @@ const MaterialPage = () => {
     conversionValue: '',
     dimension: '',
     mnp: "",
-    location: ""
+    location: "",
+materialgroup:""
   });
 
   // Modal state
@@ -51,7 +52,9 @@ const MaterialPage = () => {
       conversionValue: material.conversionValue || '',
       dimension: material.dimension || '',
       mnp: material.mnp || '',
-      location: material.location || ''
+      location: material.location || '',
+      
+materialgroup:material.materialgroup || ''
     });
   };
 
@@ -65,7 +68,8 @@ const MaterialPage = () => {
       conversionValue: '',
       dimension: '',
       mnp: "",
-      location: ""
+      location: "",
+      materialgroup:""
     });
   };
 
@@ -147,6 +151,7 @@ const MaterialPage = () => {
                   <th>Dimension</th>
                   <th>MNP</th>
                   <th>Location</th>
+                     <th>Material Group</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -161,6 +166,7 @@ const MaterialPage = () => {
                     <td>{mat.dimension || '-'}</td>
                     <td>{mat.mnp || '_'}</td>
                     <td>{mat.location || '_'}</td>
+                    <td>{mat.materialgroup || ''}</td>
                     <td>
                       <button className="btn btn-sm btn-primary" onClick={() => { startEdit(mat); handleOpenModal(); }}>
                         Edit
@@ -251,6 +257,12 @@ const MaterialPage = () => {
                           <div className='mb-3'>
                             <label >Location</label>
                             <input name='location' value={formData.location} onChange={handleChange} className='form-control' />
+                          </div>
+                        </div>
+                         <div className="col-xl-3">
+                          <div className='mb-3'>
+                            <label>Material Group</label>
+                            <input name='materialgroup' value={formData.materialgroup} onChange={handleChange} className='form-control' />
                           </div>
                         </div>
                       </div>

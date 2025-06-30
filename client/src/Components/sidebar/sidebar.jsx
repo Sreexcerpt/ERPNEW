@@ -112,6 +112,8 @@ const Sidebar = () => {
                       <li><a href="/MaterialCategory">Material Category</a></li>
                       <li><a href="/customer-category-form">Customer Category</a></li>
                       <li><a href="/vendor-category">Vendor Category</a></li>
+                      <li><a href="/Purchaserequestcat">Purchase Indent Category</a></li>
+                      <li><a href="/SalesCategory">Sales Indent Category </a></li>
                     </ul>
                   </li>
                 </ul>
@@ -130,12 +132,7 @@ const Sidebar = () => {
                       <i className="isax isax-element-45"></i><span>Purchase</span>
                       <span className="menu-arrow"></span>
                     </a> <ul style={{ display: openSubmenus.purchase ? "block" : "none" }}>
-                      <li>
-                        <a href="/Purchaserequestcat">
 
-                          <span>Indent Category</span>
-                        </a>
-                      </li>
                       <li>
                         <a href="/IndentRequest">
 
@@ -148,12 +145,7 @@ const Sidebar = () => {
                           <span>Purchase Indent summary</span>
                         </a>
                       </li>
-                      <li>
-                        <a href="/rfq-category-form">
 
-                          <span>RFQ Category</span>
-                        </a>
-                      </li>
                       <li>
                         <a href="/quotation-form">
 
@@ -189,11 +181,7 @@ const Sidebar = () => {
                       <i className="isax isax-element-45"></i><span>Sales</span>
                       <span className="menu-arrow"></span>
                     </a> <ul style={{ display: openSubmenus.sales ? "block" : "none" }}>
-                      <li>
-                        <a href="/SalesCategory">
-                          <span>Indent Category</span>
-                        </a>
-                      </li>
+
                       <li>
                         <a href="/Salesrequest">
                           <span>Sales Request</span>
@@ -217,6 +205,51 @@ const Sidebar = () => {
                       <li><a href="/SalesOrderForm"><span>SalesOrderForm</span></a></li>
                       <li><a href="/SalesOrderDisplay"><span>SalesOrderDisplay</span></a></li>
                       <li><a href="SalesOrderCategoryForm"><span>SalesOrderCategoryForm</span></a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            <li className="menu-title"><span>Inventory</span></li>
+              <li>
+                <ul>
+                  <li className="submenu">
+                    <a
+                      href="#"
+                      className={openSubmenus.inventory ? "active subdrop" : ""}
+                      onClick={e => {
+                        e.preventDefault();
+                        handleToggle("inventory");
+                      }} >
+                      <i className="isax isax-box"></i><span>Inventory</span>
+                      <span className="menu-arrow"></span>
+                    </a>
+                    <ul style={{ display: openSubmenus.inventory ? "block" : "none" }}>
+                      <li><a href="/GoodsReciept">Goods Receipt</a></li>
+                      <li><a href="/GoodsIssueFormUI">Goods Issue</a></li>
+                      <li><a href="/GoodsTransfer">Good Transfor</a></li>
+                     
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li className="menu-title"><span>Accounts</span></li>
+              <li>
+                <ul>
+                  <li className="submenu">
+                    <a
+                      href="#"
+                      className={openSubmenus.accounts ? "active subdrop" : ""}
+                      onClick={e => {
+                        e.preventDefault();
+                        handleToggle("accounts");
+                      }} >
+                      <i className="isax isax-box"></i><span>Accounts</span>
+                      <span className="menu-arrow"></span>
+                    </a>
+                    <ul style={{ display: openSubmenus.accounts ? "block" : "none" }}>
+                      <li><a href="/invoice">Invoice</a></li>
+                      <li><a href="/CustomerBilling">Customer Billing</a></li>
+                      <li><a href="/EWayBillForm">e-Way Bill</a></li>
                     </ul>
                   </li>
                 </ul>
