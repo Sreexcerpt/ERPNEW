@@ -35,6 +35,7 @@ import GoodsTransfer from './Pages/Inventory/GoodsTransfer';
 import Invoice from './Pages/Accounts/invoice';
 import CustomerBilling from './Pages/Accounts/Billing';
 import EWayBillForm from './Pages/Accounts/EWayBill';
+import StockListERP from './Pages/Inventory/Stocklist';
 function App() {
   return (
     <Router>
@@ -76,6 +77,7 @@ function App() {
           <Route path='/invoice' element={<Invoice />} />
           <Route path='/CustomerBilling' element={<CustomerBilling/>}/>
           <Route path='/EWayBillForm' element={<EWayBillForm/>}/>
+          <Route path="/StockListERP" element={<StockListERP/>}/>
         </Routes>
       </div>
     </Router>

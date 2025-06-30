@@ -227,7 +227,7 @@ const Sidebar = () => {
                       <li><a href="/GoodsReciept">Goods Receipt</a></li>
                       <li><a href="/GoodsIssueFormUI">Goods Issue</a></li>
                       <li><a href="/GoodsTransfer">Good Transfor</a></li>
-                     
+                     <li><a href="/StockListERP">Stock List</a></li>
                     </ul>
                   </li>
                 </ul>
