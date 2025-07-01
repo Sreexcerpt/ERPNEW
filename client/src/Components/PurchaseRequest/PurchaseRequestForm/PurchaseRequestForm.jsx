@@ -1093,10 +1093,6 @@ const IndentRequest = () => {
             </div>
           </div>
         )}
-
-        {/* Saved Indents Section */}
-
-
       </div>
     </div>
   );

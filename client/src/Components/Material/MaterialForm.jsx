@@ -181,6 +181,8 @@ materialgroup:material.materialgroup || ''
 
           {/* Modal */}
           {showModal && (
+             <>
+                    <div className="modal-backdrop fade show"></div>
             <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1" aria-labelledby="myLargeModalLabel" aria-modal="true" role="dialog">
               <div className="modal-dialog modal-lg">
                 <div className="modal-content">
@@ -279,7 +281,7 @@ materialgroup:material.materialgroup || ''
                   </div>
                 </div>
               </div>
-            </div>
+            </div></>
           )}
 
         </div>

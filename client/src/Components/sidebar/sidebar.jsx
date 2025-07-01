@@ -89,12 +89,12 @@ const Sidebar = () => {
                       <span className="menu-arrow"></span>
                     </a>
                     <ul style={{ display: openSubmenus.master ? "block" : "none" }}>
-                      <li><a href="/material-form" className="active">Material</a></li>
-                      <li><a href="/customer-form">Customer</a></li>
-                      <li><a href="/vendor-form">Vendor</a></li>
+                      <li><a href="/material-form" className="active">Material Master</a></li>
+                      <li><a href="/customer-form">Customer Master</a></li>
+                      <li><a href="/vendor-form">Vendor Master</a></li>
                       <li><a href="/customer-price-list">Customer Price List</a></li>
                       <li><a href="/vendor-price-list">Vendor Price List</a></li>
-                      <li><a href="/tax-form">Tax</a></li>
+                      <li><a href="/tax-form">Tax List</a></li>
                     </ul>
                   </li>
                   <li className="submenu">
@@ -114,6 +114,9 @@ const Sidebar = () => {
                       <li><a href="/vendor-category">Vendor Category</a></li>
                       <li><a href="/Purchaserequestcat">Purchase Indent Category</a></li>
                       <li><a href="/SalesCategory">Sales Indent Category </a></li>
+                      <li><a href="POCategory">PO Category</a></li>
+                      <li><a href="/sale-quotation-category-form">Sales RFQ Category</a></li>
+                      <li><a href="SalesOrderCategoryForm">Sales Order Category</a></li>
                     </ul>
                   </li>
                 </ul>
@@ -132,37 +135,12 @@ const Sidebar = () => {
                       <i className="isax isax-element-45"></i><span>Purchase</span>
                       <span className="menu-arrow"></span>
                     </a> <ul style={{ display: openSubmenus.purchase ? "block" : "none" }}>
-
-                      <li>
-                        <a href="/IndentRequest">
-
-                          <span>Indent</span>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="/PurchaseIndentsummary">
-
-                          <span>Purchase Indent summary</span>
-                        </a>
-                      </li>
-
-                      <li>
-                        <a href="/quotation-form">
-
-                          <span>Quotation Form</span>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="/quotation-list">
-
-                          <span>Quotations Display</span>
-                        </a>
-                      </li>
-                      <li><a href="POCategory"><span>POCategory</span></a></li>
-                      <li><a href="PurchaseOrderForm"><span>PurchaseOrderForm</span></a></li>
-
-                      <li><a href="/POList"><span>POList</span></a></li>
-
+                      <li><a href="/IndentRequest">Purchase Indent</a></li>
+                      <li><a href="/quotation-form">Purchase Quotation</a></li>
+                      <li><a href="PurchaseOrderForm">Purchase Order</a></li>
+                      <li><a href="/PurchaseIndentsummary">Purchase Indent List</a></li>
+                      <li><a href="/quotation-list">Purchase Quotations List</a></li>
+                      <li><a href="/POList">Purchase Order List</a></li>
                     </ul>
                   </li>
                 </ul>
@@ -182,34 +160,17 @@ const Sidebar = () => {
                       <span className="menu-arrow"></span>
                     </a> <ul style={{ display: openSubmenus.sales ? "block" : "none" }}>
 
-                      <li>
-                        <a href="/Salesrequest">
-                          <span>Sales Request</span>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="/sale-quotation-category-form">
-                          <span>RFQ Category</span>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="/sales-quotation-form">
-                          <span>Quotation Form</span>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="/quotation-list">
-                          <span>Quotations Display</span>
-                        </a>
-                      </li>
-                      <li><a href="/SalesOrderForm"><span>SalesOrderForm</span></a></li>
-                      <li><a href="/SalesOrderDisplay"><span>SalesOrderDisplay</span></a></li>
-                      <li><a href="SalesOrderCategoryForm"><span>SalesOrderCategoryForm</span></a></li>
+                      <li><a href="/Salesrequest">Sales Indent</a></li>
+                      <li><a href="/sales-quotation-form">Sales Quotation Form</a></li>
+                      <li><a href="/SalesOrderForm">Sales Order</a></li>
+                      <li><a href="/SalesIndentsummary">Sales Indent List</a></li>
+                      <li><a href="/quotation-list">Sales Quotations List</a></li>
+                      <li><a href="/SalesOrderDisplay">Sales Order List</a></li>
                     </ul>
                   </li>
                 </ul>
               </li>
-            <li className="menu-title"><span>Inventory</span></li>
+              <li className="menu-title"><span>Inventory</span></li>
               <li>
                 <ul>
                   <li className="submenu">
@@ -227,7 +188,7 @@ const Sidebar = () => {
                       <li><a href="/GoodsReciept">Goods Receipt</a></li>
                       <li><a href="/GoodsIssueFormUI">Goods Issue</a></li>
                       <li><a href="/GoodsTransfer">Good Transfor</a></li>
-                     <li><a href="/StockListERP">Stock List</a></li>
+                      <li><a href="/StockListERP">Stock List</a></li>
                     </ul>
                   </li>
                 </ul>

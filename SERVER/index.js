@@ -19,7 +19,8 @@ const salecategoryRoutes = require('./routes/Salecategory');
 const salesRequestRoutes = require('./routes/Salesrequest');  
 const saleQuotationCategoryRoutes = require('./routes/saleQuotationCategoryRoutes'); 
 const salesQuotationRoutes = require('./routes/salesQuotationRoutes');
-
+const path = require('path');
+const history = require('connect-history-api-fallback');
 const poCategoryRoutes = require('./routes/poCategoryRoutes');
 const purchaseOrderRoutes = require('./routes/purchaseOrderRoutes');
 const salesOrderCategoryRoutes = require('./routes/salesOrderCategoryRoutes');
@@ -57,7 +58,14 @@ app.use('/api/purchase-orders', purchaseOrderRoutes);
 app.use('/api/sales-order-categories', salesOrderCategoryRoutes);
 app.use('/api', salesOrderRoutes);
 
-const PORT = 8080;
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+app.use(history());
+app.use(express.static(path.join(__dirname, 'dist')));
+
+// Route all other requests to serve 'index.html' for SPA routing
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
+app.listen(process.env.Port || 8080, () => {
+  console.log('Server running on port 8080');
 });

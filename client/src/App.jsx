@@ -36,6 +36,7 @@ import Invoice from './Pages/Accounts/invoice';
 import CustomerBilling from './Pages/Accounts/Billing';
 import EWayBillForm from './Pages/Accounts/EWayBill';
 import StockListERP from './Pages/Inventory/Stocklist';
+import DashboardERP from './Pages/dashboard';
 function App() {
   return (
     <Router>
@@ -43,6 +44,7 @@ function App() {
       <Header />
       <div className="page-wrapper">
         <Routes>
+          <Route path='/' element={<DashboardERP />} />
           <Route path="/MaterialCategory" element={<MaterialCategory />} />
           <Route path="/customer-category-form" element={<CustomerCategoryForm />} />
           <Route path="/vendor-category" element={<VendorCategory />} />
@@ -70,14 +72,13 @@ function App() {
           <Route path="/POList" element={<POList />} />
           <Route path="/SalesOrderDisplay" element={<SalesOrderDisplay />} />
           <Route path="/SalesOrderForm" element={<SalesOrderForm />} />
-          {/* <Route path='/GoodsReciept' element={<GoodsReceipt />} /> */}
-          <Route path="/GoodsIssueFormUI" element={<GoodsIssueForm/>} />
-        <Route path="/GoodsReciept" element={<GoodsReciept/>} />
-        <Route path="/GoodsTransfer" element={<GoodsTransfer/>} />
+          <Route path="/GoodsIssueFormUI" element={<GoodsIssueForm />} />
+          <Route path="/GoodsReciept" element={<GoodsReciept />} />
+          <Route path="/GoodsTransfer" element={<GoodsTransfer />} />
           <Route path='/invoice' element={<Invoice />} />
-          <Route path='/CustomerBilling' element={<CustomerBilling/>}/>
-          <Route path='/EWayBillForm' element={<EWayBillForm/>}/>
-          <Route path="/StockListERP" element={<StockListERP/>}/>
+          <Route path='/CustomerBilling' element={<CustomerBilling />} />
+          <Route path='/EWayBillForm' element={<EWayBillForm />} />
+          <Route path="/StockListERP" element={<StockListERP />} />
         </Routes>
       </div>
     </Router>
