@@ -9,11 +9,13 @@ function VendorForm() {
     search: "",
     address1: "",
     address2: "",
+    extraAddresses: [],
     city: "",
     pincode: "",
     region: "",
     country: "",
     contactNo: "",
+    contactname: "",
     email: "",
   });
 
@@ -21,6 +23,8 @@ function VendorForm() {
   const [vendors, setVendors] = useState([]);
   const [vnNo, setVnNo] = useState("");
   const [editingId, setEditingId] = useState(null);
+  const [extraAddresses, setExtraAddresses] = useState([]);
+
 
   const regions = [
     "Karnataka",
@@ -83,6 +87,7 @@ function VendorForm() {
         search: "",
         address1: "",
         address2: "",
+        extraAddresses: [],
         city: "",
         pincode: "",
         region: "",
@@ -150,7 +155,51 @@ function VendorForm() {
     );
   });
 
-
+  const addExtraAddress = () => {
+    setFormData(prev => ({
+      ...prev,
+      extraAddresses: [...prev.extraAddresses, '']
+    }));
+  };
+  
+  const handleExtraAddressChange = (index, value) => {
+    const updated = [...formData.extraAddresses];
+    updated[index] = value;
+    setFormData(prev => ({
+      ...prev,
+      extraAddresses: updated
+    }));
+  };
+  
+  const removeExtraAddress = (index) => {
+    const updated = [...formData.extraAddresses];
+    updated.splice(index, 1);
+    setFormData(prev => ({
+      ...prev,
+      extraAddresses: updated
+    }));
+  };
+  const handleVendorStatusChange = async (vendorId, statusType, isChecked) => {
+    try {
+      const res = await axios.put(
+        `http://localhost:8080/api/vendors/status/${vendorId}`,
+        { [statusType]: isChecked }
+      );
+  
+      // update local state
+      setVendors((prev) =>
+        prev.map((v) =>
+          v._id === vendorId ? { ...v, [statusType]: isChecked } : v
+        )
+      );
+  
+      alert(`${statusType} updated successfully!`);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to update vendor status');
+    }
+  };
+  
   return (
     <div class="content content-two">
       {/* <h2>{editingId ? "Edit Vendor" : "Add Vendor"}</h2>
@@ -497,53 +546,89 @@ function VendorForm() {
 
       <div class="table-responsive">
         <table class="table table-nowrap datatable">
-          <thead>
-            <tr>
-              <th class="no-sort">
-                <div class="form-check form-check-md">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    id="select-all"
-                  />
-                </div>
-              </th>
-              <th>VNNo</th>
-              <th>Name1</th>
-              <th>Category</th>
-              <th>Contact</th>
-              <th>City</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredVendors.map((v) => (
-              <tr key={v._id}>
-                <td>
-                  <div class="form-check form-check-md">
-                    <input class="form-check-input" type="checkbox" />
-                  </div>
-                </td>
+        <thead>
+  <tr>
+    <th className="no-sort">
+      <div className="form-check form-check-md">
+        <input className="form-check-input" type="checkbox" id="select-all" />
+      </div>
+    </th>
+    <th>VNNo</th>
+    <th>Name1</th>
+    <th>Category</th>
+    <th>Contact</th>
+    <th>City</th>
+    <th>Delete Status</th>
+    <th>Block Status</th>
+    <th>Action</th>
+  </tr>
+</thead>
 
-                <td>
-                  <div class="d-flex align-items-center">
-                    <div>
-                      <h6 class="fs-14 fw-medium mb-0">
-                        <a href="javascript:void(0);">{v.vnNo}</a>
-                      </h6>
-                    </div>
-                  </div>
-                </td>
-                <td>{v.name1}</td>
-                <td>{v.categoryId?.categoryName}</td>
-                <td class="text-dark">{v.contactNo}</td>
-                <td class="text-dark">{v.city}</td>
-                <td style={{ cursor: "pointer" }} onClick={() => handleEdit(v)}>
-                  <i class="isax isax-edit me-2"></i>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+<tbody>
+  {filteredVendors.map((v) => (
+    <tr key={v._id}>
+      <td>
+        <div className="form-check form-check-md">
+          <input className="form-check-input" type="checkbox" />
+        </div>
+      </td>
+
+      <td>
+        <div className="d-flex align-items-center">
+          <div>
+            <h6 className="fs-14 fw-medium mb-0">
+              <a href="javascript:void(0);">{v.vnNo}</a>
+            </h6>
+          </div>
+        </div>
+      </td>
+
+      <td>{v.name1}</td>
+      <td>{v.categoryId?.categoryName}</td>
+      <td className="text-dark">{v.contactNo}</td>
+      <td className="text-dark">{v.city}</td>
+
+      {/* ✅ Delete Status */}
+      <td>
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            checked={v.isDeleted || false}
+            onChange={(e) =>
+              handleVendorStatusChange(v._id, 'isDeleted', e.target.checked)
+            }
+          />
+          <label className="form-check-label">
+            {v.isDeleted ? 'Deleted' : 'Active'}
+          </label>
+        </div>
+      </td>
+
+      {/* ✅ Block Status */}
+      <td>
+        <div className="form-check">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            checked={v.isBlocked || false}
+            onChange={(e) =>
+              handleVendorStatusChange(v._id, 'isBlocked', e.target.checked)
+            }
+          />
+          <label className="form-check-label">
+            {v.isBlocked ? 'Blocked' : 'Unblocked'}
+          </label>
+        </div>
+      </td>
+
+      <td style={{ cursor: 'pointer' }} onClick={() => handleEdit(v)}>
+        <i className="isax isax-edit me-2"></i>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
         </table>
 
         <div
@@ -685,29 +770,56 @@ function VendorForm() {
                     />
                   </div>
 
-                  {/* Address 1 */}
-                  <div className="col-md-6">
-                    <label className="form-label">Address 1</label>
-                    <input
-                      type="text"
-                      name="address1"
-                      className="form-control"
-                      value={formData.address1}
-                      onChange={handleChange}
-                    />
-                  </div>
+                  <div className='col-xl-3 mb-2'>
+  <label>Address 1</label>
+  <input
+    type="text"
+    name="address1"
+    placeholder="Enter Address 1"
+    value={formData.address1}
+    onChange={handleChange}
+    className='form-control'
+  />
+</div>
 
-                  {/* Address 2 */}
-                  <div className="col-md-6">
-                    <label className="form-label">Address 2</label>
-                    <input
-                      type="text"
-                      name="address2"
-                      className="form-control"
-                      value={formData.address2}
-                      onChange={handleChange}
-                    />
-                  </div>
+<div className='col-xl-3 mb-2'>
+  <label>Address 2</label>
+  <input
+    type="text"
+    name="address2"
+    placeholder="Enter Address 2"
+    value={formData.address2}
+    onChange={handleChange}
+    className='form-control'
+  />
+</div>
+
+{formData.extraAddresses.map((address, index) => (
+  <div key={index} className="col-xl-3 mb-2 position-relative">
+    <label>{`Address ${index + 3}`}</label>
+    <input
+      type="text"
+      placeholder={`Enter Address ${index + 3}`}
+      value={address}
+      onChange={(e) => handleExtraAddressChange(index, e.target.value)}
+      className="form-control"
+    />
+    <button
+      type="button"
+      className="btn btn-sm btn-danger position-absolute"
+      style={{ top: '0', right: '0' }}
+      onClick={() => removeExtraAddress(index)}
+    >
+      ❌
+    </button>
+  </div>
+))}
+
+<div className='col-xl-3 mb-2 d-flex align-items-end'>
+  <button type="button" className="btn btn-outline-primary" onClick={addExtraAddress}>
+    + Add Address
+  </button>
+</div>
 
                   {/* City */}
                   <div className="col-md-4">
@@ -783,7 +895,7 @@ function VendorForm() {
 
                   {/* Contact Name */}
                   <div className="col-md-6">
-                    <label className="form-label">Contact Name</label>
+                    <label className="form-label">Contact Person Name</label>
                     <input
                       type="text"
                       name="contactName"

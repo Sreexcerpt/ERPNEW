@@ -5,6 +5,6 @@ const indentController = require('../controllers/Salesrequest');
 router.post('/create', indentController.createIndent);
 // routes/indentRoutes.js
 router.get('/get', indentController.getAllIndents);
-
+router.put('/status/:id', indentController.updateIndentStatus);
 
 module.exports = router;

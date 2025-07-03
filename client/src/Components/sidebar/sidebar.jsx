@@ -74,7 +74,7 @@ const Sidebar = () => {
         <div className="sidebar-inner simplebar-scrollable-y" data-simplebar>
           <div id="sidebar-menu" className="sidebar-menu">
             <ul>
-              <li className="menu-title"><span>Master</span></li>
+              <li className="menu-title"><span>Master Data</span></li>
               <li>
                 <ul>
                   <li className="submenu">
@@ -85,7 +85,7 @@ const Sidebar = () => {
                         e.preventDefault();
                         handleToggle("master");
                       }} >
-                      <i className="isax isax-element-45"></i><span>Master</span>
+                      <i className="isax isax-element-45"></i><span>Master Data</span>
                       <span className="menu-arrow"></span>
                     </a>
                     <ul style={{ display: openSubmenus.master ? "block" : "none" }}>

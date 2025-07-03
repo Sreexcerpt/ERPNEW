@@ -19,6 +19,7 @@ const salesQuotationSchema = new mongoose.Schema({
   customerName: String,
   note: String,
   validityDate: String,
+  salesGroup: String,
   items: [itemSchema],
   createdAt: { type: Date, default: Date.now }
 });

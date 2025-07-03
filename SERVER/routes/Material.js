@@ -8,6 +8,7 @@ router.get('/', materialController.getAllMaterials);
 
 router.put('/:id', materialController.updateMaterial);
 router.get('/:id', materialController.getMaterialById);
+router.put('/status/:id', materialController.updateMaterialStatus);
 
 
 module.exports = router;

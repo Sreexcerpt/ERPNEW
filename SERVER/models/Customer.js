@@ -8,13 +8,22 @@ const customerSchema = new mongoose.Schema({
   search: String,
   address1: String,
   address2: String,
+  extraAddresses: [String],
   city: String,
   pincode: String,
   region: String,
   country: String,
   contactNo: String,
   name: String,
-  email: String
-});
+  email: String,
+  isDeleted: {
+    type: Boolean,
+    default: false
+  },
+  isBlocked: {
+    type: Boolean,
+    default: false
+  }
+}, { timestamps: true });
 
 module.exports = mongoose.model('Customer', customerSchema);

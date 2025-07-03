@@ -11,7 +11,15 @@ function VendorPriceListForm() {
     buyer: "",
     taxId: "",
   });
-
+  // Add these state variables
+  const [showVendorSearchModal, setShowVendorSearchModal] = useState(false);
+  const [showMaterialSearchModal, setShowMaterialSearchModal] = useState(false);
+  const [vendorSearchResults, setVendorSearchResults] = useState([]);
+  const [materialSearchResults, setMaterialSearchResults] = useState([]);
+  const [vendorSearchType, setVendorSearchType] = useState('vendorId');
+  const [materialSearchType, setMaterialSearchType] = useState('materialId');
+  const [vendorSearchQuery, setVendorSearchQuery] = useState('');
+  const [materialSearchQuery, setMaterialSearchQuery] = useState('');
   const [categories, setCategories] = useState([]);
   const [vendors, setVendors] = useState([]);
   const [materials, setMaterials] = useState([]);
@@ -176,7 +184,7 @@ function VendorPriceListForm() {
       resetForm();
       setShowForm(false);
       fetchPriceList(); // Refresh the list
-     
+
     } catch (error) {
       console.error("Error saving data:", error);
       alert("Failed to save Vendor Price List: " + error.message);
@@ -210,7 +218,7 @@ function VendorPriceListForm() {
       }
 
       const data = await res.json();
-     
+
 
       // Extract ID from ObjectId format or use as string
       const extractId = (idField) => {
@@ -307,23 +315,150 @@ function VendorPriceListForm() {
   const [showModal, setShowModal] = useState(false);
 
 
-   const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  
+
   const paginatedData = priceList.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
-  
+
   const totalPages = Math.ceil(priceList.length / itemsPerPage);
   const handlePageClick = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
     }
   };
+  // Vendor Search Handlers
+  const openVendorSearchModal = () => {
+    setShowVendorSearchModal(true);
+    setVendorSearchQuery('');
+    setVendorSearchResults([]);
+  };
 
-  
+  const closeVendorSearchModal = () => {
+    setShowVendorSearchModal(false);
+    setVendorSearchQuery('');
+    setVendorSearchResults([]);
+  };
 
+  const handleVendorSearchInputChange = (e) => {
+    setVendorSearchQuery(e.target.value);
+  };
+
+  const handleVendorSearch = () => {
+    if (!vendorSearchQuery.trim()) {
+      setVendorSearchResults([]);
+      return;
+    }
+
+    if (vendorSearchType === 'vendorId') {
+      const filtered = vendors.filter(vendor => {
+        const vendorId = vendor.vendorId || '';
+        return vendorId.toLowerCase().includes(vendorSearchQuery.toLowerCase());
+      });
+      setVendorSearchResults(filtered);
+    } else {
+      const filtered = vendors.filter(vendor => {
+        const name = vendor.name1 || '';
+        return name.toLowerCase().includes(vendorSearchQuery.toLowerCase());
+      });
+      setVendorSearchResults(filtered);
+    }
+  };
+
+  const handleViewAllVendors = () => {
+    setVendorSearchResults(vendors);
+    setVendorSearchQuery('');
+  };
+
+  const handleClearVendorResults = () => {
+    setVendorSearchResults([]);
+    setVendorSearchQuery('');
+  };
+
+  const selectVendorFromSearch = (vendor) => {
+    handleChange({ target: { name: "vendorId", value: vendor._id } });
+    closeVendorSearchModal();
+  };
+
+  // Material Search Handlers
+  const openMaterialSearchModal = () => {
+    setShowMaterialSearchModal(true);
+    setMaterialSearchQuery('');
+    setMaterialSearchResults([]);
+  };
+
+  const closeMaterialSearchModal = () => {
+    setShowMaterialSearchModal(false);
+    setMaterialSearchQuery('');
+    setMaterialSearchResults([]);
+  };
+
+  const handleMaterialSearchInputChange = (e) => {
+    setMaterialSearchQuery(e.target.value);
+  };
+
+  const handleMaterialSearch = () => {
+    if (!materialSearchQuery.trim()) {
+      setMaterialSearchResults([]);
+      return;
+    }
+
+    if (materialSearchType === 'materialId') {
+      const filtered = materials.filter(material => {
+        const materialId = material.materialId || '';
+        return materialId.toLowerCase().includes(materialSearchQuery.toLowerCase());
+      });
+      setMaterialSearchResults(filtered);
+    } else {
+      const filtered = materials.filter(material => {
+        const description = material.description || '';
+        return description.toLowerCase().includes(materialSearchQuery.toLowerCase());
+      });
+      setMaterialSearchResults(filtered);
+    }
+  };
+
+  const handleViewAllMaterials = () => {
+    setMaterialSearchResults(materials);
+    setMaterialSearchQuery('');
+  };
+
+  const handleClearMaterialResults = () => {
+    setMaterialSearchResults([]);
+    setMaterialSearchQuery('');
+  };
+
+  const selectMaterialFromSearch = (material) => {
+    handleChange({ target: { name: "materialId", value: material._id } });
+    closeMaterialSearchModal();
+  };
+
+  // Add these useEffect hooks
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (vendorSearchQuery.trim()) {
+        handleVendorSearch();
+      } else {
+        setVendorSearchResults([]);
+      }
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [vendorSearchQuery, vendorSearchType, vendors]);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (materialSearchQuery.trim()) {
+        handleMaterialSearch();
+      } else {
+        setMaterialSearchResults([]);
+      }
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [materialSearchQuery, materialSearchType, materials]);
   return (
     <>
       {/* <div className="content">
@@ -558,46 +693,14 @@ function VendorPriceListForm() {
                 />
               </div>
             </div>
-            <div class="d-flex align-items-center flex-wrap gap-2">
-              <div class="dropdown">
-                <a
-                  href="javascript:void(0);"
-                  class="dropdown-toggle btn btn-outline-white d-inline-flex align-items-center"
-                  data-bs-toggle="dropdown"
-                >
-                  <i class="isax isax-sort me-1"></i>Sort By :
-                  <span class="fw-normal ms-1">Latest</span>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end">
-                  <li>
-                    <a href="javascript:void(0);" class="dropdown-item">
-                      Latest
-                    </a>
-                  </li>
-                  <li>
-                    <a href="javascript:void(0);" class="dropdown-item">
-                      Oldest
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
+           
           </div>
         </div>
 
         <div className="table-responsive">
-          <table className="table table-nowrap datatable">
+          <table className="table table-bordered datatable">
             <thead>
               <tr>
-                <th className="no-sort">
-                  <div className="form-check form-check-md">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      id="select-all"
-                    />
-                  </div>
-                </th>
                 <th>Customer</th>
                 <th>Vendor</th>
                 <th>Material</th>
@@ -612,11 +715,7 @@ function VendorPriceListForm() {
             <tbody>
               {paginatedData.map((item) => (
                 <tr key={extractId(item._id)}>
-                  <td>
-                    <div className="form-check form-check-md">
-                      <input className="form-check-input" type="checkbox" />
-                    </div>
-                  </td>
+                 
                   <td>
                     <div className="d-flex align-items-center">
                       <h6 className="fs-14 fw-medium mb-0">
@@ -634,76 +733,75 @@ function VendorPriceListForm() {
                   <td className="text-dark">{item.buyer}</td>
                   <td className="text-dark">{getTaxName(item.taxId)}</td>
                   <td style={{ cursor: "pointer" }}>
-                    <i
-                      className="isax isax-edit me-2 text-primary"
+                    <button
+                      className="btn btn-primary btn-sm me-2"
                       onClick={() => handleEdit(extractId(item._id))}
-                    ></i>
+                    >Edit
+                    </button>
+                     
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
 
-           <div
-          className="dataTables_paginate paging_simple_numbers"
-          id="DataTables_Table_0_paginate"
-        >
-          <ul className="pagination">
-            <li
-              className={`paginate_button page-item previous ${
-                currentPage === 1 ? "disabled" : ""
-              }`}
-            >
-              <a
-                href="#"
-                className="page-link"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handlePageClick(currentPage - 1);
-                }}
-              >
-                <i className="isax isax-arrow-left"></i>
-              </a>
-            </li>
-
-            {Array.from({ length: totalPages }, (_, i) => (
+          <div
+            className="dataTables_paginate paging_simple_numbers"
+            id="DataTables_Table_0_paginate"
+          >
+            <ul className="pagination">
               <li
-                key={i}
-                className={`paginate_button page-item ${
-                  currentPage === i + 1 ? "active" : ""
-                }`}
+                className={`paginate_button page-item previous ${currentPage === 1 ? "disabled" : ""
+                  }`}
               >
                 <a
                   href="#"
                   className="page-link"
                   onClick={(e) => {
                     e.preventDefault();
-                    handlePageClick(i + 1);
+                    handlePageClick(currentPage - 1);
                   }}
                 >
-                  {i + 1}
+                  <i className="isax isax-arrow-left"></i>
                 </a>
               </li>
-            ))}
 
-            <li
-              className={`paginate_button page-item next ${
-                currentPage === totalPages ? "disabled" : ""
-              }`}
-            >
-              <a
-                href="#"
-                className="page-link"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handlePageClick(currentPage + 1);
-                }}
+              {Array.from({ length: totalPages }, (_, i) => (
+                <li
+                  key={i}
+                  className={`paginate_button page-item ${currentPage === i + 1 ? "active" : ""
+                    }`}
+                >
+                  <a
+                    href="#"
+                    className="page-link"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handlePageClick(i + 1);
+                    }}
+                  >
+                    {i + 1}
+                  </a>
+                </li>
+              ))}
+
+              <li
+                className={`paginate_button page-item next ${currentPage === totalPages ? "disabled" : ""
+                  }`}
               >
-                <i className="isax isax-arrow-right-1"></i>
-              </a>
-            </li>
-          </ul>
-        </div>
+                <a
+                  href="#"
+                  className="page-link"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handlePageClick(currentPage + 1);
+                  }}
+                >
+                  <i className="isax isax-arrow-right-1"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
 
         </div>
 
@@ -767,7 +865,7 @@ function VendorPriceListForm() {
                     </div>
 
                     {/* Vendor */}
-                    <div className="col-md-6">
+                    {/* <div className="col-md-6">
                       <label className="form-label">Vendor</label>
                       <select
                         name="vendorId"
@@ -783,10 +881,10 @@ function VendorPriceListForm() {
                           </option>
                         ))}
                       </select>
-                    </div>
+                    </div> */}
 
                     {/* Material */}
-                    <div className="col-md-6">
+                    {/* <div className="col-md-6">
                       <label className="form-label">Material</label>
                       <select
                         name="materialId"
@@ -802,8 +900,64 @@ function VendorPriceListForm() {
                           </option>
                         ))}
                       </select>
+                    </div> */}
+                    {/* Vendor */}
+                    <div className="col-md-6">
+                      <label className="form-label">Vendor</label>
+                      <div className="input-group">
+                        <select
+                          name="vendorId"
+                          className="form-control"
+                          value={formData.vendorId}
+                          onChange={handleChange}
+                          required
+                        >
+                          <option value="">Select Vendor</option>
+                          {vendors.map((v) => (
+                            <option key={v._id} value={v._id}>
+                              {v.name1}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          type="button"
+                          className="btn btn-outline-info"
+                          onClick={openVendorSearchModal}
+                          title="Search Vendor"
+                        >
+                          <i className="fas fa-search"></i>
+                        </button>
+                      </div>
                     </div>
 
+                    {/* Material */}
+                    <div className="col-md-6">
+                      <label className="form-label">Material</label>
+                      <div className="input-group">
+                        <select
+                          name="materialId"
+                          className="form-control"
+                          value={formData.materialId}
+                          onChange={handleChange}
+                          required
+                        >
+                          <option value="">Select Material</option>
+                          {materials.map((m) => (
+                            <option key={m._id} value={m._id}>
+                              {m.description}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          type="button"
+                          className="btn btn-outline-info"
+                          onClick={openMaterialSearchModal}
+                          title="Search Material"
+                        >
+                          <i className="fas fa-search"></i>
+                        </button>
+                      </div>
+                    </div>
                     {/* Base Unit (BUM) */}
                     <div className="col-md-6">
                       <label className="form-label">Base Unit (BUM)</label>
@@ -879,6 +1033,256 @@ function VendorPriceListForm() {
             </div>
           </div>
         </div>
+        {/* Vendor Search Modal */}
+        {showVendorSearchModal && (
+          <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+            <div className="modal-dialog modal-xl">
+              <div className="modal-content">
+                <div className="modal-header bg-primary text-white">
+                  <h5 className="modal-title">
+                    <i className="fas fa-search me-2"></i>Search Vendors
+                  </h5>
+                  <button
+                    type="button"
+                    className="btn-close btn-close-white"
+                    onClick={closeVendorSearchModal}
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  {/* Search Controls */}
+                  <div className="row mb-3">
+                    <div className="col-md-3">
+                      <label className="form-label">Search Type</label>
+                      <select
+                        className="form-select"
+                        value={vendorSearchType}
+                        onChange={(e) => setVendorSearchType(e.target.value)}
+                      >
+                        <option value="vendorId">Vendor ID</option>
+                        <option value="name">Vendor Name</option>
+                      </select>
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label">Search Query</label>
+                      <div className="input-group">
+                        <span className="input-group-text">
+                          <i className="fas fa-search"></i>
+                        </span>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder={
+                            vendorSearchType === 'vendorId'
+                              ? 'Enter Vendor ID...'
+                              : 'Search by Vendor Name...'
+                          }
+                          value={vendorSearchQuery}
+                          onChange={handleVendorSearchInputChange}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-3">
+                      <label className="form-label">&nbsp;</label>
+                      <div className="d-flex gap-2">
+                        <button className="btn btn-info" onClick={handleViewAllVendors}>
+                          <i className="fas fa-list me-1"></i>View All
+                        </button>
+                        {vendorSearchResults.length > 0 && (
+                          <button className="btn btn-outline-secondary" onClick={handleClearVendorResults}>
+                            <i className="fas fa-times me-1"></i>Clear
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Search Results */}
+                  <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                    {vendorSearchResults.length > 0 ? (
+                      <table className="table table-hover">
+                        <thead className="table-light sticky-top">
+                          <tr>
+                            <th>Vendor ID</th>
+                            <th>Name</th>
+                            <th>Contact</th>
+                            <th>Location</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {vendorSearchResults.map((vendor, idx) => (
+                            <tr key={idx}>
+                              <td><span className="badge">{vendor.vendorId}</span></td>
+                              <td>{vendor.name1}</td>
+                              <td>{vendor.contact}</td>
+                              <td>{vendor.location}</td>
+                              <td>
+                                <button
+                                  className="btn btn-success btn-sm"
+                                  onClick={() => selectVendorFromSearch(vendor)}
+                                >
+                                  <i className="fas fa-check me-1"></i>Select
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <div className="text-center py-4">
+                        <i className="fas fa-search fa-3x text-muted mb-3"></i>
+                        <p className="text-muted">
+                          {vendors.length === 0
+                            ? 'No vendors loaded from API'
+                            : vendorSearchQuery
+                              ? `No vendors found matching "${vendorSearchQuery}"`
+                              : 'Enter search term or click "View All"'
+                          }
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={closeVendorSearchModal}
+                  >
+                    <i className="fas fa-times me-1"></i>Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Material Search Modal */}
+        {/* Material Search Modal */}
+        {showMaterialSearchModal && (
+          <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+            <div className="modal-dialog modal-xl">
+              <div className="modal-content">
+                <div className="modal-header bg-primary text-white">
+                  <h5 className="modal-title">
+                    <i className="fas fa-search me-2"></i>Search Materials
+                  </h5>
+                  <button
+                    type="button"
+                    className="btn-close btn-close-white"
+                    onClick={closeMaterialSearchModal}
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  {/* Search Controls */}
+                  <div className="row mb-3">
+                    <div className="col-md-3">
+                      <label className="form-label">Search Type</label>
+                      <select
+                        className="form-select"
+                        value={materialSearchType}
+                        onChange={(e) => setMaterialSearchType(e.target.value)}
+                      >
+                        <option value="materialId">Material ID</option>
+                        <option value="description">Description</option>
+                      </select>
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label">Search Query</label>
+                      <div className="input-group">
+                        <span className="input-group-text">
+                          <i className="fas fa-search"></i>
+                        </span>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder={
+                            materialSearchType === 'materialId'
+                              ? 'Enter Material ID (e.g., MMNR-100000 or 100000)'
+                              : 'Search by Description...'
+                          }
+                          value={materialSearchQuery}
+                          onChange={handleMaterialSearchInputChange}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-3">
+                      <label className="form-label">&nbsp;</label>
+                      <div className="d-flex gap-2">
+                        <button className="btn btn-info" onClick={handleViewAllMaterials}>
+                          <i className="fas fa-list me-1"></i>View All
+                        </button>
+                        {materialSearchResults.length > 0 && (
+                          <button className="btn btn-outline-secondary" onClick={handleClearMaterialResults}>
+                            <i className="fas fa-times me-1"></i>Clear
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Search Results */}
+                  <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                    {materialSearchResults.length > 0 ? (
+                      <table className="table table-hover">
+                        <thead className="table-light sticky-top">
+                          <tr>
+                            <th>Material ID</th>
+                            <th>Description</th>
+                            <th>Base Unit</th>
+                            <th>Location</th>
+                            <th>Material Group</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {materialSearchResults.map((material, idx) => (
+                            <tr key={idx}>
+                              <td><span className="badge">{material.materialId}</span></td>
+                              <td>{material.description}</td>
+                              <td><span className="badge bg-secondary">{material.baseUnit}</span></td>
+                              <td>{material.location}</td>
+                              <td><span className="badge bg-info">{material.materialgroup}</span></td>
+                              <td>
+                                <button
+                                  className="btn btn-success btn-sm"
+                                  onClick={() => selectMaterialFromSearch(material)}
+                                >
+                                  <i className="fas fa-check me-1"></i>Select
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <div className="text-center py-4">
+                        <i className="fas fa-search fa-3x text-muted mb-3"></i>
+                        <p className="text-muted">
+                          {materials.length === 0
+                            ? 'No materials loaded from API'
+                            : materialSearchQuery
+                              ? `No materials found matching "${materialSearchQuery}"`
+                              : 'Enter search term or click "View All"'
+                          }
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={closeMaterialSearchModal}
+                  >
+                    <i className="fas fa-times me-1"></i>Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

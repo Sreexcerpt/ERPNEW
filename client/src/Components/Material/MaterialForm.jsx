@@ -14,9 +14,9 @@ const MaterialPage = () => {
     orderUnit: '',
     conversionValue: '',
     dimension: '',
-    mnp: "",
+    mpn: "",
     location: "",
-materialgroup:""
+    materialgroup: ""
   });
 
   // Modal state
@@ -51,10 +51,9 @@ materialgroup:""
       orderUnit: material.orderUnit,
       conversionValue: material.conversionValue || '',
       dimension: material.dimension || '',
-      mnp: material.mnp || '',
+      mpn: material.mpn || '',
       location: material.location || '',
-      
-materialgroup:material.materialgroup || ''
+      materialgroup: material.materialgroup || ''
     });
   };
 
@@ -67,9 +66,9 @@ materialgroup:material.materialgroup || ''
       orderUnit: '',
       conversionValue: '',
       dimension: '',
-      mnp: "",
+      mpn: "",
       location: "",
-      materialgroup:""
+      materialgroup: ""
     });
   };
 
@@ -104,6 +103,29 @@ materialgroup:material.materialgroup || ''
     }
   };
 
+  // Handle status change for delete/undelete and block/unblock - Updated for checkbox
+  const handleStatusChange = async (materialId, statusType, isChecked) => {
+    try {
+      const updateData = {
+        [statusType]: isChecked
+      };
+
+      await axios.put(`http://localhost:8080/api/material/status/${materialId}`, updateData);
+      
+      // Update local state
+      setMaterials(materials.map(material => 
+        material._id === materialId 
+          ? { ...material, [statusType]: isChecked }
+          : material
+      ));
+
+      alert('Status updated successfully!');
+    } catch (err) {
+      console.error('Error updating status:', err);
+      alert('Failed to update status!');
+    }
+  };
+
   // Modal show/hide functions
   const handleOpenModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
@@ -111,6 +133,7 @@ materialgroup:material.materialgroup || ''
 
   const handleOpendropdown = () => setShowdropdown(true);
   const handleClosedropdown = () => setShowdropdown(false);
+
   return (
     <div className="main-wrapper">
       <div>
@@ -149,9 +172,10 @@ materialgroup:material.materialgroup || ''
                   <th>Order</th>
                   <th>Conversion</th>
                   <th>Dimension</th>
-                  <th>MNP</th>
+                  <th>MPN</th>
                   <th>Location</th>
-                     <th>Material Group</th>
+                  <th>Delete Status</th>
+                  <th>Block Status</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -164,14 +188,38 @@ materialgroup:material.materialgroup || ''
                     <td>{mat.orderUnit}</td>
                     <td>{mat.conversionValue || '-'}</td>
                     <td>{mat.dimension || '-'}</td>
-                    <td>{mat.mnp || '_'}</td>
+                    <td>{mat.mpn || '_'}</td>
                     <td>{mat.location || '_'}</td>
-                    <td>{mat.materialgroup || ''}</td>
+                    <td>
+                      <div className="form-check">
+                        <input 
+                          className="form-check-input" 
+                          type="checkbox" 
+                          checked={mat.isDeleted || false}
+                          onChange={(e) => handleStatusChange(mat._id, 'isDeleted', e.target.checked)}
+                        />
+                        <label className="form-check-label">
+                          {mat.isDeleted ? 'Deleted' : 'Active'}
+                        </label>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="form-check">
+                        <input 
+                          className="form-check-input" 
+                          type="checkbox" 
+                          checked={mat.isBlocked || false}
+                          onChange={(e) => handleStatusChange(mat._id, 'isBlocked', e.target.checked)}
+                        />
+                        <label className="form-check-label">
+                          {mat.isBlocked ? 'Blocked' : 'Active'}
+                        </label>
+                      </div>
+                    </td>
                     <td>
                       <button className="btn btn-sm btn-primary" onClick={() => { startEdit(mat); handleOpenModal(); }}>
                         Edit
                       </button>
-
                     </td>
                   </tr>
                 ))}
@@ -181,10 +229,10 @@ materialgroup:material.materialgroup || ''
 
           {/* Modal */}
           {showModal && (
-             <>
-                    <div className="modal-backdrop fade show"></div>
+            <>
+            <div className="modal-backdrop fade show"></div>  
             <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1" aria-labelledby="myLargeModalLabel" aria-modal="true" role="dialog">
-              <div className="modal-dialog modal-lg">
+              <div className="modal-dialog modal-dialog-centered modal-lg">
                 <div className="modal-content">
                   <div className="modal-header">
                     <h4 className="modal-title" id="myLargeModalLabel"> {editingMaterial ? 'Edit Material' : 'Add New Material'}</h4>
@@ -251,8 +299,8 @@ materialgroup:material.materialgroup || ''
                         </div>
                         <div className="col-xl-3">
                           <div className='mb-3'>
-                            <label >MNP</label>
-                            <input name='mnp' value={formData.mnp} onChange={handleChange} className='form-control' />
+                            <label >MPN</label>
+                            <input name='mpn' value={formData.mpn} onChange={handleChange} className='form-control' />
                           </div>
                         </div>
                         <div className="col-xl-3">
@@ -263,7 +311,7 @@ materialgroup:material.materialgroup || ''
                         </div>
                          <div className="col-xl-3">
                           <div className='mb-3'>
-                            <label>Material Group</label>
+                            <label >Material Group</label>
                             <input name='materialgroup' value={formData.materialgroup} onChange={handleChange} className='form-control' />
                           </div>
                         </div>
@@ -281,8 +329,8 @@ materialgroup:material.materialgroup || ''
                   </div>
                 </div>
               </div>
-            </div></>
-          )}
+            </div>
+          </>)}
 
         </div>
       </div>

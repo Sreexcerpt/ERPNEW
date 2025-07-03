@@ -8,9 +8,11 @@ const materialSchema = new mongoose.Schema({
   orderUnit: { type: String, required: true },
   conversionValue: { type: Number }, // optional when base = order
   dimension: { type: String },
-  mnp:String,
+  mpn:String,
   materialgroup: String, // New field for Material Group
   location:String,
+  isDeleted: { type: Boolean, default: false },
+  isBlocked: { type: Boolean, default: false },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Material', materialSchema);

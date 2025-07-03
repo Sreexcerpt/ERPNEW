@@ -46,3 +46,25 @@ exports.updateCustomer = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+
+
+exports.updateCustomerStatus = async (req, res) => {
+  try {
+    const updated = await Customer.findByIdAndUpdate(
+      req.params.id,
+      req.body, // e.g., { isDeleted: true }
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: 'Customer not found' });
+    }
+
+    res.json(updated);
+  } catch (error) {
+    console.error('Error updating customer status:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
+

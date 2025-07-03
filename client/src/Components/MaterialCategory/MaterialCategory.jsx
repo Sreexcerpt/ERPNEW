@@ -98,6 +98,35 @@ const MaterialCategory = () => {
       !validateField('rangeEnd', formData.rangeEnd)
     );
   };
+  const [materialIds, setMaterialIds] = useState({});
+ useEffect(() => {
+    const fetchMaterialIds = async () => {
+      const ids = {};
+      for (const cat of categories) {
+        try {
+          const res = await axios.post('http://localhost:8080/api/material/generate-id', {
+            categoryId: cat._id,
+          });
+          ids[cat._id] = res.data.nextNumber;
+        } catch (err) {
+          console.error('Error generating ID for category:', cat._id, err);
+        }
+      }
+      setMaterialIds(ids);
+    };
+
+    if (categories.length) {
+      fetchMaterialIds();
+    }
+  }, [categories]);
+
+  const extractId = async (id) => {
+    const idRes = await axios.post('http://localhost:8080/api/material/generate-id', {
+      categoryId: id
+    });
+    // console.log('Generated Material ID:', idRes.data.materialId);
+    return idRes.data.materialId;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -183,6 +212,7 @@ const MaterialCategory = () => {
                     <th>Prefix</th>
                     <th>Start</th>
                     <th>End</th>
+                    <th>Status</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -193,8 +223,9 @@ const MaterialCategory = () => {
                       <td>{cat.prefix}</td>
                       <td>{cat.rangeStart}</td>
                       <td>{cat.rangeEnd}</td>
+                      <td>{materialIds[cat._id] || 'Loading...'}</td>
                       <td>
-                        <button className="btn btn-sm btn-warning" onClick={() => {handleEdit(cat),handleOpenModal()}}>
+                        <button className="btn btn-sm btn-warning" onClick={() => { handleEdit(cat), handleOpenModal() }}>
                           Edit
                         </button>
                       </td>
@@ -210,7 +241,7 @@ const MaterialCategory = () => {
                   <div className="modal-content">
                     <div className="modal-header">
                       <h4 className="modal-title" id="myLargeModalLabel"> {editingId ? 'Edit' : 'Create'} Material Category</h4>
-                      <button type="button" className="btn-close" onClick={() => { handleCloseModal(),  setEditingId(null),setFormData({ categoryName: '', prefix: '', rangeStart: '', rangeEnd: '' }); }} aria-label="Close"></button>
+                      <button type="button" className="btn-close" onClick={() => { handleCloseModal(), setEditingId(null), setFormData({ categoryName: '', prefix: '', rangeStart: '', rangeEnd: '' }); }} aria-label="Close"></button>
                     </div>
                     <div className="modal-body">
                       <form onSubmit={handleSubmit}>

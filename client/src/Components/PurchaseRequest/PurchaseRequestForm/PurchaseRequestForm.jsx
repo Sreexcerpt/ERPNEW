@@ -313,6 +313,11 @@ const IndentRequest = () => {
 
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [commonLocation, setCommonLocation] = useState('');
+const [commonBuyerGroup, setCommonBuyerGroup] = useState('');
+const [documentDate, setDocumentDate] = useState(new Date().toISOString().split('T')[0]);
+
+
   // Initialize selectedItems with 4 default manual rows
   const [selectedItems, setSelectedItems] = useState([
     {
@@ -320,11 +325,11 @@ const IndentRequest = () => {
       description: '',
       baseUnit: '',
       orderUnit: '',
-      location: '',
+   
       materialgroup: '',
       qty: '',
       deliveryDate: '',
-      buyerGroup: '',
+     
       isManual: true,
     },
     {
@@ -381,14 +386,26 @@ const IndentRequest = () => {
   const MATERIAL_PREFIX = 'MMNR-';
 
   // Fetch materials
+  // useEffect(() => {
+  //   axios.get('http://localhost:8080/api/material')
+  //     .then(res => {
+  //       console.log('Materials fetched:', res.data);
+  //       setMaterials(res.data);
+  //     })
+  //     .catch(err => console.error(err));
+  // }, []);
   useEffect(() => {
-    axios.get('http://localhost:8080/api/material')
-      .then(res => {
-        console.log('Materials fetched:', res.data);
-        setMaterials(res.data);
-      })
-      .catch(err => console.error(err));
-  }, []);
+  axios.get('http://localhost:8080/api/material')
+    .then(res => {
+      const filteredMaterials = res.data.filter(
+        (material) => !material.isDeleted && !material.isBlocked
+      );
+      console.log('Filtered materials:', filteredMaterials);
+      setMaterials(filteredMaterials);
+    })
+    .catch(err => console.error(err));
+}, []);
+
 
   // Fetch purchase categories
   useEffect(() => {
@@ -611,49 +628,62 @@ const IndentRequest = () => {
 
   // Pagination logic for selected items
 
-  const handleSubmitIndent = async () => {
-    if (!selectedCategory) {
-      alert("Please select a purchase category");
-      return;
-    }
+const handleSubmitIndent = async () => {
+  if (!selectedCategory) {
+    alert("Please select a purchase category");
+    return;
+  }
+  
+  if (!commonLocation || !commonBuyerGroup) {
+    alert("Please fill in Location and Buyer Group");
+    return;
+  }
 
-    // Filter out empty/null rows before submitting
-    const validItems = selectedItems.filter(item => {
-      return item.materialId && item.materialId.trim() !== '' &&
-        item.description && item.description.trim() !== '' &&
-        item.qty && item.qty > 0;
-    });
+  // Filter out empty/null rows before submitting
+  const validItems = selectedItems.filter(item => {
+    return item.materialId && item.materialId.trim() !== '' &&
+      item.description && item.description.trim() !== '' &&
+      item.qty && item.qty > 0;
+  });
 
-    if (validItems.length === 0) {
-      alert("Please add at least one valid item with Material ID, Description, and Quantity");
-      return;
-    }
+  if (validItems.length === 0) {
+    alert("Please add at least one valid item with Material ID, Description, and Quantity");
+    return;
+  }
 
-    const selectedCategoryObj = categories.find(cat =>
-      cat.name === selectedCategory || cat.categoryName === selectedCategory || cat._id === selectedCategory
-    );
+  const selectedCategoryObj = categories.find(cat =>
+    cat.name === selectedCategory || cat.categoryName === selectedCategory || cat._id === selectedCategory
+  );
 
-    try {
-      const payload = {
-        categoryId: selectedCategoryObj._id,
-        categoryName: selectedCategoryObj.name || selectedCategoryObj.categoryName,
-        items: validItems, // Use filtered items instead of selectedItems
-      };
+  try {
+    const payload = {
+      categoryId: selectedCategoryObj._id,
+      categoryName: selectedCategoryObj.name || selectedCategoryObj.categoryName,
+      location: commonLocation,
+      buyerGroup: commonBuyerGroup,
+      documentDate: documentDate,
+      items: validItems,
+    };
 
-      const res = await axios.post('http://localhost:8080/api/indent/create', payload);
-      alert(`Indent saved successfully with ID: ${res.data.indentId}`);
-      setSelectedItems([]);
-      setCurrentPage(1);
+    const res = await axios.post('http://localhost:8080/api/indent/create', payload);
+    alert(`Indent saved successfully with ID: ${res.data.indentId}`);
+    
+    // Reset form
+    setSelectedItems([]);
+    setCommonLocation('');
+    setCommonBuyerGroup('');
+    setDocumentDate(new Date().toISOString().split('T')[0]);
+    setCurrentPage(1);
 
-      // Refresh saved indents
-      axios.get('http://localhost:8080/api/indent/get')
-        .then(res => setSavedIndents(res.data))
-        .catch(err => console.error("Failed to fetch saved indents", err));
-    } catch (err) {
-      console.error(err);
-      alert("Failed to save indent");
-    }
-  };
+    // Refresh saved indents
+    axios.get('http://localhost:8080/api/indent/get')
+      .then(res => setSavedIndents(res.data))
+      .catch(err => console.error("Failed to fetch saved indents", err));
+  } catch (err) {
+    console.error(err);
+    alert("Failed to save indent");
+  }
+};
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -762,33 +792,58 @@ const IndentRequest = () => {
               <div className="card-body">
                 {/* Purchase Category Dropdown */}
                 <div className="row">
-                  <div className="col-md-6">
-                    <label className="form-label fw-bold">Select Purchase Category <span className="text-danger">*</span></label>
-                    <select
-                      className="form-select form-select-lg"
-                      value={selectedCategory}
-                      onChange={(e) => setSelectedCategory(e.target.value)}
-                    >
-                      <option value="">-- Select Category --</option>
-                      {categories.map((cat, idx) => (
-                        <option key={idx} value={cat.name || cat.categoryName || cat._id}>
-                          {cat.name || cat.categoryName || `Category ${idx + 1}`}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="col-md-6 d-flex align-items-end">
-                    <button onClick={addManualRow} className="btn btn-outline-primary me-2">
-                      <i className="fas fa-plus me-1"></i>Add Manual Entry
-                    </button>
-                    <button
-                      onClick={handleSubmitIndent}
-                      className="btn btn-success"
-                      disabled={!selectedCategory || selectedItems.length === 0}
-                    >
-                      <i className="fas fa-save me-1"></i>Save Indent
-                    </button>
-                  </div>
+                 
+                  <div className="card-body">
+  <div className="row">
+    <div className="col-md-4">
+      <label className="form-label fw-bold">Select Purchase Category <span className="text-danger">*</span></label>
+      <select
+        className="form-select form-select-lg"
+        value={selectedCategory}
+        onChange={(e) => setSelectedCategory(e.target.value)}
+      >
+        <option value="">-- Select Category --</option>
+        {categories.map((cat, idx) => (
+          <option key={idx} value={cat.name || cat.categoryName || cat._id}>
+            {cat.name || cat.categoryName || `Category ${idx + 1}`}
+          </option>
+        ))}
+      </select>
+    </div>
+    <div className="col-md-3">
+      <label className="form-label fw-bold">Doc Date <span className="text-danger">*</span></label>
+      <input
+        type="date"
+        className="form-control form-control-lg"
+        value={documentDate}
+        onChange={(e) => setDocumentDate(e.target.value)}
+      />
+    </div>
+    <div className="col-md-3">
+      <label className="form-label fw-bold">Location <span className="text-danger">*</span></label>
+      <input
+        type="text"
+        className="form-control form-control-lg"
+        value={commonLocation}
+        onChange={(e) => setCommonLocation(e.target.value)}
+        placeholder="Enter Location"
+      />
+    </div>
+    <div className="col-md-2">
+      <label className="form-label fw-bold">Buyer Group <span className="text-danger">*</span></label>
+      <input
+        type="text"
+        className="form-control form-control-lg"
+        value={commonBuyerGroup}
+        onChange={(e) => setCommonBuyerGroup(e.target.value)}
+        placeholder="Buyer Group"
+      />
+    </div>
+  </div>
+
+</div>
+
+                 
                 </div>
               </div>
             </div>
@@ -824,8 +879,8 @@ const IndentRequest = () => {
                             <th style={{ width: '100px' }}>Base Unit</th>
                             <th style={{ width: '130px' }}>Delivery Date</th>
                             <th style={{ width: '100px' }}>Order Unit</th>
-                            <th style={{ width: '120px' }}>Location</th>
-                            <th style={{ width: '120px' }}>Buyer Group</th>
+                           
+                            
                             <th style={{ width: '130px' }}>Material Group</th>
                             <th style={{ width: '80px' }}>Action</th>
                           </tr>
@@ -912,22 +967,8 @@ const IndentRequest = () => {
                                     ))}
                                   </select>
                                 </td>
-                                <td>
-                                  <input
-                                    className="form-control form-control-sm"
-                                    value={item.location}
-                                    onChange={(e) => updateField(actualIndex, 'location', e.target.value)}
-                                    placeholder="Location"
-                                  />
-                                </td>
-                                <td>
-                                  <input
-                                    className="form-control form-control-sm"
-                                    value={item.buyerGroup}
-                                    onChange={(e) => updateField(actualIndex, 'buyerGroup', e.target.value)}
-                                    placeholder="Buyer Group"
-                                  />
-                                </td>
+                                
+                               
                                 <td>
                                   <span className="badge bg-secondary">{item.materialgroup || '-'}</span>
                                 </td>
@@ -964,6 +1005,18 @@ const IndentRequest = () => {
                   </div>
                 )}
               </div>
+               <div className="col-md-6 d-flex align-items-end">
+                    <button onClick={addManualRow} className="btn btn-outline-primary me-2">
+                      <i className="fas fa-plus me-1"></i>Add Manual Entry
+                    </button>
+                    <button
+                      onClick={handleSubmitIndent}
+                      className="btn btn-success"
+                      disabled={!selectedCategory || selectedItems.length === 0}
+                    >
+                      <i className="fas fa-save me-1"></i>Save Indent
+                    </button>
+                  </div>
             </div>
           </div>
         </div>
@@ -1093,6 +1146,10 @@ const IndentRequest = () => {
             </div>
           </div>
         )}
+
+        {/* Saved Indents Section */}
+
+
       </div>
     </div>
   );

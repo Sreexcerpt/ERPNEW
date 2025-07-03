@@ -46,3 +46,22 @@ exports.updateVendor = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+// Update isDeleted or isBlocked
+exports.updateVendorStatus = async (req, res) => {
+  try {
+    const updated = await Vendor.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: 'Vendor not found' });
+    }
+
+    res.json(updated);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

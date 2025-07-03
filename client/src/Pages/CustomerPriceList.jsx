@@ -14,14 +14,17 @@ function CustomerPriceListForm() {
     taxId: "",
     tandc: "",
   });
-  const [showSearchModal, setShowSearchModal] = useState(false);
+
   const [conversionValue, setConversionValue] = useState(1);
   const [categories, setCategories] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [materials, setMaterials] = useState([]);
   const [taxes, setTaxes] = useState([]);
   const [allData, setAllData] = useState([]);
-
+  const [showSearchModal, setShowSearchModal] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchType, setSearchType] = useState('materialId');
+  const [currentEditIndex, setCurrentEditIndex] = useState(null);
   useEffect(() => {
     fetchCategories();
     fetchCustomers();
@@ -122,6 +125,7 @@ function CustomerPriceListForm() {
       });
 
       setConversionValue(1);
+      handleCloseModal();
       fetchAllPriceLists(); // refresh table
     } catch (err) {
       alert("Error saving data");
@@ -216,10 +220,11 @@ function CustomerPriceListForm() {
   const handleOpendropdown = () => setShowdropdown(true);
   const handleClosedropdown = () => setShowdropdown(false);
 
-  const openSearchModal = (index) => {
-    setCurrentEditIndex(index);
+  const openSearchModal = () => {
+    setCurrentEditIndex();
     setShowSearchModal(true);
     setSearchQuery('');
+    // handleCloseModal();
     setSearchResults([]);
   };
 
@@ -230,33 +235,148 @@ function CustomerPriceListForm() {
     setSearchResults([]);
   };
   const selectMaterialFromSearch = (material) => {
-    if (currentEditIndex !== null) {
-      const updated = [...selectedItems];
-      updated[currentEditIndex] = {
-        ...updated[currentEditIndex],
-        materialId: material.materialId,
-        description: material.description,
-        baseUnit: material.baseUnit,
-        orderUnit: material.orderUnit,
-        location: material.location,
-        materialgroup: material.materialgroup,
-        isManual: true,
-      };
-      setSelectedItems(updated);
-    }
+    console.log("Selected material:", material);
+    // Trigger handleChange with name as "materialId" and value as material._id
+    handleChange({ target: { name: "materialId", value: material._id } });
+
     closeSearchModal();
   };
+  const handleSearchInputChange = (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+  };
+  const handleSearch = () => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
+    console.log('Searching with query:', searchQuery, 'Type:', searchType);
+    console.log('Available materials:', materials);
+
+    if (searchType === 'materialId') {
+      let searchTerm = searchQuery;
+
+      if (/^\d+$/.test(searchQuery)) {
+        searchTerm = MATERIAL_PREFIX + searchQuery;
+      }
+
+      const filtered = materials.filter(material => {
+        const materialId = material.materialId || '';
+        return materialId.toLowerCase().includes(searchTerm.toLowerCase());
+      });
+
+      console.log('Filtered results for materialId:', filtered);
+      setSearchResults(filtered);
+    } else {
+      const filtered = materials.filter(material => {
+        const description = material.description || '';
+        return description.toLowerCase().includes(searchQuery.toLowerCase());
+      });
+
+      console.log('Filtered results for description:', filtered);
+      setSearchResults(filtered);
+    }
+  };
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchQuery.trim()) {
+        handleSearch();
+      } else {
+        setSearchResults([]);
+      }
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery, searchType, materials]);
+
+  const handleViewAll = () => {
+    setSearchResults(materials);
+    setSearchQuery('');
+  };
+
+  const handleClearResults = () => {
+    setSearchResults([]);
+    setSearchQuery('');
+  };
+  const [showCustomerSearchModal, setShowCustomerSearchModal] = useState(false);
+  const [customerSearchResults, setCustomerSearchResults] = useState([]);
+  const [customerSearchType, setCustomerSearchType] = useState('customerId');
+  const [customerSearchQuery, setCustomerSearchQuery] = useState('');
+  const openCustomerSearchModal = () => {
+    setShowCustomerSearchModal(true);
+    setCustomerSearchQuery('');
+    setCustomerSearchResults([]);
+  };
+
+  const closeCustomerSearchModal = () => {
+    setShowCustomerSearchModal(false);
+    setCustomerSearchQuery('');
+    setCustomerSearchResults([]);
+  };
+
+  const handleCustomerSearchInputChange = (e) => {
+    const value = e.target.value;
+    setCustomerSearchQuery(value);
+  };
+
+  const handleCustomerSearch = () => {
+    if (!customerSearchQuery.trim()) {
+      setCustomerSearchResults([]);
+      return;
+    }
+
+    if (customerSearchType === 'customerId') {
+      const filtered = customers.filter(customer => {
+        const customerId = customer.customerId || '';
+        return customerId.toLowerCase().includes(customerSearchQuery.toLowerCase());
+      });
+      setCustomerSearchResults(filtered);
+    } else {
+      const filtered = customers.filter(customer => {
+        const name = customer.name1 || '';
+        return name.toLowerCase().includes(customerSearchQuery.toLowerCase());
+      });
+      setCustomerSearchResults(filtered);
+    }
+  };
+
+  const handleViewAllCustomers = () => {
+    setCustomerSearchResults(customers);
+    setCustomerSearchQuery('');
+  };
+
+  const handleClearCustomerResults = () => {
+    setCustomerSearchResults([]);
+    setCustomerSearchQuery('');
+  };
+
+  const selectCustomerFromSearch = (customer) => {
+    handleChange({ target: { name: "customerId", value: customer._id } });
+    closeCustomerSearchModal();
+  };
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (customerSearchQuery.trim()) {
+        handleCustomerSearch();
+      } else {
+        setCustomerSearchResults([]);
+      }
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [customerSearchQuery, customerSearchType, customers]);
   return (
     <>
       <div class="content content-two">
         <div class="d-flex d-block align-items-center justify-content-between flex-wrap gap-3 mb-3">
           <div>
-            <h6>Customer-Price-List</h6>
+            <h6>Customer Price List</h6>
           </div>
           <div class="d-flex my-xl-auto right-content align-items-center flex-wrap gap-2">
             <div class="dropdown">
               <a
-                href="javascript:void(0);"
+                href="#"
                 class="btn btn-outline-white d-inline-flex align-items-center"
                 data-bs-toggle="dropdown"
               >
@@ -264,12 +384,12 @@ function CustomerPriceListForm() {
               </a>
               <ul class="dropdown-menu">
                 <li>
-                  <a class="dropdown-item" href="javascript:void(0);">
+                  <a class="dropdown-item" href="#">
                     Download as PDF
                   </a>
                 </li>
                 <li>
-                  <a class="dropdown-item" href="javascript:void(0);">
+                  <a class="dropdown-item" href="#">
                     Download as Excel
                   </a>
                 </li>
@@ -277,7 +397,7 @@ function CustomerPriceListForm() {
             </div>
             <div>
               <div>
-                <a onClick={() => { handleOpenModal(); }} className="btn btn-primary d-flex align-items-center"><i className="isax isax-add-circle5 me-1"></i>New Material</a>
+                <a onClick={() => { handleOpenModal(); }} className="btn btn-primary d-flex align-items-center"><i className="isax isax-add-circle5 me-1"></i>New Customer Price List</a>
               </div>
             </div>
           </div>
@@ -296,35 +416,12 @@ function CustomerPriceListForm() {
                 />
               </div>
             </div>
-            <div class="d-flex align-items-center flex-wrap gap-2">
-              <div class="dropdown">
-                <a
-                  href="javascript:void(0);"
-                  class="dropdown-toggle btn btn-outline-white d-inline-flex align-items-center"
-                  data-bs-toggle="dropdown"
-                >
-                  <i class="isax isax-sort me-1"></i>Sort By :
-                  <span class="fw-normal ms-1">Latest</span>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end">
-                  <li>
-                    <a href="javascript:void(0);" class="dropdown-item">
-                      Latest
-                    </a>
-                  </li>
-                  <li>
-                    <a href="javascript:void(0);" class="dropdown-item">
-                      Oldest
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
+
           </div>
         </div>
 
         <div className="table-responsive">
-          <table className="table table-nowrap datatable">
+          <table className="table table-bordered datatable">
             <thead>
               <tr>
                 <th>Customer</th>
@@ -345,7 +442,7 @@ function CustomerPriceListForm() {
                     <div className="d-flex align-items-center">
                       <div>
                         <h6 className="fs-14 fw-medium mb-0">
-                          <a href="javascript:void(0);">
+                          <a href="#">
                             {row.customerId?.name1}
                           </a>
                         </h6>
@@ -360,10 +457,10 @@ function CustomerPriceListForm() {
                   <td className="text-dark">{row.salesGroup}</td>
                   <td className="text-dark">{row.taxId?.taxName}</td>
                   <td style={{ cursor: "pointer" }}>
-                    <i
-                      className="isax isax-edit me-2 text-primary"
-                      onClick={() => handleEdit(row)}
-                    ></i>
+
+                    <button className="btn btn-sm btn-primary" onClick={() => { handleEdit(row); handleOpenModal(); }}>
+                      Edit
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -480,7 +577,7 @@ function CustomerPriceListForm() {
                           </div>
 
                           {/* Customer */}
-                          <div className="col-md-6">
+                          {/* <div className="col-md-6">
                             <label className="form-label">Customer</label>
                             <select
                               name="customerId"
@@ -496,25 +593,65 @@ function CustomerPriceListForm() {
                                 </option>
                               ))}
                             </select>
+                          </div> */}
+                          {/* Customer */}
+                          <div className="col-md-6">
+                            <label className="form-label">Customer</label>
+                            <div className="input-group">
+                              <select
+                                name="customerId"
+                                className="form-control"
+                                value={formData.customerId}
+                                onChange={handleChange}
+                                required
+                              >
+                                <option value="">Select</option>
+                                {customers.map((c) => (
+                                  <option key={c._id} value={c._id}>
+                                    {c.name1}
+                                  </option>
+                                ))}
+                              </select>
+                              <button
+                                type="button"
+                                className="btn btn-outline-info"
+                                onClick={() => openCustomerSearchModal()}
+                                title="Search Customer"
+                              >
+                                <i className="fas fa-search"></i>
+                              </button>
+                            </div>
                           </div>
-
                           {/* Material */}
+                          <div className="col-md-6">
+                            <label className="form-label">Material</label>
+                            <div className="input-group">
+                              <select
+                                name="materialId"
+                                className="form-control"
+                                value={formData.materialId}
+                                onChange={handleChange}
+                                required
+                              >
+                                <option value="">Select</option>
+                                {materials.map((m) => (
+                                  <option key={m._id} value={m._id}>
+                                    {m.description}
+                                  </option>
+                                ))}
+                              </select>
+                              <button
+                                type="button"
+                                className="btn btn-outline-info"
+                                onClick={() => openSearchModal()}
+                                title="Search Material"
+                              >
+                                <i className="fas fa-search"></i>
+                              </button>
+                            </div>
 
-                          <div className="input-group input-group-sm">
-                            <input
-                              className="form-control"
-                              // value={item.materialId}
-                              onChange={(e) => updateField(actualIndex, 'materialId', e.target.value)}
-                              placeholder="Material ID"
 
-                            />
-                            <button
-                              className="btn btn-outline-info"
-                              onClick={() => openSearchModal(actualIndex)}
-                              title="Search Material"
-                            >
-                              <i className="fas fa-search"></i>
-                            </button>
+
                           </div>
 
                           {/* Unit */}
@@ -737,6 +874,128 @@ function CustomerPriceListForm() {
                     type="button"
                     className="btn btn-secondary"
                     onClick={closeSearchModal}
+                  >
+                    <i className="fas fa-times me-1"></i>Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        {showCustomerSearchModal && (
+          <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+            <div className="modal-dialog modal-xl">
+              <div className="modal-content">
+                <div className="modal-header bg-primary text-white">
+                  <h5 className="modal-title">
+                    <i className="fas fa-search me-2"></i>Search Customers
+                  </h5>
+                  <button
+                    type="button"
+                    className="btn-close btn-close-white"
+                    onClick={closeCustomerSearchModal}
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  {/* Search Controls */}
+                  <div className="row mb-3">
+                    <div className="col-md-3">
+                      <label className="form-label">Search Type</label>
+                      <select
+                        className="form-select"
+                        value={customerSearchType}
+                        onChange={(e) => setCustomerSearchType(e.target.value)}
+                      >
+                        <option value="customerId">Customer ID</option>
+                        <option value="name">Customer Name</option>
+                      </select>
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label">Search Query</label>
+                      <div className="input-group">
+                        <span className="input-group-text">
+                          <i className="fas fa-search"></i>
+                        </span>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder={
+                            customerSearchType === 'customerId'
+                              ? 'Enter Customer ID...'
+                              : 'Search by Customer Name...'
+                          }
+                          value={customerSearchQuery}
+                          onChange={handleCustomerSearchInputChange}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-3">
+                      <label className="form-label">&nbsp;</label>
+                      <div className="d-flex gap-2">
+                        <button className="btn btn-info" onClick={handleViewAllCustomers}>
+                          <i className="fas fa-list me-1"></i>View All
+                        </button>
+                        {customerSearchResults.length > 0 && (
+                          <button className="btn btn-outline-secondary" onClick={handleClearCustomerResults}>
+                            <i className="fas fa-times me-1"></i>Clear
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Search Results */}
+                  <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                    {customerSearchResults.length > 0 ? (
+                      <table className="table table-hover">
+                        <thead className="table-light sticky-top">
+                          <tr>
+                            <th>Customer ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {customerSearchResults.map((customer, idx) => (
+                            <tr key={idx}>
+                              <td><span className="badge">{customer.customerId}</span></td>
+                              <td>{customer.name1}</td>
+                              <td>{customer.email}</td>
+                              <td>{customer.phone}</td>
+                              <td>
+                                <button
+                                  className="btn btn-success btn-sm"
+                                  onClick={() => selectCustomerFromSearch(customer)}
+                                >
+                                  <i className="fas fa-check me-1"></i>Select
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <div className="text-center py-4">
+                        <i className="fas fa-search fa-3x text-muted mb-3"></i>
+                        <p className="text-muted">
+                          {customers.length === 0
+                            ? 'No customers loaded from API'
+                            : customerSearchQuery
+                              ? `No customers found matching "${customerSearchQuery}"`
+                              : 'Enter search term or click "View All"'
+                          }
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={closeCustomerSearchModal}
                   >
                     <i className="fas fa-times me-1"></i>Close
                   </button>

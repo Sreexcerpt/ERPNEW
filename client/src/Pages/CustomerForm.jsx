@@ -9,6 +9,7 @@ function CustomerForm() {
     search: '',
     address1: '',
     address2: '',
+    extraAddresses: [],
     city: '',
     pincode: '',
     region: '',
@@ -23,6 +24,8 @@ function CustomerForm() {
   const [cnNo, setCnNo] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [errors, setErrors] = useState({});
+  const [extraAddresses, setExtraAddresses] = useState([]);
+
 
   const regions = ['Karnataka', 'Kerala', 'Tamil Nadu', 'Andhra Pradesh', 'Telangana', 'West Bengal', 'Odisha', 'Bihar', 'Jharkhand', 'Madhya Pradesh', 'Chhattisgarh', 'Uttar Pradesh'];
   const countries = ['India', 'USA', 'Germany', 'France', 'UK'];
@@ -131,6 +134,7 @@ function CustomerForm() {
       search: '',
       address1: '',
       address2: '',
+      extraAddresses: [],
       city: '',
       pincode: '',
       region: '',
@@ -171,7 +175,52 @@ function CustomerForm() {
 
   const handleOpendropdown = () => setShowdropdown(true);
   const handleClosedropdown = () => setShowdropdown(false);
-
+  const addExtraAddress = () => {
+    setFormData(prev => ({
+      ...prev,
+      extraAddresses: [...prev.extraAddresses, '']
+    }));
+  };
+  
+  const handleExtraAddressChange = (index, value) => {
+    const updated = [...formData.extraAddresses];
+    updated[index] = value;
+    setFormData(prev => ({
+      ...prev,
+      extraAddresses: updated
+    }));
+  };
+  
+  const removeExtraAddress = (index) => {
+    const updated = [...formData.extraAddresses];
+    updated.splice(index, 1);
+    setFormData(prev => ({
+      ...prev,
+      extraAddresses: updated
+    }));
+  };
+  const handleCustomerStatusChange = async (customerId, statusType, isChecked) => {
+    try {
+      const updateData = {
+        [statusType]: isChecked,
+      };
+  
+      await axios.put(`http://localhost:8080/api/customers/status/${customerId}`, updateData);
+  
+      setCustomers(customers.map((customer) =>
+        customer._id === customerId
+          ? { ...customer, [statusType]: isChecked }
+          : customer
+      ));
+  
+      alert('Status updated successfully!');
+    } catch (err) {
+      console.error('Error updating status:', err);
+      alert('Failed to update status!');
+    }
+  };
+  
+  
   return (
     <div className="main-wrapper">
       <div >
@@ -200,63 +249,99 @@ function CustomerForm() {
             </div>
           </div>
           <div>
-            <div className='table-responsive'>
-              <table className='table table-bordered' >
-                <thead >
-                  <tr>
-                    <th>CNNo</th>
-                    <th>Name 1</th>
-                    {/* <th>Name 2</th> */}
-                    <th>Category</th>
-                    <th>Search</th>
-                    <th>Address 1</th>
-                    {/* <th>Address 2</th> */}
-                    <th>City</th>
-                    <th>Pincode</th>
-                    <th>Region</th>
-                    <th>Country</th>
-                    <th>Contact No</th>
-                    <th>Email</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {customers.length === 0 ? (
-                    <tr>
-                      <td colSpan="14" >
-                        No customers found
-                      </td>
-                    </tr>
-                  ) : (
-                    customers.map((c, index) => (
-                      <tr key={c._id} >
-                        <td>{c.cnNo}</td>
-                        <td>{c.name1}</td>
-                        {/* <td>{c.name2}</td> */}
-                        <td>{c.categoryId?.categoryName || 'N/A'}</td>
-                        <td>{c.search}</td>
-                        <td>{c.address1}</td>
-                        {/* <td>{c.address2}</td> */}
-                        <td>{c.city}</td>
-                        <td>{c.pincode}</td>
-                        <td>{c.region}</td>
-                        <td>{c.country}</td>
-                        <td>{c.contactNo}</td>
-                        <td>{c.email}</td>
-                        <td>
-                          <button
-                            onClick={() => { handleEdit(c); handleOpenModal(); }}
-                            className='btn btn-primary'
-                          >
-                            Edit
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+          <div className='table-responsive'>
+  <table className='table table-bordered'>
+    <thead>
+      <tr>
+        <th>CNNo</th>
+        <th>Name 1</th>
+        <th>Category</th>
+        <th>Search</th>
+        <th>Address 1</th>
+        <th>City</th>
+        <th>Pincode</th>
+        <th>Region</th>
+        <th>Country</th>
+        <th>Contact No</th>
+        <th>Email</th>
+        <th>Delete Status</th> {/* ✅ Added */}
+        <th>Block Status</th>  {/* ✅ Added */}
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {customers.length === 0 ? (
+        <tr>
+          <td colSpan="14">No customers found</td>
+        </tr>
+      ) : (
+        customers.map((c) => (
+          <tr key={c._id}>
+            <td>{c.cnNo}</td>
+            <td>{c.name1}</td>
+            <td>{c.categoryId?.categoryName || 'N/A'}</td>
+            <td>{c.search}</td>
+            <td>{c.address1}</td>
+            <td>{c.city}</td>
+            <td>{c.pincode}</td>
+            <td>{c.region}</td>
+            <td>{c.country}</td>
+            <td>{c.contactNo}</td>
+            <td>{c.email}</td>
+
+            {/* ✅ Delete Status Toggle */}
+            <td>
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  checked={c.isDeleted || false}
+                  onChange={(e) =>
+                    handleCustomerStatusChange(c._id, 'isDeleted', e.target.checked)
+                  }
+                />
+                <label className="form-check-label">
+                  {c.isDeleted ? 'Deleted' : 'Active'}
+                </label>
+              </div>
+            </td>
+
+            {/* ✅ Block Status Toggle */}
+            <td>
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  checked={c.isBlocked || false}
+                  onChange={(e) =>
+                    handleCustomerStatusChange(c._id, 'isBlocked', e.target.checked)
+                  }
+                />
+                <label className="form-check-label">
+                  {c.isBlocked ? 'Blocked' : 'Unblocked'}
+                </label>
+              </div>
+            </td>
+
+            <td>
+              <button
+                onClick={() => {
+                  handleEdit(c);
+                  handleOpenModal();
+                }}
+                className='btn btn-primary'
+              >
+                Edit
+              </button>
+            </td>
+          </tr>
+        ))
+      )}
+    </tbody>
+  </table>
+</div>
+
+
             {showModal && (
               <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1" aria-labelledby="myLargeModalLabel" aria-modal="true" role="dialog">
                 <div className="modal-dialog modal-lg">
@@ -329,32 +414,55 @@ function CustomerForm() {
                           </div>
 
                           <div className='col-xl-3 mb-2'>
-                            <label>
-                              Address 1
-                            </label>
-                            <input
-                              type="text"
-                              name="address1"
-                              placeholder="Enter Address 1"
-                              value={formData.address1}
-                              onChange={handleChange}
-                              className='form-control'
-                            />
+  <label>Address 1</label>
+  <input
+    type="text"
+    name="address1"
+    placeholder="Enter Address 1"
+    value={formData.address1}
+    onChange={handleChange}
+    className='form-control'
+  />
+</div>
 
-                          </div>
+<div className='col-xl-3 mb-2'>
+  <label>Address 2</label>
+  <input
+    type="text"
+    name="address2"
+    placeholder="Enter Address 2"
+    value={formData.address2}
+    onChange={handleChange}
+    className='form-control'
+  />
+</div>
 
-                          <div className='col-xl-3 mb-2'>
-                            <label >Address 2</label>
-                            <input
-                              type="text"
-                              name="address2"
-                              placeholder="Enter Address 2 (Optional)"
-                              value={formData.address2}
-                              onChange={handleChange}
-                              className='form-control'
-                            />
-                          </div>
+{formData.extraAddresses.map((address, index) => (
+  <div key={index} className="col-xl-3 mb-2 position-relative">
+    <label>{`Address ${index + 3}`}</label>
+    <input
+      type="text"
+      placeholder={`Enter Address ${index + 3}`}
+      value={address}
+      onChange={(e) => handleExtraAddressChange(index, e.target.value)}
+      className="form-control"
+    />
+    <button
+      type="button"
+      className="btn btn-sm btn-danger position-absolute"
+      style={{ top: '0', right: '0' ,size: '10px'}}
+      onClick={() => removeExtraAddress(index)}
+    >
+      ❌
+    </button>
+  </div>
+))}
 
+<div className='col-xl-3 mb-2 d-flex align-items-end'>
+  <button type="button" className="btn btn-outline-primary" onClick={addExtraAddress}>
+    + Add Address
+  </button>
+</div>
                           <div className='col-xl-3 mb-2'>
                             <label >City</label>
                             <input
@@ -443,7 +551,7 @@ function CustomerForm() {
                             />
                           </div>
                           <div className='col-xl-3 mb-2'>
-                            <label >Name</label>
+                            <label >Contact Person Name</label>
                             <input
                               type="name"
                               name="name"

@@ -1,5 +1,6 @@
 const SalesOrder = require('../models/SalesOrder');
 const SalesOrderCategory = require('../models/SalesOrderCategory');
+const SalesQuotation = require('../models/salesQuotationModel');
 
 // At the top or before createSalesOrder
 const generateSONumber = async (categoryId) => {
@@ -33,19 +34,82 @@ const generateSONumber = async (categoryId) => {
   
   
 
+  
   exports.createSalesOrder = async (req, res) => {
     try {
-      const { categoryId } = req.body;
-      const soNumber = await generateSONumber(categoryId); // This will now work
-      const salesOrder = new SalesOrder({ ...req.body, soNumber });
-      const saved = await salesOrder.save();
+      const {
+        quotationNumber,
+        categoryId,
+        category,
+        date,
+customer,
+        deliveryLocation,
+        deliveryAddress,
+         salesGroup,        // ✅ NEW
+        contactPerson,     // ✅ NEW
+        payTerms,         // ✅ NEW
+        validityDate,     // ✅ NEW
+        taxName,
+        cgst,
+        sgst,
+        igst,
+        cgstAmount,       // ✅ NEW
+        sgstAmount,       // ✅ NEW
+        igstAmount,       // ✅ NEW
+        taxDiscount,
+        finalTotal,
+        items             // ✅ This now includes note field for each item
+      } = req.body;
+  console.log('Received data:', req.body);
+      // Find quotation by quotationNumber
+      const quotation = await SalesQuotation.findOne({ quotationNumber });
+      if (!quotation) return res.status(404).json({ error: 'Quotation not found' });
+  
+      // Generate PO number
+       const soNumber = await generateSONumber(categoryId); // This will now work
+  
+      // Extract vendor
+      
+
+      // Calculate total from items
+      const total = items.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+  
+      // Save PO with new fields
+      const newPO = new SalesOrder({
+       soNumber,
+        categoryId,
+        category,
+        date,
+  
+      customer,
+        deliveryLocation: deliveryLocation || quotation.items[0]?.location || '',
+        deliveryAddress,
+       salesGroup,        // ✅ NEW
+        contactPerson,     // ✅ NEW
+        payTerms,         // ✅ NEW
+        validityDate,     // ✅ NEW
+        quotationId: quotation._id,
+        quotationNumber,
+        items,            // ✅ This now includes note for each item
+        total,
+        taxName,
+        cgst,
+        sgst,
+        igst,
+        cgstAmount,       // ✅ NEW
+        sgstAmount,       // ✅ NEW
+        igstAmount,       // ✅ NEW
+        taxDiscount,
+        finalTotal
+      });
+  console.log('New Sales Order:', newPO);
+      const saved = await newPO.save();
       res.status(201).json(saved);
-    } catch (error) {
-      console.error('Error creating sales order:', error);
-      res.status(500).json({ error: 'Failed to create sales order' });
+    } catch (err) {
+      console.error('Error creating PO:', err);
+      res.status(500).json({ error: err.message });
     }
   };
-  
   
 
 exports.getAllSalesOrders = async (req, res) => {
