@@ -3,10 +3,10 @@ const router = express.Router();
 const {
   createGoodsIssue,
   getAllGoodsIssues,
-  getGoodsIssueByDocNumber
+  updateGoodsIssue
 } = require('../controllers/goodsIssueController');
 
 router.post('/', createGoodsIssue);
 router.get('/', getAllGoodsIssues);
-// router.get('/:docnumber', getGoodsIssueByDocNumber);
+router.patch('/:id', updateGoodsIssue);
 module.exports = router;

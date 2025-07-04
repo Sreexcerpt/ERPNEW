@@ -1,15 +1,16 @@
 const mongoose = require('mongoose');
 
-const GoodsIssueSchema = new mongoose.Schema({
+const BillingSchema = new mongoose.Schema({
   category: { type: String, required: true },
   catdesc: { type: String },
   docnumber: { type: String, unique: true, required: true },
   documentDate: { type: String, required: true },
   postingDate: { type: String, required: true },
   reference: { type: String },
+  BillingRef: { type: String },
   customer: { type: String },
   location: { type: String },
-  issueDate: { type: String },
+  receiptDate: { type: String },
   salesOrderId: { type: mongoose.Schema.Types.ObjectId, ref: 'SalesOrder' },
   items: [
     {
@@ -20,17 +21,20 @@ const GoodsIssueSchema = new mongoose.Schema({
       deliveryDate: String,
       lotNo: String,
       price: Number,
-        availableQty: {
-            type: Number,
-            default: 0 // Default value for available quantity
-        }
+        hsnNo: String, // Added HSN number field
+       priceUnit: String, 
+       
     }
   ],
-  isdelete: {
-    type: Boolean,
-    default: false // Default value for isdelete
-  }
-
+  taxCode: String,
+  taxName: String,
+  cgst: Number,
+  sgst: Number,
+  igst: Number,
+  totalAmount: Number,
+  discount: Number,
+  netAmount: Number,
+   finalTotal: Number
 }, { timestamps: true });
 
-module.exports = mongoose.model('GoodsIssue', GoodsIssueSchema);
+module.exports = mongoose.model('Billing', BillingSchema);

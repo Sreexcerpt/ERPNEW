@@ -30,7 +30,11 @@ const goodsTransferCategoryRoutes = require('./routes/goodsTransferCategoryRoute
 const goodsTransferRoutes = require('./routes/goodsTransferRoutes');
 const goodsReceiptRoutes = require('./routes/goodsReceiptRoutes');
 const goodsReceiptCategoryRoutes = require('./routes/goodsReceiptCategoryRoutes');
-
+const locationRoutes = require('./routes/locationRoutes'); // Ensure this is the correct path
+const invoiceCategoryRoutes = require('./routes/invoiceCategoryRoutes');
+const billingCategoryRoutes = require('./routes/billingCategoryRoutes');
+const invoiceRoutes = require('./routes/invoiceRoutes');
+const billingRoutes = require('./routes/billingRoutes');
 
 const app = express();
 app.use(cors());
@@ -69,7 +73,12 @@ app.use('/api/goodsTransferCategory', goodsTransferCategoryRoutes);
 app.use('/api/goodstransfer', goodsTransferRoutes);
 app.use('/api', goodsReceiptRoutes);
 app.use('/api/goodsreceiptcategory', goodsReceiptCategoryRoutes);
+app.use('/api/locations', locationRoutes);
+app.use('/api/invoicecategory', invoiceCategoryRoutes);
+app.use('/api/billingcategory', billingCategoryRoutes);
+app.use('/api', invoiceRoutes);
 
+app.use('/api', billingRoutes);
 
 const PORT = 8080;
 app.listen(PORT, () => {

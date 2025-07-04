@@ -8,6 +8,7 @@ const materialSchema = new mongoose.Schema({
   orderUnit: { type: String, required: true },
   conversionValue: { type: Number }, // optional when base = order
   dimension: { type: String },
+  hsn: { type: String },
   mnp:String,
   materialgroup: String, // New field for Material Group
   location:String,

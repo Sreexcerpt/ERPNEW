@@ -39,6 +39,14 @@ import StockListERP from './Pages/Inventory/Stocklist';
 import DashboardERP from './Pages/dashboard';
 import GoodsReceiptCategory from './Pages/Inventory/GoodsReceiptCategory';
 import GoodsReceiptList from './Pages/Inventory/GoodsReceiptList';
+import GoodsIssueCategory from './Pages/Inventory/GoodsIssueCategory';
+import LocationMaster from './Pages/location/LocationMaster';
+import InvoiceCategory from './Pages/Invoice/InvoiceCategory';
+import BillingCategory from './Pages/Billing/BillingCategory';
+import InvoiceForm from './Pages/Invoice/InvoiceForm';
+import InvoiceList from './Pages/Invoice/InvoiceL';
+import BillingForm from './Pages/Billing/BillingForm';
+import BillingDisplay from './Pages/Billing/BillingDisplay';
 function App() {
   return (
     <Router>
@@ -83,6 +91,14 @@ function App() {
           <Route path="/StockListERP" element={<StockListERP />} />
           <Route path="/GoodsReceiptCategory" element={<GoodsReceiptCategory />} />
           <Route path="/GoodsReceiptList" element={<GoodsReceiptList />} />
+          <Route path="/GoodsIssueCategory" element={<GoodsIssueCategory />} />
+          <Route path="/LocationMaster" element={<LocationMaster />} />
+<Route path="/InvoiceCategory" element={<InvoiceCategory/>} />
+           <Route path="/BillingCategory" element={<BillingCategory/>} />
+            <Route path="/InvoiceForm" element={<InvoiceForm/>} />
+              <Route path="/InvoiceList" element={<InvoiceList/>} />
+                 <Route path="/BillingForm" element={<BillingForm/>} />
+                  <Route path="/BillingDisplay" element={<BillingDisplay/>} />
         </Routes>
       </div>
     </Router>

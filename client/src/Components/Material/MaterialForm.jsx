@@ -66,6 +66,7 @@ const MaterialPage = () => {
       orderUnit: '',
       conversionValue: '',
       dimension: '',
+      hsn: "",
       mpn: "",
       location: "",
       materialgroup: ""
@@ -111,10 +112,10 @@ const MaterialPage = () => {
       };
 
       await axios.put(`http://localhost:8080/api/material/status/${materialId}`, updateData);
-      
+
       // Update local state
-      setMaterials(materials.map(material => 
-        material._id === materialId 
+      setMaterials(materials.map(material =>
+        material._id === materialId
           ? { ...material, [statusType]: isChecked }
           : material
       ));
@@ -133,6 +134,19 @@ const MaterialPage = () => {
 
   const handleOpendropdown = () => setShowdropdown(true);
   const handleClosedropdown = () => setShowdropdown(false);
+  const [locations, setLocations] = useState([]);
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const res = await axios.get('http://localhost:8080/api/locations');
+        setLocations(res.data);
+      } catch (err) {
+        console.error('Error fetching locations:', err);
+      }
+    };
+
+    fetchLocations();
+  }, []);
 
   return (
     <div className="main-wrapper">
@@ -173,6 +187,7 @@ const MaterialPage = () => {
                   <th>Conversion</th>
                   <th>Dimension</th>
                   <th>MPN</th>
+                  <th>HSN</th>
                   <th>Location</th>
                   <th>Delete Status</th>
                   <th>Block Status</th>
@@ -189,12 +204,13 @@ const MaterialPage = () => {
                     <td>{mat.conversionValue || '-'}</td>
                     <td>{mat.dimension || '-'}</td>
                     <td>{mat.mpn || '_'}</td>
+                    <td>{mat.hsn || '_'}</td>
                     <td>{mat.location || '_'}</td>
                     <td>
                       <div className="form-check">
-                        <input 
-                          className="form-check-input" 
-                          type="checkbox" 
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
                           checked={mat.isDeleted || false}
                           onChange={(e) => handleStatusChange(mat._id, 'isDeleted', e.target.checked)}
                         />
@@ -205,9 +221,9 @@ const MaterialPage = () => {
                     </td>
                     <td>
                       <div className="form-check">
-                        <input 
-                          className="form-check-input" 
-                          type="checkbox" 
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
                           checked={mat.isBlocked || false}
                           onChange={(e) => handleStatusChange(mat._id, 'isBlocked', e.target.checked)}
                         />
@@ -230,107 +246,114 @@ const MaterialPage = () => {
           {/* Modal */}
           {showModal && (
             <>
-            <div className="modal-backdrop fade show"></div>  
-            <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1" aria-labelledby="myLargeModalLabel" aria-modal="true" role="dialog">
-              <div className="modal-dialog modal-dialog-centered modal-lg">
-                <div className="modal-content">
-                  <div className="modal-header">
-                    <h4 className="modal-title" id="myLargeModalLabel"> {editingMaterial ? 'Edit Material' : 'Add New Material'}</h4>
-                    <button type="button" className="btn-close" onClick={handleCloseModal} aria-label="Close"></button>
-                  </div>
-                  <div className="modal-body">
+              <div className="modal-backdrop fade show"></div>
+              <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1" aria-labelledby="myLargeModalLabel" aria-modal="true" role="dialog">
+                <div className="modal-dialog modal-dialog-centered modal-lg">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h4 className="modal-title" id="myLargeModalLabel"> {editingMaterial ? 'Edit Material' : 'Add New Material'}</h4>
+                      <button type="button" className="btn-close" onClick={handleCloseModal} aria-label="Close"></button>
+                    </div>
+                    <div className="modal-body">
 
-                    <form onSubmit={handleSubmit}>
-                      <div className="row">
-                        <div className="col-xl-3">
-                          <div className="mb-3">
-                            <label>Category</label>
-                            <select name="categoryId" value={formData.categoryId} onChange={handleChange} className="form-control" required>
-                              <option value="">-- Select --</option>
-                              {categories.map((cat) => (
-                                <option key={cat._id} value={cat._id}>
-                                  {cat.categoryName}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
-                        <div className="col-xl-9">
-                          <div className="mb-3">
-                            <label>Description</label>
-                            <input name="description" value={formData.description} onChange={handleChange} className="form-control" required />
-                          </div>
-                        </div>
-                        <div className="col-xl-3">
-                          <div className="mb-3">
-                            <label>Base Unit</label>
-                            <select name="baseUnit" value={formData.baseUnit} onChange={handleChange} className="form-control" required>
-                              <option value="">-- Select --</option>
-                              {baseUnits.map((unit) => (
-                                <option key={unit} value={unit}>{unit}</option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
-                        <div className="col-xl-3">
-                          <div className="mb-3">
-                            <label>Order Unit</label>
-                            <select name="orderUnit" value={formData.orderUnit} onChange={handleChange} className="form-control" required>
-                              <option value="">-- Select --</option>
-                              {baseUnits.map((unit) => (
-                                <option key={unit} value={unit}>{unit}</option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
-                        {formData.baseUnit && formData.orderUnit && formData.baseUnit !== formData.orderUnit && (
+                      <form onSubmit={handleSubmit}>
+                        <div className="row">
                           <div className="col-xl-3">
                             <div className="mb-3">
-                              <label>1 {formData.orderUnit} = how many {formData.baseUnit}?</label>
-                              <input name="conversionValue" value={formData.conversionValue} onChange={handleChange} className="form-control" required />
+                              <label>Category</label>
+                              <select name="categoryId" value={formData.categoryId} onChange={handleChange} className="form-control" required>
+                                <option value="">-- Select --</option>
+                                {categories.map((cat) => (
+                                  <option key={cat._id} value={cat._id}>
+                                    {cat.categoryName}
+                                  </option>
+                                ))}
+                              </select>
                             </div>
                           </div>
-                        )}
-                        <div className="col-xl-3">
-                          <div className="mb-3">
-                            <label>Dimension</label>
-                            <input name="dimension" value={formData.dimension} onChange={handleChange} className="form-control" />
+                          <div className="col-xl-9">
+                            <div className="mb-3">
+                              <label>Description</label>
+                              <input name="description" value={formData.description} onChange={handleChange} className="form-control" required />
+                            </div>
                           </div>
-                        </div>
-                        <div className="col-xl-3">
-                          <div className='mb-3'>
-                            <label >MPN</label>
-                            <input name='mpn' value={formData.mpn} onChange={handleChange} className='form-control' />
+                          <div className="col-xl-3">
+                            <div className="mb-3">
+                              <label>Base Unit</label>
+                              <select name="baseUnit" value={formData.baseUnit} onChange={handleChange} className="form-control" required>
+                                <option value="">-- Select --</option>
+                                {baseUnits.map((unit) => (
+                                  <option key={unit} value={unit}>{unit}</option>
+                                ))}
+                              </select>
+                            </div>
                           </div>
-                        </div>
-                        <div className="col-xl-3">
-                          <div className='mb-3'>
-                            <label >Location</label>
-                            <input name='location' value={formData.location} onChange={handleChange} className='form-control' />
+                          <div className="col-xl-3">
+                            <div className="mb-3">
+                              <label>Order Unit</label>
+                              <select name="orderUnit" value={formData.orderUnit} onChange={handleChange} className="form-control" required>
+                                <option value="">-- Select --</option>
+                                {baseUnits.map((unit) => (
+                                  <option key={unit} value={unit}>{unit}</option>
+                                ))}
+                              </select>
+                            </div>
                           </div>
-                        </div>
-                         <div className="col-xl-3">
-                          <div className='mb-3'>
-                            <label >Material Group</label>
-                            <input name='materialgroup' value={formData.materialgroup} onChange={handleChange} className='form-control' />
+                          {formData.baseUnit && formData.orderUnit && formData.baseUnit !== formData.orderUnit && (
+                            <div className="col-xl-3">
+                              <div className="mb-3">
+                                <label>1 {formData.orderUnit} = how many {formData.baseUnit}?</label>
+                                <input name="conversionValue" value={formData.conversionValue} onChange={handleChange} className="form-control" required />
+                              </div>
+                            </div>
+                          )}
+                          <div className="col-xl-3">
+                            <div className="mb-3">
+                              <label>Dimension</label>
+                              <input name="dimension" value={formData.dimension} onChange={handleChange} className="form-control" />
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                      <button type="submit" className="btn btn-primary">
-                        {editingMaterial ? 'Update Material' : 'Add Material'}
-                      </button>
+                          <div className="col-xl-3">
+                            <div className='mb-3'>
+                              <label >MPN</label>
+                              <input name='mpn' value={formData.mpn} onChange={handleChange} className='form-control' />
+                            </div>
+                          </div>
 
-                      {editingMaterial && (
-                        <button type="button" onClick={cancelEdit} className="btn btn-secondary ms-2">
-                          Cancel
+                          <div className="col-xl-3">
+                            <div className='mb-3'>
+                              <label >HSN</label>
+                              <input name='hsn' value={formData.hsn} onChange={handleChange} className='form-control' />
+                            </div>
+                          </div>
+                          <div className="col-xl-3">
+                            <div className='mb-3'>
+                              <label >Location</label>
+                              <input name='location' value={formData.location} onChange={handleChange} className='form-control' />
+                            </div>
+                          </div>
+                          <div className="col-xl-3">
+                            <div className='mb-3'>
+                              <label >Material Group</label>
+                              <input name='materialgroup' value={formData.materialgroup} onChange={handleChange} className='form-control' />
+                            </div>
+                          </div>
+                        </div>
+                        <button type="submit" className="btn btn-primary">
+                          {editingMaterial ? 'Update Material' : 'Add Material'}
                         </button>
-                      )}
-                    </form>
+
+                        {editingMaterial && (
+                          <button type="button" onClick={cancelEdit} className="btn btn-secondary ms-2">
+                            Cancel
+                          </button>
+                        )}
+                      </form>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </>)}
+            </>)}
 
         </div>
       </div>

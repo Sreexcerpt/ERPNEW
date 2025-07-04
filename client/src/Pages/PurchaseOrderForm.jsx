@@ -656,7 +656,7 @@ function PurchaseOrderForm() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedQuotationNumber, setSelectedQuotationNumber] = useState('');
   const [poNumber, setPoNumber] = useState('');
-const [date, setDate] = useState(new Date().toISOString().substring(0, 10));
+  const [date, setDate] = useState(new Date().toISOString().substring(0, 10));
 
   const [vendor, setVendor] = useState('');
   const [deliveryLocation, setDeliveryLocation] = useState('');
@@ -664,24 +664,24 @@ const [date, setDate] = useState(new Date().toISOString().substring(0, 10));
   const [items, setItems] = useState([]);
   const [total, setTotal] = useState(0);
   const [vendors, setVendors] = useState([]);
-const [buyerGroups, setBuyerGroups] = useState([]);
+  const [buyerGroups, setBuyerGroups] = useState([]);
 
-// Quotation Search States
-const [showQuotationModal, setShowQuotationModal] = useState(false);
-const [quotationSearchQuery, setQuotationSearchQuery] = useState('');
-const [quotationSearchResults, setQuotationSearchResults] = useState([]);
+  // Quotation Search States
+  const [showQuotationModal, setShowQuotationModal] = useState(false);
+  const [quotationSearchQuery, setQuotationSearchQuery] = useState('');
+  const [quotationSearchResults, setQuotationSearchResults] = useState([]);
 
-// Vendor Search States  
-const [showVendorModal, setShowVendorModal] = useState(false);
-const [vendorSearchQuery, setVendorSearchQuery] = useState('');
-const [vendorSearchResults, setVendorSearchResults] = useState([]);
+  // Vendor Search States  
+  const [showVendorModal, setShowVendorModal] = useState(false);
+  const [vendorSearchQuery, setVendorSearchQuery] = useState('');
+  const [vendorSearchResults, setVendorSearchResults] = useState([]);
   const [buyerGroup, setBuyerGroup] = useState('');
-const [contactPerson, setContactPerson] = useState('');
-const [payTerms, setPayTerms] = useState('');
-const [validityDate, setValidityDate] = useState('');
-const [cgstAmount, setCgstAmount] = useState(0);
-const [sgstAmount, setSgstAmount] = useState(0);
-const [igstAmount, setIgstAmount] = useState(0);
+  const [contactPerson, setContactPerson] = useState('');
+  const [payTerms, setPayTerms] = useState('');
+  const [validityDate, setValidityDate] = useState('');
+  const [cgstAmount, setCgstAmount] = useState(0);
+  const [sgstAmount, setSgstAmount] = useState(0);
+  const [igstAmount, setIgstAmount] = useState(0);
 
 
   // Tax States
@@ -698,12 +698,12 @@ const [igstAmount, setIgstAmount] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [materialSearch, setMaterialSearch] = useState('');
   const [selectedItemIndex, setSelectedItemIndex] = useState(null);
-
+  const [locations, setLocations] = useState([]);
   useEffect(() => {
     axios.get('http://localhost:8080/api/po-categories').then(res => setCategories(res.data));
-   axios.get('http://localhost:8080/api/quotations/get').then(res => {
+    axios.get('http://localhost:8080/api/quotations/get').then(res => {
       setQuotations(res.data);
-      
+
       // Extract unique buyer groups from all quotation items
       const allBuyerGroups = [];
       res.data.forEach(quotation => {
@@ -716,154 +716,154 @@ const [igstAmount, setIgstAmount] = useState(0);
       setBuyerGroups(allBuyerGroups);
     });
 
-    
+    axios.get('http://localhost:8080/api/locations').then(res => setLocations(res.data));
     axios.get('http://localhost:8080/api/tax').then(res => setTaxes(res.data));
     axios.get('http://localhost:8080/api/material').then(res => setMaterials(res.data));
     axios.get('http://localhost:8080/api/vendors').then(res => setVendors(res.data));
     setItems([
-    ...Array(4).fill(null).map(() => ({
-      materialId: '',
-      description: '',
-      quantity: 0,
-      baseUnit: '',
-      unit: '',
-      orderUnit: '',
-      price: 0,
-      priceUnit: '',
-      buyerGroup: '',
-      materialgroup: '',
-      deliveryDate: new Date().toISOString().slice(0, 10),
-      note: '',  // ✅ NEW - Individual note field
-    }))
-  ]);
+      ...Array(4).fill(null).map(() => ({
+        materialId: '',
+        description: '',
+        quantity: 0,
+        baseUnit: '',
+        unit: '',
+        orderUnit: '',
+        price: 0,
+        priceUnit: '',
+        buyerGroup: '',
+        materialgroup: '',
+        deliveryDate: new Date().toISOString().slice(0, 10),
+        note: '',  // ✅ NEW - Individual note field
+      }))
+    ]);
   }, []);
 
   const handleQuotationSearch = (query) => {
-  setQuotationSearchQuery(query);
-  if (query.trim()) {
-    const filtered = quotations.filter(q =>
-      q.quotationNumber.toLowerCase().includes(query.toLowerCase())
-    );
-    setQuotationSearchResults(filtered);
-  } else {
+    setQuotationSearchQuery(query);
+    if (query.trim()) {
+      const filtered = quotations.filter(q =>
+        q.quotationNumber.toLowerCase().includes(query.toLowerCase())
+      );
+      setQuotationSearchResults(filtered);
+    } else {
+      setQuotationSearchResults([]);
+    }
+  };
+
+  const handleViewAllQuotations = () => {
+    setQuotationSearchResults(quotations);
+  };
+
+  const selectQuotationFromSearch = (quotation) => {
+    setSelectedQuotationNumber(quotation.quotationNumber);
+    handleQuotationChange(quotation.quotationNumber);
+    setShowQuotationModal(false);
+    setQuotationSearchQuery('');
     setQuotationSearchResults([]);
-  }
-};
+  };
 
-const handleViewAllQuotations = () => {
-  setQuotationSearchResults(quotations);
-};
+  const closeQuotationModal = () => {
+    setShowQuotationModal(false);
+    setQuotationSearchQuery('');
+    setQuotationSearchResults([]);
+  };
 
-const selectQuotationFromSearch = (quotation) => {
-  setSelectedQuotationNumber(quotation.quotationNumber);
-  handleQuotationChange(quotation.quotationNumber);
-  setShowQuotationModal(false);
-  setQuotationSearchQuery('');
-  setQuotationSearchResults([]);
-};
+  // Vendor Search Handlers
+  const handleVendorSearch = (query) => {
+    setVendorSearchQuery(query);
+    if (query.trim()) {
+      const filtered = vendors.filter(v =>
+        v.vendorName.toLowerCase().includes(query.toLowerCase()) ||
+        v.vendorCode.toLowerCase().includes(query.toLowerCase())
+      );
+      setVendorSearchResults(filtered);
+    } else {
+      setVendorSearchResults([]);
+    }
+  };
 
-const closeQuotationModal = () => {
-  setShowQuotationModal(false);
-  setQuotationSearchQuery('');
-  setQuotationSearchResults([]);
-};
+  const handleViewAllVendors = () => {
+    setVendorSearchResults(vendors);
+  };
 
-// Vendor Search Handlers
-const handleVendorSearch = (query) => {
-  setVendorSearchQuery(query);
-  if (query.trim()) {
-    const filtered = vendors.filter(v =>
-      v.vendorName.toLowerCase().includes(query.toLowerCase()) ||
-      v.vendorCode.toLowerCase().includes(query.toLowerCase())
-    );
-    setVendorSearchResults(filtered);
-  } else {
+  const selectVendorFromSearch = (selectedVendor) => {
+    setVendor(selectedVendor.name1 || selectedVendor.vendorName);
+    setShowVendorModal(false);
+    setVendorSearchQuery('');
     setVendorSearchResults([]);
-  }
-};
+  };
 
-const handleViewAllVendors = () => {
-  setVendorSearchResults(vendors);
-};
+  const closeVendorModal = () => {
+    setShowVendorModal(false);
+    setVendorSearchQuery('');
+    setVendorSearchResults([]);
+  };
 
-const selectVendorFromSearch = (selectedVendor) => {
-  setVendor(selectedVendor.name1 || selectedVendor.vendorName);
-  setShowVendorModal(false);
-  setVendorSearchQuery('');
-  setVendorSearchResults([]);
-};
-
-const closeVendorModal = () => {
-  setShowVendorModal(false);
-  setVendorSearchQuery('');
-  setVendorSearchResults([]);
-};
-
-// Updated recalculateTotal function - REPLACE your existing one
+  // Updated recalculateTotal function - REPLACE your existing one
 
 
-// Also update your tax change handlers - ADD these functions
-// Replace your existing tax change handlers with these immediate ones:
+  // Also update your tax change handlers - ADD these functions
+  // Replace your existing tax change handlers with these immediate ones:
 
-// Updated recalculateTotal function - accepts tax values directly
-const recalculateTotal = (updatedItems, cgstVal, sgstVal, igstVal, discountVal) => {
-  const subtotal = updatedItems.reduce((sum, item) => sum + (item.quantity || 0) * (item.price || 0), 0);
-  setTotal(subtotal.toFixed(2));
+  // Updated recalculateTotal function - accepts tax values directly
+  const recalculateTotal = (updatedItems, cgstVal, sgstVal, igstVal, discountVal) => {
+    const subtotal = updatedItems.reduce((sum, item) => sum + (item.quantity || 0) * (item.price || 0), 0);
+    setTotal(subtotal.toFixed(2));
 
-  // Use passed values or current state values
-  const finalCgst = cgstVal !== undefined ? cgstVal : cgst;
-  const finalSgst = sgstVal !== undefined ? sgstVal : sgst;
-  const finalIgst = igstVal !== undefined ? igstVal : igst;
-  const finalDiscount = discountVal !== undefined ? discountVal : taxDiscount;
+    // Use passed values or current state values
+    const finalCgst = cgstVal !== undefined ? cgstVal : cgst;
+    const finalSgst = sgstVal !== undefined ? sgstVal : sgst;
+    const finalIgst = igstVal !== undefined ? igstVal : igst;
+    const finalDiscount = discountVal !== undefined ? discountVal : taxDiscount;
 
-  // Calculate individual tax amounts
-  const cgstAmount = (subtotal * (parseFloat(finalCgst) || 0)) / 100;
-  const sgstAmount = (subtotal * (parseFloat(finalSgst) || 0)) / 100;
-  const igstAmount = (subtotal * (parseFloat(finalIgst) || 0)) / 100;
-  const discount = parseFloat(finalDiscount) || 0;
+    // Calculate individual tax amounts
+    const cgstAmount = (subtotal * (parseFloat(finalCgst) || 0)) / 100;
+    const sgstAmount = (subtotal * (parseFloat(finalSgst) || 0)) / 100;
+    const igstAmount = (subtotal * (parseFloat(finalIgst) || 0)) / 100;
+    const discount = parseFloat(finalDiscount) || 0;
 
-  // Set calculated tax amounts for display
-  setCgstAmount(cgstAmount.toFixed(2));
-  setSgstAmount(sgstAmount.toFixed(2));
-  setIgstAmount(igstAmount.toFixed(2));
+    // Set calculated tax amounts for display
+    setCgstAmount(cgstAmount.toFixed(2));
+    setSgstAmount(sgstAmount.toFixed(2));
+    setIgstAmount(igstAmount.toFixed(2));
 
-  // Calculate final total
-  const final = subtotal + cgstAmount + sgstAmount + igstAmount - discount;
-  setFinalTotal(final.toFixed(2));
-};
+    // Calculate final total
+    const final = subtotal + cgstAmount + sgstAmount + igstAmount - discount;
+    setFinalTotal(final.toFixed(2));
+  };
 
-// Immediate tax change handlers - NO setTimeout needed
-const handleCgstChange = (value) => {
-  setCgst(value);
-  recalculateTotal(items, value, sgst, igst, taxDiscount);
-};
+  // Immediate tax change handlers - NO setTimeout needed
+  const handleCgstChange = (value) => {
+    setCgst(value);
+    recalculateTotal(items, value, sgst, igst, taxDiscount);
+  };
 
-const handleSgstChange = (value) => {
-  setSgst(value);
-  recalculateTotal(items, cgst, value, igst, taxDiscount);
-};
+  const handleSgstChange = (value) => {
+    setSgst(value);
+    recalculateTotal(items, cgst, value, igst, taxDiscount);
+  };
 
-const handleIgstChange = (value) => {
-  setIgst(value);
-  recalculateTotal(items, cgst, sgst, value, taxDiscount);
-};
+  const handleIgstChange = (value) => {
+    setIgst(value);
+    recalculateTotal(items, cgst, sgst, value, taxDiscount);
+  };
 
-const handleTaxDiscountChange = (value) => {
-  setTaxDiscount(value);
-  recalculateTotal(items, cgst, sgst, igst, value);
-};
+  const handleTaxDiscountChange = (value) => {
+    setTaxDiscount(value);
+    recalculateTotal(items, cgst, sgst, igst, value);
+  };
 
-// Also update your tax template selection handler for immediate calculation:
-// In your tax template dropdown onChange:
+  // Also update your tax template selection handler for immediate calculation:
+  // In your tax template dropdown onChange:
 
 
-// Update your item change handler to use the new recalculateTotal:
-const handleItemChange = (index, field, value) => {
-  const updatedItems = [...items];
-  updatedItems[index][field] = (field === 'quantity' || field === 'price') ? parseFloat(value) || 0 : value;
-  setItems(updatedItems);
-  recalculateTotal(updatedItems, cgst, sgst, igst, taxDiscount);
-};
+  // Update your item change handler to use the new recalculateTotal:
+  const handleItemChange = (index, field, value) => {
+    const updatedItems = [...items];
+    updatedItems[index][field] = (field === 'quantity' || field === 'price') ? parseFloat(value) || 0 : value;
+    setItems(updatedItems);
+    recalculateTotal(updatedItems, cgst, sgst, igst, taxDiscount);
+  };
 
   const handleQuotationChange = (quotationNumber) => {
     setSelectedQuotationNumber(quotationNumber);
@@ -871,7 +871,7 @@ const handleItemChange = (index, field, value) => {
     if (quotation) {
       setVendor(quotation.name1 || quotation.vendorName);
       setDeliveryLocation(quotation.items[0]?.location || '');
- const firstItemWithBuyerGroup = quotation.items.find(item => item.buyerGroup);
+      const firstItemWithBuyerGroup = quotation.items.find(item => item.buyerGroup);
       if (firstItemWithBuyerGroup) {
         setBuyerGroup(firstItemWithBuyerGroup.buyerGroup);
       }
@@ -979,71 +979,71 @@ const handleItemChange = (index, field, value) => {
   //     alert('Failed to create PO');
   //   }
   // };
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  if (!selectedCategory || !selectedQuotationNumber) {
-    return alert('Please select both category and quotation');
-  }
+    if (!selectedCategory || !selectedQuotationNumber) {
+      return alert('Please select both category and quotation');
+    }
 
-  const selectedQuotation = quotations.find(
-    (q) => q.quotationNumber === selectedQuotationNumber
-  );
+    const selectedQuotation = quotations.find(
+      (q) => q.quotationNumber === selectedQuotationNumber
+    );
 
-  const data = {
-    poNumber,
-    quotationId: selectedQuotation?._id,
-    quotationNumber: selectedQuotationNumber,
-    categoryId: selectedCategory._id,
-    category: selectedCategory.categoryName,
-    date,
-    vendor,
-    contactPerson,
-    validityDate,
-    buyerGroup,
-    deliveryLocation,
-    deliveryAddress,
-    items,
-    total: parseFloat(total) || 0,
-    taxName: selectedTax?.taxName || '',
-    cgst: parseFloat(cgst) || 0,
-    sgst: parseFloat(sgst) || 0,
-    igst: parseFloat(igst) || 0,
-    taxDiscount: parseFloat(taxDiscount) || 0,
-    finalTotal: parseFloat(finalTotal) || 0,
+    const data = {
+      poNumber,
+      quotationId: selectedQuotation?._id,
+      quotationNumber: selectedQuotationNumber,
+      categoryId: selectedCategory._id,
+      category: selectedCategory.categoryName,
+      date,
+      vendor,
+      contactPerson,
+      validityDate,
+      buyerGroup,
+      deliveryLocation,
+      deliveryAddress,
+      items,
+      total: parseFloat(total) || 0,
+      taxName: selectedTax?.taxName || '',
+      cgst: parseFloat(cgst) || 0,
+      sgst: parseFloat(sgst) || 0,
+      igst: parseFloat(igst) || 0,
+      taxDiscount: parseFloat(taxDiscount) || 0,
+      finalTotal: parseFloat(finalTotal) || 0,
+    };
+
+    try {
+      const res = await axios.post('http://localhost:8080/api/purchase-orders', data);
+      console.log('Saved PO:', res.data);
+
+      // ✅ Reset all fields only after successful response
+      setSelectedCategory(null);
+      setSelectedQuotationNumber('');
+      setDate(new Date().toISOString().substring(0, 10));
+      setVendor('');
+      setDeliveryLocation('');
+      setDeliveryAddress('');
+      setItems([]);
+      setTotal('');
+      setSelectedTax(null);
+
+      setCgst('');
+      setSgst('');
+      setIgst('');
+      setTaxDiscount('');
+      setFinalTotal('');
+      setSelectedTax(null);
+      setPayTerms('');
+      setBuyerGroup('');
+      setContactPerson('');
+      // ✅ Show success message only after everything succeeds
+      alert('PO Created Successfully!');
+    } catch (err) {
+      console.error('Error during PO creation:', err);
+      alert('Failed to create PO');
+    }
   };
-
-  try {
-    const res = await axios.post('http://localhost:8080/api/purchase-orders', data);
-    console.log('Saved PO:', res.data);
-
-    // ✅ Reset all fields only after successful response
-    setSelectedCategory(null);
-    setSelectedQuotationNumber('');
-    setDate(new Date().toISOString().substring(0, 10));
-    setVendor('');
-    setDeliveryLocation('');
-    setDeliveryAddress('');
-    setItems([]);
-    setTotal('');
-   setSelectedTax(null); 
-
-    setCgst('');
-    setSgst('');
-    setIgst('');
-    setTaxDiscount('');
-    setFinalTotal('');
-    setSelectedTax(null);
-   setPayTerms('');
-setBuyerGroup('');
-setContactPerson('');
-    // ✅ Show success message only after everything succeeds
-    alert('PO Created Successfully!');
-  } catch (err) {
-    console.error('Error during PO creation:', err);
-    alert('Failed to create PO');
-  }
-};
 
   const MaterialModal = () => {
     const filteredMaterials = materials.filter(mat =>
@@ -1120,226 +1120,226 @@ setContactPerson('');
   };
 
   const QuotationSearchModal = () => (
-  <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-    <div className="modal-dialog modal-xl">
-      <div className="modal-content">
-        <div className="modal-header bg-primary text-white">
-          <h5 className="modal-title">
-            <i className="fas fa-search me-2"></i>Search Quotations
-          </h5>
-          <button
-            type="button"
-            className="btn-close btn-close-white"
-            onClick={closeQuotationModal}
-          ></button>
-        </div>
-        <div className="modal-body">
-          <div className="row mb-3">
-            <div className="col-md-6">
-              <label className="form-label">Search Quotation Number</label>
-              <div className="input-group">
-                <span className="input-group-text">
-                  <i className="fas fa-search"></i>
-                </span>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Enter quotation number..."
-                  value={quotationSearchQuery}
-                  onChange={(e) => handleQuotationSearch(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="col-md-3">
-              <label className="form-label">&nbsp;</label>
-              <div className="d-flex gap-2">
-                <button className="btn btn-info" onClick={handleViewAllQuotations}>
-                  <i className="fas fa-list me-1"></i>View All
-                </button>
-              </div>
-            </div>
+    <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+      <div className="modal-dialog modal-xl">
+        <div className="modal-content">
+          <div className="modal-header bg-primary text-white">
+            <h5 className="modal-title">
+              <i className="fas fa-search me-2"></i>Search Quotations
+            </h5>
+            <button
+              type="button"
+              className="btn-close btn-close-white"
+              onClick={closeQuotationModal}
+            ></button>
           </div>
+          <div className="modal-body">
+            <div className="row mb-3">
+              <div className="col-md-6">
+                <label className="form-label">Search Quotation Number</label>
+                <div className="input-group">
+                  <span className="input-group-text">
+                    <i className="fas fa-search"></i>
+                  </span>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Enter quotation number..."
+                    value={quotationSearchQuery}
+                    onChange={(e) => handleQuotationSearch(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="col-md-3">
+                <label className="form-label">&nbsp;</label>
+                <div className="d-flex gap-2">
+                  <button className="btn btn-info" onClick={handleViewAllQuotations}>
+                    <i className="fas fa-list me-1"></i>View All
+                  </button>
+                </div>
+              </div>
+            </div>
 
-          <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-            {quotationSearchResults.length > 0 ? (
-              <table className="table table-hover">
-                <thead className="table-light sticky-top">
-                  <tr>
-                    <th>Quotation Number</th>
-                    <th>Vendor Name</th>
-                    <th>Date</th>
-                    <th>Total</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {quotationSearchResults.map((quotation, idx) => (
-                    <tr key={idx}>
-                      <td><span className="badge bg-info">{quotation.quotationNumber}</span></td>
-                      <td>{quotation.vendorName}</td>
-                      <td>{quotation.date}</td>
-                      <td>₹{quotation.total}</td>
-                      <td>
-                        <button
-                          className="btn btn-success btn-sm"
-                          onClick={() => selectQuotationFromSearch(quotation)}
-                        >
-                          <i className="fas fa-check me-1"></i>Select
-                        </button>
-                      </td>
+            <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+              {quotationSearchResults.length > 0 ? (
+                <table className="table table-hover">
+                  <thead className="table-light sticky-top">
+                    <tr>
+                      <th>Quotation Number</th>
+                      <th>Vendor Name</th>
+                      <th>Date</th>
+                      <th>Total</th>
+                      <th>Action</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <div className="text-center py-4">
-                <i className="fas fa-search fa-3x text-muted mb-3"></i>
-                <p className="text-muted">
-                  {quotationSearchQuery
-                    ? `No quotations found matching "${quotationSearchQuery}"`
-                    : 'Enter search term or click "View All"'
-                  }
-                </p>
-              </div>
-            )}
+                  </thead>
+                  <tbody>
+                    {quotationSearchResults.map((quotation, idx) => (
+                      <tr key={idx}>
+                        <td><span className="badge bg-info">{quotation.quotationNumber}</span></td>
+                        <td>{quotation.vendorName}</td>
+                        <td>{quotation.date}</td>
+                        <td>₹{quotation.total}</td>
+                        <td>
+                          <button
+                            className="btn btn-success btn-sm"
+                            onClick={() => selectQuotationFromSearch(quotation)}
+                          >
+                            <i className="fas fa-check me-1"></i>Select
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="text-center py-4">
+                  <i className="fas fa-search fa-3x text-muted mb-3"></i>
+                  <p className="text-muted">
+                    {quotationSearchQuery
+                      ? `No quotations found matching "${quotationSearchQuery}"`
+                      : 'Enter search term or click "View All"'
+                    }
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-        <div className="modal-footer">
-          <button type="button" className="btn btn-secondary" onClick={closeQuotationModal}>
-            <i className="fas fa-times me-1"></i>Close
-          </button>
+          <div className="modal-footer">
+            <button type="button" className="btn btn-secondary" onClick={closeQuotationModal}>
+              <i className="fas fa-times me-1"></i>Close
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
 
 
 
-const VendorSearchModal = () => (
-  <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-    <div className="modal-dialog modal-xl">
-      <div className="modal-content">
-        <div className="modal-header bg-primary text-white">
-          <h5 className="modal-title">
-            <i className="fas fa-search me-2"></i>Search Vendors
-          </h5>
-          <button
-            type="button"
-            className="btn-close btn-close-white"
-            onClick={closeVendorModal}
-          ></button>
-        </div>
-        <div className="modal-body">
-          <div className="row mb-3">
-            <div className="col-md-6">
-              <label className="form-label">Search Vendor</label>
-              <div className="input-group">
-                <span className="input-group-text">
-                  <i className="fas fa-search"></i>
-                </span>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Search by vendor name or code..."
-                  value={vendorSearchQuery}
-                  onChange={(e) => handleVendorSearch(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="col-md-3">
-              <label className="form-label">&nbsp;</label>
-              <div className="d-flex gap-2">
-                <button className="btn btn-info" onClick={handleViewAllVendors}>
-                  <i className="fas fa-list me-1"></i>View All
-                </button>
-              </div>
-            </div>
+  const VendorSearchModal = () => (
+    <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+      <div className="modal-dialog modal-xl">
+        <div className="modal-content">
+          <div className="modal-header bg-primary text-white">
+            <h5 className="modal-title">
+              <i className="fas fa-search me-2"></i>Search Vendors
+            </h5>
+            <button
+              type="button"
+              className="btn-close btn-close-white"
+              onClick={closeVendorModal}
+            ></button>
           </div>
+          <div className="modal-body">
+            <div className="row mb-3">
+              <div className="col-md-6">
+                <label className="form-label">Search Vendor</label>
+                <div className="input-group">
+                  <span className="input-group-text">
+                    <i className="fas fa-search"></i>
+                  </span>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Search by vendor name or code..."
+                    value={vendorSearchQuery}
+                    onChange={(e) => handleVendorSearch(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="col-md-3">
+                <label className="form-label">&nbsp;</label>
+                <div className="d-flex gap-2">
+                  <button className="btn btn-info" onClick={handleViewAllVendors}>
+                    <i className="fas fa-list me-1"></i>View All
+                  </button>
+                </div>
+              </div>
+            </div>
 
-          <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-            {vendorSearchResults.length > 0 ? (
-              <table className="table table-hover">
-                <thead className="table-light sticky-top">
-                  <tr>
-                    <th>Vendor Code</th>
-                    <th>Vendor Name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {vendorSearchResults.map((vendor, idx) => (
-                    <tr key={idx}>
-                      <td><span className="badge bg-info">{vendor.vnNo}</span></td>
-                      <td>{vendor.name1}</td>
-                      <td>{vendor.email}</td>
-                      <td>{vendor.phone}</td>
-                      <td>
-                        <button
-                          className="btn btn-success btn-sm"
-                          onClick={() => selectVendorFromSearch(vendor)}
-                        >
-                          <i className="fas fa-check me-1"></i>Select
-                        </button>
-                      </td>
+            <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+              {vendorSearchResults.length > 0 ? (
+                <table className="table table-hover">
+                  <thead className="table-light sticky-top">
+                    <tr>
+                      <th>Vendor Code</th>
+                      <th>Vendor Name</th>
+                      <th>Email</th>
+                      <th>Phone</th>
+                      <th>Action</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <div className="text-center py-4">
-                <i className="fas fa-search fa-3x text-muted mb-3"></i>
-                <p className="text-muted">
-                  {vendorSearchQuery
-                    ? `No vendors found matching "${vendorSearchQuery}"`
-                    : 'Enter search term or click "View All"'
-                  }
-                </p>
-              </div>
-            )}
+                  </thead>
+                  <tbody>
+                    {vendorSearchResults.map((vendor, idx) => (
+                      <tr key={idx}>
+                        <td><span className="badge bg-info">{vendor.vnNo}</span></td>
+                        <td>{vendor.name1}</td>
+                        <td>{vendor.email}</td>
+                        <td>{vendor.phone}</td>
+                        <td>
+                          <button
+                            className="btn btn-success btn-sm"
+                            onClick={() => selectVendorFromSearch(vendor)}
+                          >
+                            <i className="fas fa-check me-1"></i>Select
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="text-center py-4">
+                  <i className="fas fa-search fa-3x text-muted mb-3"></i>
+                  <p className="text-muted">
+                    {vendorSearchQuery
+                      ? `No vendors found matching "${vendorSearchQuery}"`
+                      : 'Enter search term or click "View All"'
+                    }
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-        <div className="modal-footer">
-          <button type="button" className="btn btn-secondary" onClick={closeVendorModal}>
-            <i className="fas fa-times me-1"></i>Close
-          </button>
+          <div className="modal-footer">
+            <button type="button" className="btn btn-secondary" onClick={closeVendorModal}>
+              <i className="fas fa-times me-1"></i>Close
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
   return (
     <div className='content'>
       <h2>Purchase Order Form</h2>
       <form onSubmit={handleSubmit}>
         <div className="row">
-         <div className='col-xl-3'>
-  <label>Quotation Number:</label>
-  <div className="input-group">
-    <input
-      type="text"
-      className='form-control'
-      placeholder="Enter quotation number"
-      value={selectedQuotationNumber}
-      onChange={(e) => {
-        setSelectedQuotationNumber(e.target.value);
-        if (e.target.value) {
-          handleQuotationChange(e.target.value);
-        }
-      }}
-      required
-    />
-    <button
-      type="button"
-      className="btn btn-outline-secondary"
-      onClick={() => setShowQuotationModal(true)}
-    >
-      <i className="fas fa-search"></i>
-    </button>
-  </div>
-</div>
+          <div className='col-xl-3'>
+            <label>Quotation Number:</label>
+            <div className="input-group">
+              <input
+                type="text"
+                className='form-control'
+                placeholder="Enter quotation number"
+                value={selectedQuotationNumber}
+                onChange={(e) => {
+                  setSelectedQuotationNumber(e.target.value);
+                  if (e.target.value) {
+                    handleQuotationChange(e.target.value);
+                  }
+                }}
+                required
+              />
+              <button
+                type="button"
+                className="btn btn-outline-secondary"
+                onClick={() => setShowQuotationModal(true)}
+              >
+                <i className="fas fa-search"></i>
+              </button>
+            </div>
+          </div>
 
 
           <div className='col-xl-3'>
@@ -1356,52 +1356,67 @@ const VendorSearchModal = () => (
           </div>
 
           <div className='col-xl-3'> <label>PO Number:</label> <input className='form-control' value={poNumber} readOnly /></div>
-         <div className='col-xl-3'>
-  <label>PO Creating date:</label>
-  <input
-    type='date'
-    className='form-control'
-    value={date}
-    onChange={(e) => setDate(e.target.value)}
-  />
-</div>
+          <div className='col-xl-3'>
+            <label>PO Creating date:</label>
+            <input
+              type='date'
+              className='form-control'
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+            />
+          </div>
 
-        <div className='col-xl-3'>
-  <label>Vendor:</label>
-  <div className="input-group">
-    <input
-      className='form-control'
-      value={vendor}
-      onChange={(e) => setVendor(e.target.value)}
-      placeholder="Enter vendor name"
-    />
-    <button
-      type="button"
-      className="btn btn-outline-secondary"
-      onClick={() => setShowVendorModal(true)}
-    >
-      <i className="fas fa-search"></i>
-    </button>
-  </div>
-</div>
+          <div className='col-xl-3'>
+            <label>Vendor:</label>
+            <div className="input-group">
+              <input
+                className='form-control'
+                value={vendor}
+                onChange={(e) => setVendor(e.target.value)}
+                placeholder="Enter vendor name"
+              />
+              <button
+                type="button"
+                className="btn btn-outline-secondary"
+                onClick={() => setShowVendorModal(true)}
+              >
+                <i className="fas fa-search"></i>
+              </button>
+            </div>
+          </div>
 
           <div className='col-xl-3'><label> Location:</label> <input className='form-control' value={deliveryLocation} onChange={(e) => setDeliveryLocation(e.target.value)} /></div>
           <div className='col-xl-3'>
-  <label>Buyer Group:</label>
-  <input className='form-control' value={buyerGroup} onChange={(e) => setBuyerGroup(e.target.value)} />
-</div>
-<div className='col-xl-3'>
-  <label>Contact Person:</label>
-  <input className='form-control' value={contactPerson} onChange={(e) => setContactPerson(e.target.value)} />
-</div>
-<div className='col-xl-3'>
-  <label>Payment Terms:</label>
-  <textarea className='form-control' value={payTerms} onChange={(e) => setPayTerms(e.target.value)} maxLength="250" />
-</div>
-<div className='col-xl-3'>
-  <label>Validity Date:</label>
-  <input type="date" className='form-control' value={validityDate} onChange={(e) => setValidityDate(e.target.value)} />
-</div>
+            <label>Location:</label>
+            <select
+              className='form-select'
+              value={deliveryLocation}
+              onChange={(e) => setDeliveryLocation(e.target.value)}
+            >
+              <option value="">-- Select Location --</option>
+              {locations.map(loc => (
+                <option key={loc._id || loc.id || loc.name} value={loc.name || loc.locationName || loc._id}>
+                  {loc.name || loc.locationName || loc._id}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className='col-xl-3'>
+            <label>Buyer Group:</label>
+            <input className='form-control' value={buyerGroup} onChange={(e) => setBuyerGroup(e.target.value)} />
+          </div>
+          <div className='col-xl-3'>
+            <label>Contact Person:</label>
+            <input className='form-control' value={contactPerson} onChange={(e) => setContactPerson(e.target.value)} />
+          </div>
+          <div className='col-xl-3'>
+            <label>Payment Terms:</label>
+            <textarea className='form-control' value={payTerms} onChange={(e) => setPayTerms(e.target.value)} maxLength="250" />
+          </div>
+          <div className='col-xl-3'>
+            <label>Validity Date:</label>
+            <input type="date" className='form-control' value={validityDate} onChange={(e) => setValidityDate(e.target.value)} />
+          </div>
         </div>
         <h4>Items</h4>
         <div className='table-responsive' style={{ width: '100%', tableLayout: 'fixed' }}>
@@ -1427,20 +1442,20 @@ const VendorSearchModal = () => (
                       style={{ cursor: 'pointer', backgroundColor: '#f9f9f9' }}
                     />
                   </td>
-                  <td><input  className='form-control' value={item.description} onChange={(e) => handleItemChange(idx, 'description', e.target.value)} /></td>
-                  <td><input  className='form-control' type="number" value={item.quantity} onChange={(e) => handleItemChange(idx, 'quantity', e.target.value)} /></td>
-                  <td><input  className='form-control' value={item.baseUnit} onChange={(e) => handleItemChange(idx, 'baseUnit', e.target.value)} /></td>
+                  <td><input className='form-control' value={item.description} onChange={(e) => handleItemChange(idx, 'description', e.target.value)} /></td>
+                  <td><input className='form-control' type="number" value={item.quantity} onChange={(e) => handleItemChange(idx, 'quantity', e.target.value)} /></td>
+                  <td><input className='form-control' value={item.baseUnit} onChange={(e) => handleItemChange(idx, 'baseUnit', e.target.value)} /></td>
 
-                  <td><input  className='form-control' value={item.orderUnit} onChange={(e) => handleItemChange(idx, 'orderUnit', e.target.value)} /></td>
-                 
-                  <td><input  className='form-control' value={item.materialgroup} onChange={(e) => handleItemChange(idx, 'materialgroup', e.target.value)} /></td>
-                  <td><input  className='form-control' type="number" value={item.price} onChange={(e) => handleItemChange(idx, 'price', e.target.value)} /></td>
+                  <td><input className='form-control' value={item.orderUnit} onChange={(e) => handleItemChange(idx, 'orderUnit', e.target.value)} /></td>
+
+                  <td><input className='form-control' value={item.materialgroup} onChange={(e) => handleItemChange(idx, 'materialgroup', e.target.value)} /></td>
+                  <td><input className='form-control' type="number" value={item.price} onChange={(e) => handleItemChange(idx, 'price', e.target.value)} /></td>
                   <td>
                     <select
                       value={item.priceUnit}
                       onChange={(e) => handleItemChange(idx, 'priceUnit', e.target.value)}
                       required
-                       className='form-select'
+                      className='form-select'
                     >
                       <option value="">-- Select --</option>
                       <option value="INR">INR</option>
@@ -1449,16 +1464,16 @@ const VendorSearchModal = () => (
                     </select>
                   </td>
                   <td>{(item.quantity * item.price).toFixed(2)}</td>
-                  <td><input  className='form-control' type="date" value={item.deliveryDate} onChange={(e) => handleItemChange(idx, 'deliveryDate', e.target.value)} /></td>
+                  <td><input className='form-control' type="date" value={item.deliveryDate} onChange={(e) => handleItemChange(idx, 'deliveryDate', e.target.value)} /></td>
                   <td>
-  <textarea 
-    className='form-control' 
-    value={item.note} 
-    onChange={(e) => handleItemChange(idx, 'note', e.target.value)} 
-    maxLength="250"
-    rows="2"
-  />
-</td>
+                    <textarea
+                      className='form-control'
+                      value={item.note}
+                      onChange={(e) => handleItemChange(idx, 'note', e.target.value)}
+                      maxLength="250"
+                      rows="2"
+                    />
+                  </td>
                   <td><button className='btn btn-soft-danger' type="button" onClick={() => deleteItem(idx)}>Delete</button></td>
                 </tr>
               ))}
@@ -1470,151 +1485,151 @@ const VendorSearchModal = () => (
 
 
 
-<div className="row mt-4">
-  {/* Delivery Address Section */}
-  <div className='col-xl-6'>
-    <div className="card">
-      <div className="card-header bg-light">
-        <h5 className="card-title mb-0">
-          <i className="fas fa-shipping-fast me-2"></i>Delivery Information
-        </h5>
-      </div>
-      <div className="card-body">
-        <div className="mb-3">
-          <label className="form-label">Delivery Address:</label>
-          <textarea 
-            className='form-control' 
-            value={deliveryAddress} 
-            onChange={(e) => setDeliveryAddress(e.target.value)}
-            rows="4"
-            placeholder="Enter complete delivery address..."
-          />
-        </div>
-      </div>
-    </div>
-  </div>
-
-  {/* Tax Calculation Section */}
-  <div className='col-xl-6'>
-    <div className="card">
-      <div className="card-header bg-light">
-        <h5 className="card-title mb-0">
-          <i className="fas fa-calculator me-2"></i>Tax Calculation
-        </h5>
-      </div>
-      <div className="card-body">
-        <div className="row">
-          <div className="col-12 mb-3">
-            <label className="form-label">Tax Template:</label>
-            <select className='form-select' onChange={(e) => {
-  const tax = taxes.find(t => t.taxName === e.target.value);
-  setSelectedTax(tax);
-  if (tax) {
-    const newCgst = tax.cgst || 0;
-    const newSgst = tax.sgst || 0;
-    const newIgst = tax.igst || 0;
-    
-    setCgst(newCgst);
-    setSgst(newSgst);
-    setIgst(newIgst);
-    
-    // Immediate recalculation with new tax values
-    recalculateTotal(items, newCgst, newSgst, newIgst, taxDiscount);
-  }
-}}>
-              <option value="">-- Select Tax Template --</option>
-              {taxes.map(t => (
-                <option key={t._id} value={t.taxName}>{t.taxName}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div className="row">
-          <div className="col-md-6 mb-3">
-            <label className="form-label">CGST (%):</label>
-            <input 
-              type="number" 
-              className='form-control' 
-              value={cgst} 
-              onChange={(e) => handleCgstChange(e.target.value)}
-              step="0.01"
-            />
-            <small className="text-muted">Amount: ₹{cgstAmount}</small>
+        <div className="row mt-4">
+          {/* Delivery Address Section */}
+          <div className='col-xl-6'>
+            <div className="card">
+              <div className="card-header bg-light">
+                <h5 className="card-title mb-0">
+                  <i className="fas fa-shipping-fast me-2"></i>Delivery Information
+                </h5>
+              </div>
+              <div className="card-body">
+                <div className="mb-3">
+                  <label className="form-label">Delivery Address:</label>
+                  <textarea
+                    className='form-control'
+                    value={deliveryAddress}
+                    onChange={(e) => setDeliveryAddress(e.target.value)}
+                    rows="4"
+                    placeholder="Enter complete delivery address..."
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="col-md-6 mb-3">
-            <label className="form-label">SGST (%):</label>
-            <input 
-              type="number" 
-              className='form-control' 
-              value={sgst} 
-              onChange={(e) => handleSgstChange(e.target.value)}
-              step="0.01"
-            />
-            <small className="text-muted">Amount: ₹{sgstAmount}</small>
-          </div>
+          {/* Tax Calculation Section */}
+          <div className='col-xl-6'>
+            <div className="card">
+              <div className="card-header bg-light">
+                <h5 className="card-title mb-0">
+                  <i className="fas fa-calculator me-2"></i>Tax Calculation
+                </h5>
+              </div>
+              <div className="card-body">
+                <div className="row">
+                  <div className="col-12 mb-3">
+                    <label className="form-label">Tax Template:</label>
+                    <select className='form-select' onChange={(e) => {
+                      const tax = taxes.find(t => t.taxName === e.target.value);
+                      setSelectedTax(tax);
+                      if (tax) {
+                        const newCgst = tax.cgst || 0;
+                        const newSgst = tax.sgst || 0;
+                        const newIgst = tax.igst || 0;
 
-          <div className="col-md-6 mb-3">
-            <label className="form-label">IGST (%):</label>
-            <input 
-              type="number" 
-              className='form-control' 
-              value={igst} 
-              onChange={(e) => handleIgstChange(e.target.value)}
-              step="0.01"
-            />
-            <small className="text-muted">Amount: ₹{igstAmount}</small>
-          </div>
+                        setCgst(newCgst);
+                        setSgst(newSgst);
+                        setIgst(newIgst);
 
-          <div className="col-md-6 mb-3">
-            <label className="form-label">Tax Discount:</label>
-            <input 
-              type="number" 
-              className='form-control' 
-              value={taxDiscount} 
-              onChange={(e) => handleTaxDiscountChange(e.target.value)}
-              step="0.01"
-            />
-          </div>
-        </div>
+                        // Immediate recalculation with new tax values
+                        recalculateTotal(items, newCgst, newSgst, newIgst, taxDiscount);
+                      }
+                    }}>
+                      <option value="">-- Select Tax Template --</option>
+                      {taxes.map(t => (
+                        <option key={t._id} value={t.taxName}>{t.taxName}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
 
-        {/* Total Summary */}
-        <div className="border-top pt-3 mt-3">
-          <div className="row">
-            <div className="col-6">
-              <div className="d-flex justify-content-between">
-                <span>Subtotal:</span>
-                <strong>₹{total}</strong>
-              </div>
-              <div className="d-flex justify-content-between text-muted small">
-                <span>CGST:</span>
-                <span>₹{cgstAmount}</span>
-              </div>
-              <div className="d-flex justify-content-between text-muted small">
-                <span>SGST:</span>
-                <span>₹{sgstAmount}</span>
-              </div>
-              <div className="d-flex justify-content-between text-muted small">
-                <span>IGST:</span>
-                <span>₹{igstAmount}</span>
-              </div>
-              <div className="d-flex justify-content-between text-muted small">
-                <span>Discount:</span>
-                <span>- ₹{taxDiscount}</span>
-              </div>
-              <hr className="my-2" />
-              <div className="d-flex justify-content-between">
-                <strong>Final Total:</strong>
-                <strong className="text-success">₹{finalTotal}</strong>
+                <div className="row">
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">CGST (%):</label>
+                    <input
+                      type="number"
+                      className='form-control'
+                      value={cgst}
+                      onChange={(e) => handleCgstChange(e.target.value)}
+                      step="0.01"
+                    />
+                    <small className="text-muted">Amount: ₹{cgstAmount}</small>
+                  </div>
+
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">SGST (%):</label>
+                    <input
+                      type="number"
+                      className='form-control'
+                      value={sgst}
+                      onChange={(e) => handleSgstChange(e.target.value)}
+                      step="0.01"
+                    />
+                    <small className="text-muted">Amount: ₹{sgstAmount}</small>
+                  </div>
+
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">IGST (%):</label>
+                    <input
+                      type="number"
+                      className='form-control'
+                      value={igst}
+                      onChange={(e) => handleIgstChange(e.target.value)}
+                      step="0.01"
+                    />
+                    <small className="text-muted">Amount: ₹{igstAmount}</small>
+                  </div>
+
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">Tax Discount:</label>
+                    <input
+                      type="number"
+                      className='form-control'
+                      value={taxDiscount}
+                      onChange={(e) => handleTaxDiscountChange(e.target.value)}
+                      step="0.01"
+                    />
+                  </div>
+                </div>
+
+                {/* Total Summary */}
+                <div className="border-top pt-3 mt-3">
+                  <div className="row">
+                    <div className="col-6">
+                      <div className="d-flex justify-content-between">
+                        <span>Subtotal:</span>
+                        <strong>₹{total}</strong>
+                      </div>
+                      <div className="d-flex justify-content-between text-muted small">
+                        <span>CGST:</span>
+                        <span>₹{cgstAmount}</span>
+                      </div>
+                      <div className="d-flex justify-content-between text-muted small">
+                        <span>SGST:</span>
+                        <span>₹{sgstAmount}</span>
+                      </div>
+                      <div className="d-flex justify-content-between text-muted small">
+                        <span>IGST:</span>
+                        <span>₹{igstAmount}</span>
+                      </div>
+                      <div className="d-flex justify-content-between text-muted small">
+                        <span>Discount:</span>
+                        <span>- ₹{taxDiscount}</span>
+                      </div>
+                      <hr className="my-2" />
+                      <div className="d-flex justify-content-between">
+                        <strong>Final Total:</strong>
+                        <strong className="text-success">₹{finalTotal}</strong>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
         {/* <div className='mt-2'>
           <strong>Subtotal: ₹{total}</strong><br />
           <strong>Final Total (after taxes & discount): ₹{finalTotal}</strong>
@@ -1625,7 +1640,7 @@ const VendorSearchModal = () => (
 
       {showModal && <MaterialModal />}
       {showQuotationModal && <QuotationSearchModal />}
-{showVendorModal && <VendorSearchModal />}
+      {showVendorModal && <VendorSearchModal />}
     </div>
   );
 }

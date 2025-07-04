@@ -95,6 +95,7 @@ const Sidebar = () => {
                       <li><a href="/customer-price-list">Customer Price List</a></li>
                       <li><a href="/vendor-price-list">Vendor Price List</a></li>
                       <li><a href="/tax-form">Tax List</a></li>
+                      <li><a href="/LocationMaster">Location Master</a></li>
                     </ul>
                   </li>
                   <li className="submenu">
@@ -118,6 +119,7 @@ const Sidebar = () => {
                       <li><a href="/sale-quotation-category-form">Sales RFQ Category</a></li>
                       <li><a href="SalesOrderCategoryForm">Sales Order Category</a></li>
                       <li><a href="/GoodsReceiptCategory">Goods Receipt Category</a></li>
+                      <li><a href="/GoodsIssueCategory">Goods Issue Category</a></li>
                     </ul>
                   </li>
                 </ul>
@@ -195,7 +197,7 @@ const Sidebar = () => {
                   </li>
                 </ul>
               </li>
-              <li className="menu-title"><span>Accounts</span></li>
+              {/* <li className="menu-title"><span>Accounts</span></li>
               <li>
                 <ul>
                   <li className="submenu">
@@ -213,6 +215,54 @@ const Sidebar = () => {
                       <li><a href="/invoice">Invoice</a></li>
                       <li><a href="/CustomerBilling">Customer Billing</a></li>
                       <li><a href="/EWayBillForm">e-Way Bill</a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li> */}
+
+              <li className="menu-title"><span>Invoice</span></li>
+              <li>
+                <ul>
+                  <li className="submenu">
+                    <a
+                      href="#"
+                      className={openSubmenus.invoice ? "active subdrop" : ""}
+                      onClick={e => {
+                        e.preventDefault();
+                        handleToggle("invoice");
+                      }} >
+                      <i className="isax isax-box"></i><span>Invoice</span>
+                      <span className="menu-arrow"></span>
+                    </a>
+                    <ul style={{ display: openSubmenus.invoice ? "block" : "none" }}>
+                      <li><a href="/InvoiceCategory">Invoice Category</a></li>
+                       <li><a href="/InvoiceForm">Invoice Form</a></li>
+                         <li><a href="/InvoiceList">Invoice List</a></li>
+                    
+                     
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li className="menu-title"><span>Billing</span></li>
+              <li>
+                <ul>
+                  <li className="submenu">
+                    <a
+                      href="#"
+                      className={openSubmenus.billing ? "active subdrop" : ""}
+                      onClick={e => {
+                        e.preventDefault();
+                        handleToggle("billing");
+                      }} >
+                      <i className="isax isax-box"></i><span>Billing</span>
+                      <span className="menu-arrow"></span>
+                    </a>
+                    <ul style={{ display: openSubmenus.invoice ? "block" : "none" }}>
+                      <li><a href="/BillingCategory">Billing Category</a></li>
+                        <li><a href="/BillingForm">Billing Form</a></li>
+                     <li><a href="/BillingDisplay">Billing List</a></li>
+                     
                     </ul>
                   </li>
                 </ul>

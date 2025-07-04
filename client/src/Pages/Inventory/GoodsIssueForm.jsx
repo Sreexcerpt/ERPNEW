@@ -10,62 +10,62 @@ function GoodsIssue() {
   const [showModal, setShowModal] = useState(false);
   const [showCustomerModal, setShowCustomerModal] = useState(false);
   const [showDocumentModal, setShowDocumentModal] = useState(false);
-const [materials, setMaterials] = useState([]);
+  const [materials, setMaterials] = useState([]);
   const [selectedMaterial, setSelectedMaterial] = useState(null);
-  const[filteredMaterials, setFilteredMaterials] = useState([]);
+  const [filteredMaterials, setFilteredMaterials] = useState([]);
   const [showMaterialModal, setShowMaterialModal] = useState(false);
-const [materialSearchType, setMaterialSearchType] = useState("materialId");
-const [materialSearch, setMaterialSearch] = useState("");
-const [viewAllMaterials, setViewAllMaterials] = useState(false);
-// Add this useEffect to properly fetch materials
-useEffect(() => {
-  axios.get("http://localhost:8080/api/material")
-    .then(res => {
-      setMaterials(res.data);
-      console.log("Materials loaded:", res.data);
-    })
-    .catch(err => console.error("Error fetching materials:", err));
-}, []);
+  const [materialSearchType, setMaterialSearchType] = useState("materialId");
+  const [materialSearch, setMaterialSearch] = useState("");
+  const [viewAllMaterials, setViewAllMaterials] = useState(false);
+  // Add this useEffect to properly fetch materials
+  useEffect(() => {
+    axios.get("http://localhost:8080/api/material")
+      .then(res => {
+        setMaterials(res.data);
+        console.log("Materials loaded:", res.data);
+      })
+      .catch(err => console.error("Error fetching materials:", err));
+  }, []);
 
-// Add this useEffect to filter materials based on search
-useEffect(() => {
-  if (!viewAllMaterials && !materialSearch) {
-    setFilteredMaterials([]);
-    return;
-  }
-
-  const filtered = materials.filter((material) => {
-    if (viewAllMaterials && !materialSearch) return true;
-    
-    const searchValue = materialSearch.toLowerCase();
-    const fieldValue = material[materialSearchType]?.toString().toLowerCase() || "";
-    
-    return fieldValue.includes(searchValue);
-  });
-
-  setFilteredMaterials(filtered);
-}, [materials, materialSearch, materialSearchType, viewAllMaterials]);
-
-// Fix the handleSelectMaterial function
-const handleSelectMaterial = (mat) => {
-  if (searchRowIndex !== null && selectedSO?.items) {
-    const updatedItems = [...selectedSO.items];
-    if (updatedItems[searchRowIndex]) {
-      updatedItems[searchRowIndex] = {
-        ...updatedItems[searchRowIndex],
-        materialId: mat.materialId,
-        description: mat.description,
-        baseUnit: mat.baseUnit,
-        price: mat.price,
-      };
-      
-      setSelectedSO({ ...selectedSO, items: updatedItems });
+  // Add this useEffect to filter materials based on search
+  useEffect(() => {
+    if (!viewAllMaterials && !materialSearch) {
+      setFilteredMaterials([]);
+      return;
     }
-  }
-  setShowMaterialModal(false);
-  setSearchRowIndex(null);
-};
-  
+
+    const filtered = materials.filter((material) => {
+      if (viewAllMaterials && !materialSearch) return true;
+
+      const searchValue = materialSearch.toLowerCase();
+      const fieldValue = material[materialSearchType]?.toString().toLowerCase() || "";
+
+      return fieldValue.includes(searchValue);
+    });
+
+    setFilteredMaterials(filtered);
+  }, [materials, materialSearch, materialSearchType, viewAllMaterials]);
+
+  // Fix the handleSelectMaterial function
+  const handleSelectMaterial = (mat) => {
+    if (searchRowIndex !== null && selectedSO?.items) {
+      const updatedItems = [...selectedSO.items];
+      if (updatedItems[searchRowIndex]) {
+        updatedItems[searchRowIndex] = {
+          ...updatedItems[searchRowIndex],
+          materialId: mat.materialId,
+          description: mat.description,
+          baseUnit: mat.baseUnit,
+          price: mat.price,
+        };
+
+        setSelectedSO({ ...selectedSO, items: updatedItems });
+      }
+    }
+    setShowMaterialModal(false);
+    setSearchRowIndex(null);
+  };
+
   const [searchRowIndex, setSearchRowIndex] = useState(null); // for tracking which row to update
   const [formData, setFormData] = useState({
     category: "",
@@ -77,12 +77,14 @@ const handleSelectMaterial = (mat) => {
     customer: "",
     location: "",
     availableQty: 0,
+    isdelete: false,
   });
 
   const [searchQuery, setSearchQuery] = useState("");
   const [searchType, setSearchType] = useState("soNumber");
   const [viewAllClicked, setViewAllClicked] = useState(false);
   const [customers, setCustomers] = useState([]);
+  const [selectedGI, setSelectedGI] = useState(null); 
   const [customerSearchType, setCustomerSearchType] = useState("name1");
   const [customerSearch, setCustomerSearch] = useState("");
   const [customerViewAllClicked, setCustomerViewAllClicked] = useState(false);
@@ -109,22 +111,22 @@ const handleSelectMaterial = (mat) => {
 
   // Fetch documents for search
   const fetchDocuments = () => {
-  console.log('Fetching documents...'); // Debug log
-  axios.get('http://localhost:8080/api/goodsissue')
-    .then(res => {
-      console.log('Documents fetched:', res.data); // Debug log
-      setDocuments(res.data);
-    })
-    .catch(err => {
-      console.error("Error fetching documents", err);
+    console.log('Fetching documents...'); // Debug log
+    axios.get('http://localhost:8080/api/goodsissue')
+      .then(res => {
+        console.log('Documents fetched:', res.data); // Debug log
+        setDocuments(res.data);
+      })
+      .catch(err => {
+        console.error("Error fetching documents", err);
+      });
+  };
+  useEffect(() => {
+    console.log('Categories loaded:', categories);
+    categories.forEach(cat => {
+      console.log(`Category: "${cat.categoryName}" (length: ${cat.categoryName.length})`);
     });
-};
-useEffect(() => {
-  console.log('Categories loaded:', categories);
-  categories.forEach(cat => {
-    console.log(`Category: "${cat.categoryName}" (length: ${cat.categoryName.length})`);
-  });
-}, [categories]);
+  }, [categories]);
   const handleSelectSO = (so) => {
     setSelectedSO(so);
     setFormData(prev => ({
@@ -154,7 +156,7 @@ useEffect(() => {
       customer: doc.customer || "",
       location: doc.location || ""
     }));
-
+setSelectedGI(doc);
     // Set selected SO data if available
     if (doc.salesOrderId) {
       const relatedSO = salesOrders.find(so => so._id === doc.salesOrderId);
@@ -173,43 +175,49 @@ useEffect(() => {
 
     setShowDocumentModal(false);
   };
-const handleCategoryChange = (e) => {
-  const value = e.target.value;
-  console.log(`Selected category: "${value}" (length: ${value.length})`); // Debug log
-  
-  let docnumber = "";
-  let isEnabled = false;
 
-  // Normalize the value for comparison (trim whitespace and convert to lowercase)
-  const normalizedValue = value.trim().toLowerCase();
-  
-  if (normalizedValue === "cancel") {
-    docnumber = `CNL-${Date.now()}`;
-  } else if (normalizedValue === "demo") {
-    docnumber = `DMP-${Date.now()}`;
-  } else if (normalizedValue === "display") {
-    isEnabled = true;
-    console.log('Display category selected - enabling document search'); // Debug log
-    // Fetch documents when Display is selected
-    fetchDocuments();
-  }
+  const [isCancelMode, setIsCancelMode] = useState(false);
+  const handleCategoryChange = (e) => {
+    const value = e.target.value;
+    console.log(`Selected category: "${value}" (length: ${value.length})`); // Debug log
 
-  const selectedCategory = categories.find(cat => 
-    cat.categoryName.trim().toLowerCase() === normalizedValue
-  );
-  
-  console.log('Selected category object:', selectedCategory); // Debug log
-  console.log('Document number enabled:', isEnabled); // Debug log
-  
-  setFormData((prev) => ({
-    ...prev,
-    category: value, // Keep original case for display
-    catdesc: selectedCategory?.description || "",
-    docnumber: isEnabled ? "" : docnumber
-  }));
-  
-  setIsDocumentNumberEnabled(isEnabled);
-};
+    let docnumber = "";
+    let isEnabled = false;
+
+    // Normalize the value for comparison (trim whitespace and convert to lowercase)
+    const normalizedValue = value.trim().toLowerCase();
+
+    if (normalizedValue === "cancel") {
+      isEnabled = true;
+      setIsCancelMode(true);
+      console.log('Cancel category selected - enabling document search'); // Debug log
+      // Fetch documents when Display is selected
+      fetchDocuments();
+    } else if (normalizedValue === "demo") {
+      docnumber = `DMP-${Date.now()}`;
+    } else if (normalizedValue === "display") {
+      isEnabled = true;
+      console.log('Display category selected - enabling document search'); // Debug log
+      // Fetch documents when Display is selected
+      fetchDocuments();
+    }
+
+    const selectedCategory = categories.find(cat =>
+      cat.categoryName.trim().toLowerCase() === normalizedValue
+    );
+
+    console.log('Selected category object:', selectedCategory); // Debug log
+    console.log('Document number enabled:', isEnabled); // Debug log
+
+    setFormData((prev) => ({
+      ...prev,
+      category: value, // Keep original case for display
+      catdesc: selectedCategory?.description || "",
+      docnumber: isEnabled ? "" : docnumber
+    }));
+
+    setIsDocumentNumberEnabled(isEnabled);
+  };
 
 
   const handleDocumentNumberChange = (e) => {
@@ -221,7 +229,7 @@ const handleCategoryChange = (e) => {
 
     // Auto-search when typing
     if (value.length > 2) {
-      const matchedDoc = documents.find(doc => 
+      const matchedDoc = documents.find(doc =>
         doc.docnumber && doc.docnumber.toLowerCase().includes(value.toLowerCase())
       );
       if (matchedDoc) {
@@ -248,21 +256,30 @@ const handleCategoryChange = (e) => {
     };
 
     try {
-      await axios.post("http://localhost:8080/api/goodsissue", issue);
-      alert("Goods Issue saved successfully!");
-      setFormData({
-        category: "",
-        catdesc: "",
-        docnumber: "",
-        documentDate: today,
-        postingDate: today,
-        reference: "",
-        customer: "",
-        location: "",
-        availableQty: 0,
-      });
-      setSelectedSO(null);
-      setIsDocumentNumberEnabled(false);
+
+      if (isCancelMode) {
+        await axios.patch(`http://localhost:8080/api/goodsissue/${selectedGI._id}`, {
+          isdelete: true
+        });
+        alert("Goods Issue cancelled successfully!");
+        return;
+      } else {
+        await axios.post("http://localhost:8080/api/goodsissue", issue);
+        alert("Goods Issue saved successfully!");
+        setFormData({
+          category: "",
+          catdesc: "",
+          docnumber: "",
+          documentDate: today,
+          postingDate: today,
+          reference: "",
+          customer: "",
+          location: "",
+          availableQty: 0,
+        });
+        setSelectedSO(null);
+        setIsDocumentNumberEnabled(false);
+      }
     } catch (err) {
       console.error("Error saving goods issue", err);
       alert("Failed to save goods issue");
@@ -320,7 +337,7 @@ const handleCategoryChange = (e) => {
 
   // Check if category is Display (case insensitive)
 
-const isDisplayCategory = formData.category.trim().toLowerCase() === "display";
+  const isDisplayCategory = formData.category.trim().toLowerCase() === "display";
   return (
     <div className="content p-3">
       <h6>Goods Issue</h6>
@@ -357,19 +374,19 @@ const isDisplayCategory = formData.category.trim().toLowerCase() === "display";
               <div className="col-xl-3">
                 <label>Document Number</label>
                 <div className="input-group">
-                  <input 
-                    type="text" 
-                    name="docnumber" 
-                    className="form-control" 
-                    value={formData.docnumber} 
+                  <input
+                    type="text"
+                    name="docnumber"
+                    className="form-control"
+                    value={formData.docnumber}
                     onChange={handleDocumentNumberChange}
                     readOnly={!isDocumentNumberEnabled}
                     placeholder={isDocumentNumberEnabled ? "Enter document number..." : ""}
                   />
                   {isDocumentNumberEnabled && (
-                    <button 
-                      type="button" 
-                      className="btn btn-outline-primary" 
+                    <button
+                      type="button"
+                      className="btn btn-outline-primary"
                       onClick={() => setShowDocumentModal(true)}
                     >
                       Search
@@ -419,135 +436,110 @@ const isDisplayCategory = formData.category.trim().toLowerCase() === "display";
                   <th>LOT No</th>
                   <th>Value</th>
                   <th>Available Qty</th>
+                  {isCancelMode && <th>Cancel</th>}
                 </tr>
               </thead>
-              {/* <tbody>
+              <tbody>
                 {selectedSO?.items?.map((item, idx) => (
                   <tr key={idx}>
                     <td>{idx + 1}</td>
                     <td>
-        <div className="input-group">
-          <input
-            className="form-control"
-            value={item.materialId || ""}
-            readOnly
-          />
-          <button
-            type="button"
-            className="btn btn-outline-secondary"
-            onClick={() => {
-              setSearchRowIndex(idx);
-              setShowMaterialModal(true);
-            }}
-          >
-            🔍
-          </button>
-        </div>
-      </td>
-                    <td><input type="text" className="form-control" value={item.description} readOnly /></td>
-                    <td><input type="number" className="form-control" value={item.quantity} onChange={(e) => handleItemChange(idx, "quantity", e.target.value)} /></td>
-                    <td><input type="text" className="form-control" value={item.baseUnit} readOnly /></td>
-                    <td><input type="date" className="form-control" value={item.deliveryDate} onChange={(e) => handleItemChange(idx, "deliveryDate", e.target.value)} /></td>
-                    <td><input type="text" className="form-control" value={item.lotNo || ""} onChange={(e) => handleItemChange(idx, "lotNo", e.target.value)} /></td>
-                    <td><input type="number" className="form-control" value={item.price} readOnly /></td>
-                    <td><input type="text" className="form-control" value={item.availableQty || ""} onChange={(e) => handleItemChange(idx, "availableQty", e.target.value)} /></td>
+                      <div className="input-group">
+                        <input
+                          className="form-control"
+                          value={item.materialId || ""}
+                          readOnly
+                        />
+                        {!isDisplayCategory && (
+                          <button
+                            type="button"
+                            className="btn btn-outline-secondary"
+                            onClick={() => {
+                              setSearchRowIndex(idx);
+                              setShowMaterialModal(true);
+                            }}
+                          >
+                            🔍
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                    <td>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={item.description}
+                        readOnly
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        className={`form-control ${isDisplayCategory ? 'bg-light' : ''}`}
+                        value={item.quantity}
+                        onChange={isDisplayCategory ? undefined : (e) => handleItemChange(idx, "quantity", e.target.value)}
+                        readOnly={isDisplayCategory}
+                        disabled={isDisplayCategory}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={item.baseUnit}
+                        readOnly
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="date"
+                        className={`form-control ${isDisplayCategory ? 'bg-light' : ''}`}
+                        value={item.deliveryDate}
+                        onChange={isDisplayCategory ? undefined : (e) => handleItemChange(idx, "deliveryDate", e.target.value)}
+                        readOnly={isDisplayCategory}
+                        disabled={isDisplayCategory}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="text"
+                        className={`form-control ${isDisplayCategory ? 'bg-light' : ''}`}
+                        value={item.lotNo || ""}
+                        onChange={isDisplayCategory ? undefined : (e) => handleItemChange(idx, "lotNo", e.target.value)}
+                        readOnly={isDisplayCategory}
+                        disabled={isDisplayCategory}
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        className="form-control"
+                        value={item.price}
+                        readOnly
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="text"
+                        className={`form-control ${isDisplayCategory ? 'bg-light' : ''}`}
+                        value={item.availableQty || ""}
+                        onChange={isDisplayCategory ? undefined : (e) => handleItemChange(idx, "availableQty", e.target.value)}
+                        readOnly={isDisplayCategory}
+                        disabled={isDisplayCategory}
+                      />
+                    </td>
+                    {isCancelMode && (
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={item.isCancelled}
+                          onChange={(e) => handleItemChange(idx, "isCancelled", e.target.checked)}
+                        />
+                      </td>
+                    )}
                   </tr>
                 ))}
-              </tbody> */}
-            
-
-<tbody>
-  {selectedSO?.items?.map((item, idx) => (
-    <tr key={idx}>
-      <td>{idx + 1}</td>
-      <td>
-        <div className="input-group">
-          <input
-            className="form-control"
-            value={item.materialId || ""}
-            readOnly
-          />
-          {!isDisplayCategory && (
-            <button
-              type="button"
-              className="btn btn-outline-secondary"
-              onClick={() => {
-                setSearchRowIndex(idx);
-                setShowMaterialModal(true);
-              }}
-            >
-              🔍
-            </button>
-          )}
-        </div>
-      </td>
-      <td>
-        <input 
-          type="text" 
-          className="form-control" 
-          value={item.description} 
-          readOnly 
-        />
-      </td>
-      <td>
-        <input 
-          type="number" 
-          className={`form-control ${isDisplayCategory ? 'bg-light' : ''}`}
-          value={item.quantity} 
-          onChange={isDisplayCategory ? undefined : (e) => handleItemChange(idx, "quantity", e.target.value)}
-          readOnly={isDisplayCategory}
-          disabled={isDisplayCategory}
-        />
-      </td>
-      <td>
-        <input 
-          type="text" 
-          className="form-control" 
-          value={item.baseUnit} 
-          readOnly 
-        />
-      </td>
-      <td>
-        <input 
-          type="date" 
-          className={`form-control ${isDisplayCategory ? 'bg-light' : ''}`}
-          value={item.deliveryDate} 
-          onChange={isDisplayCategory ? undefined : (e) => handleItemChange(idx, "deliveryDate", e.target.value)}
-          readOnly={isDisplayCategory}
-          disabled={isDisplayCategory}
-        />
-      </td>
-      <td>
-        <input 
-          type="text" 
-          className={`form-control ${isDisplayCategory ? 'bg-light' : ''}`}
-          value={item.lotNo || ""} 
-          onChange={isDisplayCategory ? undefined : (e) => handleItemChange(idx, "lotNo", e.target.value)}
-          readOnly={isDisplayCategory}
-          disabled={isDisplayCategory}
-        />
-      </td>
-      <td>
-        <input 
-          type="number" 
-          className="form-control" 
-          value={item.price} 
-          readOnly 
-        />
-      </td>
-      <td>
-        <input 
-          type="text" 
-          className={`form-control ${isDisplayCategory ? 'bg-light' : ''}`}
-          value={item.availableQty || ""} 
-          onChange={isDisplayCategory ? undefined : (e) => handleItemChange(idx, "availableQty", e.target.value)}
-          readOnly={isDisplayCategory}
-          disabled={isDisplayCategory}
-        />
-      </td>
-    </tr>
-  ))}
-</tbody>
+              </tbody>
 
 
             </table>
@@ -561,92 +553,92 @@ const isDisplayCategory = formData.category.trim().toLowerCase() === "display";
           </div>
         )}
       </form>
-{showMaterialModal && (
-  <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-    <div className="modal-dialog modal-xl">
-      <div className="modal-content">
-        <div className="modal-header bg-primary text-white">
-          <h5 className="modal-title"><i className="fas fa-box-open me-2"></i>Select Material</h5>
-          <button type="button" className="btn-close btn-close-white" onClick={() => setShowMaterialModal(false)}></button>
-        </div>
-        <div className="modal-body">
-          <div className="row mb-3">
-            <div className="col-md-3">
-              <label className="form-label">Search Type</label>
-              <select className="form-select" value={materialSearchType} onChange={(e) => setMaterialSearchType(e.target.value)}>
-                <option value="materialId">Material ID</option>
-                <option value="description">Description</option>
-                <option value="baseUnit">Base Unit</option>
-              </select>
-            </div>
-            <div className="col-md-6">
-              <label className="form-label">Search Query</label>
-              <div className="input-group">
-                <span className="input-group-text"><i className="fas fa-search"></i></span>
-                <input type="text" className="form-control" placeholder={`Search by ${materialSearchType}`} value={materialSearch} onChange={(e) => setMaterialSearch(e.target.value)} />
+      {showMaterialModal && (
+        <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-xl">
+            <div className="modal-content">
+              <div className="modal-header bg-primary text-white">
+                <h5 className="modal-title"><i className="fas fa-box-open me-2"></i>Select Material</h5>
+                <button type="button" className="btn-close btn-close-white" onClick={() => setShowMaterialModal(false)}></button>
               </div>
-            </div>
-            <div className="col-md-3">
-              <label className="form-label">&nbsp;</label>
-              <div className="d-flex gap-2">
-                <button className="btn btn-info" onClick={() => setViewAllMaterials(true)}>View All</button>
-                {(materialSearch || viewAllMaterials) && (
-                  <button className="btn btn-outline-secondary" onClick={() => { setMaterialSearch(""); setViewAllMaterials(false); }}>
-                    <i className="fas fa-times me-1"></i>Clear
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-            
-            {filteredMaterials.length > 0 ? (
-              <table className="table table-hover">
-                <thead className="table-light sticky-top">
-                  <tr>
-                    <th>Material ID</th>
-                    <th>Description</th>
-                    <th>Base Unit</th>
-                    <th>Price</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredMaterials.map((mat, idx) => (
-                    <tr key={idx}>
-                      <td><span className="badge bg-secondary">{mat.materialId}</span></td>
-                      <td>{mat.description}</td>
-                      <td>{mat.baseUnit}</td>
-                      <td>{mat.price}</td>
-                      <td>
-                        <button className="btn btn-success btn-sm" onClick={() => handleSelectMaterial(mat)}>
-                          <i className="fas fa-check me-1"></i>Select
+              <div className="modal-body">
+                <div className="row mb-3">
+                  <div className="col-md-3">
+                    <label className="form-label">Search Type</label>
+                    <select className="form-select" value={materialSearchType} onChange={(e) => setMaterialSearchType(e.target.value)}>
+                      <option value="materialId">Material ID</option>
+                      <option value="description">Description</option>
+                      <option value="baseUnit">Base Unit</option>
+                    </select>
+                  </div>
+                  <div className="col-md-6">
+                    <label className="form-label">Search Query</label>
+                    <div className="input-group">
+                      <span className="input-group-text"><i className="fas fa-search"></i></span>
+                      <input type="text" className="form-control" placeholder={`Search by ${materialSearchType}`} value={materialSearch} onChange={(e) => setMaterialSearch(e.target.value)} />
+                    </div>
+                  </div>
+                  <div className="col-md-3">
+                    <label className="form-label">&nbsp;</label>
+                    <div className="d-flex gap-2">
+                      <button className="btn btn-info" onClick={() => setViewAllMaterials(true)}>View All</button>
+                      {(materialSearch || viewAllMaterials) && (
+                        <button className="btn btn-outline-secondary" onClick={() => { setMaterialSearch(""); setViewAllMaterials(false); }}>
+                          <i className="fas fa-times me-1"></i>Clear
                         </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <div className="text-center py-4">
-                <i className="fas fa-box fa-3x text-muted mb-3"></i>
-                <p className="text-muted">
-                  {materialSearch ? `No materials found for "${materialSearch}"`: 'Enter search term or click "View All"'}
-                </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+
+                  {filteredMaterials.length > 0 ? (
+                    <table className="table table-hover">
+                      <thead className="table-light sticky-top">
+                        <tr>
+                          <th>Material ID</th>
+                          <th>Description</th>
+                          <th>Base Unit</th>
+                          <th>Price</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredMaterials.map((mat, idx) => (
+                          <tr key={idx}>
+                            <td><span className="badge bg-secondary">{mat.materialId}</span></td>
+                            <td>{mat.description}</td>
+                            <td>{mat.baseUnit}</td>
+                            <td>{mat.price}</td>
+                            <td>
+                              <button className="btn btn-success btn-sm" onClick={() => handleSelectMaterial(mat)}>
+                                <i className="fas fa-check me-1"></i>Select
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className="text-center py-4">
+                      <i className="fas fa-box fa-3x text-muted mb-3"></i>
+                      <p className="text-muted">
+                        {materialSearch ? `No materials found for "${materialSearch}"` : 'Enter search term or click "View All"'}
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
-            )}
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowMaterialModal(false)}>
+                  <i className="fas fa-times me-1"></i>Close
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-        <div className="modal-footer">
-          <button type="button" className="btn btn-secondary" onClick={() => setShowMaterialModal(false)}>
-            <i className="fas fa-times me-1"></i>Close
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
+      )}
       {/* Sales Order Modal */}
       {showModal && (
         <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
@@ -809,6 +801,8 @@ const isDisplayCategory = formData.category.trim().toLowerCase() === "display";
         </div>
       )}
 
+
+
       {/* Document Search Modal */}
       {showDocumentModal && (
         <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
@@ -830,12 +824,12 @@ const isDisplayCategory = formData.category.trim().toLowerCase() === "display";
                     <label className="form-label">Search Query</label>
                     <div className="input-group">
                       <span className="input-group-text"><i className="fas fa-search"></i></span>
-                      <input 
-                        type="text" 
-                        className="form-control" 
-                        placeholder="Search by Document Number" 
-                        value={documentSearch} 
-                        onChange={(e) => setDocumentSearch(e.target.value)} 
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Search by Document Number"
+                        value={documentSearch}
+                        onChange={(e) => setDocumentSearch(e.target.value)}
                       />
                     </div>
                   </div>
@@ -895,7 +889,8 @@ const isDisplayCategory = formData.category.trim().toLowerCase() === "display";
           </div>
         </div>
       )}
-      
+
+
     </div>
   );
 }
