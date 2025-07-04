@@ -117,6 +117,7 @@ const Sidebar = () => {
                       <li><a href="POCategory">PO Category</a></li>
                       <li><a href="/sale-quotation-category-form">Sales RFQ Category</a></li>
                       <li><a href="SalesOrderCategoryForm">Sales Order Category</a></li>
+                      <li><a href="/GoodsReceiptCategory">Goods Receipt Category</a></li>
                     </ul>
                   </li>
                 </ul>
@@ -185,9 +186,10 @@ const Sidebar = () => {
                       <span className="menu-arrow"></span>
                     </a>
                     <ul style={{ display: openSubmenus.inventory ? "block" : "none" }}>
-                      <li><a href="/GoodsReciept">Goods Receipt</a></li>
-                      <li><a href="/GoodsIssueFormUI">Goods Issue</a></li>
-                      <li><a href="/GoodsTransfer">Good Transfor</a></li>
+                      <li><a href="/GoodsReciept">Material Receipt</a></li>
+                      <li><a href="/GoodsReceiptList">Material Receipt List</a></li>
+                      <li><a href="/GoodsIssueFormUI">Material Issue</a></li>
+                      <li><a href="/GoodsTransfer">Material Transfer</a></li>
                       <li><a href="/StockListERP">Stock List</a></li>
                     </ul>
                   </li>

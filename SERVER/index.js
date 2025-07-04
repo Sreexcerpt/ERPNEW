@@ -24,6 +24,13 @@ const poCategoryRoutes = require('./routes/poCategoryRoutes');
 const purchaseOrderRoutes = require('./routes/purchaseOrderRoutes');
 const salesOrderCategoryRoutes = require('./routes/salesOrderCategoryRoutes');
 const salesOrderRoutes = require('./routes/salesOrderRoutes');
+const goodsIssueCategoryRoutes = require('./routes/goodsIssueCategoryRoutes');
+const goodsIssueRoutes = require('./routes/goodsissue');
+const goodsTransferCategoryRoutes = require('./routes/goodsTransferCategoryRoutes');
+const goodsTransferRoutes = require('./routes/goodsTransferRoutes');
+const goodsReceiptRoutes = require('./routes/goodsReceiptRoutes');
+const goodsReceiptCategoryRoutes = require('./routes/goodsReceiptCategoryRoutes');
+
 
 const app = express();
 app.use(cors());
@@ -56,6 +63,13 @@ app.use('/api/po-categories', poCategoryRoutes);
 app.use('/api/purchase-orders', purchaseOrderRoutes);
 app.use('/api/sales-order-categories', salesOrderCategoryRoutes);
 app.use('/api', salesOrderRoutes);
+app.use('/api/goodsissuecategory', goodsIssueCategoryRoutes);
+app.use('/api/goodsissue', goodsIssueRoutes);
+app.use('/api/goodsTransferCategory', goodsTransferCategoryRoutes);
+app.use('/api/goodstransfer', goodsTransferRoutes);
+app.use('/api', goodsReceiptRoutes);
+app.use('/api/goodsreceiptcategory', goodsReceiptCategoryRoutes);
+
 
 const PORT = 8080;
 app.listen(PORT, () => {

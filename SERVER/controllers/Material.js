@@ -12,7 +12,7 @@ exports.generateMaterialId = async (req, res) => {
     const nextNumber = category.rangeStart + materialCount;
 
     const materialId = `${category.prefix}-${nextNumber}`;
-    res.json({ materialId, nextNumber: nextNumber });
+    res.json({ materialId });
   } catch (err) {
     res.status(500).json({ error: 'Error generating material ID' });
   }
@@ -85,32 +85,5 @@ exports.getMaterialByMaterialId = async (req, res) => {
   } catch (err) {
     console.error('Error fetching material by materialId:', err);
     res.status(500).json({ error: 'Failed to fetch material by ID' });
-  }
-};
-
-
-exports.updateMaterialStatus = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { isDeleted, isBlocked } = req.body;
-    
-    const updateData = {};
-    if (typeof isDeleted === 'boolean') {
-      updateData.isDeleted = isDeleted;
-    }
-    if (typeof isBlocked === 'boolean') {
-      updateData.isBlocked = isBlocked;
-    }
-
-    const updated = await Material.findByIdAndUpdate(id, updateData, { new: true });
-
-    if (!updated) {
-      return res.status(404).json({ error: 'Material not found' });
-    }
-
-    res.json({ message: 'Material status updated', material: updated });
-  } catch (err) {
-    console.error('Error updating material status:', err);
-    res.status(500).json({ error: 'Failed to update material status' });
   }
 };

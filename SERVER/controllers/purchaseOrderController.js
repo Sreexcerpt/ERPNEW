@@ -77,80 +77,77 @@ async function generatePONumber(categoryId) {
 //   }
 // };
 // Create Purchase Order using quotationNumber
-// Update the createPO function in your controller
 exports.createPO = async (req, res) => {
-  try {
-    const {
-      quotationNumber,
-      categoryId,
-      category,
-      date,
-      deliveryLocation,
-      deliveryAddress,
-      buyerGroup,        // ✅ NEW
-      contactPerson,     // ✅ NEW
-      payTerms,         // ✅ NEW
-      validityDate,     // ✅ NEW
-      taxName,
-      cgst,
-      sgst,
-      igst,
-      cgstAmount,       // ✅ NEW
-      sgstAmount,       // ✅ NEW
-      igstAmount,       // ✅ NEW
-      taxDiscount,
-      finalTotal,
-      items             // ✅ This now includes note field for each item
-    } = req.body;
-
-    // Find quotation by quotationNumber
-    const quotation = await Quotation.findOne({ quotationNumber });
-    if (!quotation) return res.status(404).json({ error: 'Quotation not found' });
-
-    // Generate PO number
-    const poNumber = await generatePONumber(categoryId);
-
-    // Extract vendor
-    const vendor = quotation.vendorName;
-
-    // Calculate total from items
-    const total = items.reduce((sum, item) => sum + (item.quantity * item.price), 0);
-
-    // Save PO with new fields
-    const newPO = new PurchaseOrder({
-      poNumber,
-      categoryId,
-      category,
-      date,
-      vendor,
-      deliveryLocation: deliveryLocation || quotation.items[0]?.location || '',
-      deliveryAddress,
-      buyerGroup,        // ✅ NEW
-      contactPerson,     // ✅ NEW
-      payTerms,         // ✅ NEW
-      validityDate,     // ✅ NEW
-      quotationId: quotation._id,
-      quotationNumber,
-      items,            // ✅ This now includes note for each item
-      total,
-      taxName,
-      cgst,
-      sgst,
-      igst,
-      cgstAmount,       // ✅ NEW
-      sgstAmount,       // ✅ NEW
-      igstAmount,       // ✅ NEW
-      taxDiscount,
-      finalTotal
-    });
-
-    const saved = await newPO.save();
-    res.status(201).json(saved);
-  } catch (err) {
-    console.error('Error creating PO:', err);
-    res.status(500).json({ error: err.message });
-  }
-};
+    try {
+      const {
+        quotationNumber,
+        categoryId,
+        category,
+        date,
+        deliveryLocation,
+        deliveryAddress,
+        taxName,
+        cgst,
+        sgst,
+        igst,
+        taxDiscount,
+        finalTotal
+      } = req.body;
+  
+      // ✅ Step 1: Find quotation by quotationNumber
+      const quotation = await Quotation.findOne({ quotationNumber });
+      if (!quotation) return res.status(404).json({ error: 'Quotation not found' });
+  
+      // ✅ Step 2: Generate PO number
+      const poNumber = await generatePONumber(categoryId);
+  
+      // ✅ Step 3: Extract data from quotation
+      const vendor = quotation.vendorName;
+      const items = quotation.items.map(item => ({
+        materialId: item.materialId,
+        description: item.description,
+        quantity: item.qty,
+        unit: item.unit,
+        baseUnit: item.baseUnit,
+        orderUnit: item.orderUnit,
+        price: item.price,
+        priceUnit: item.priceUnit, // ✅ new field
+        buyerGroup: item.buyerGroup,
+        materialgroup: item.materialgroup,
+        deliveryDate: item.deliveryDate ? String(item.deliveryDate).slice(0, 10) : null,
+      }));
+  
+      const total = items.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+  
+      // ✅ Step 4: Save PO with additional fields
+      const newPO = new PurchaseOrder({
+        poNumber,
+        categoryId,
+        category,
+        date,
+        vendor,
+        deliveryLocation: deliveryLocation || quotation.items[0]?.location || '',
+        deliveryAddress, // ✅ new field
+        quotationId: quotation._id,
+        quotationNumber,
+        items,
+        total,
+        taxName,        // ✅ new field
+        cgst,           // ✅ new field
+        sgst,           // ✅ new field
+        igst,           // ✅ new field
+        taxDiscount,    // ✅ new field
+        finalTotal      // ✅ new field
+      });
+  
+      const saved = await newPO.save();
+      res.status(201).json(saved);
+    } catch (err) {
+      console.error('Error creating PO:', err);
+      res.status(500).json({ error: err.message });
+    }
+  };
+  
 
 // Get All Purchase Orders
 exports.getAllPOs = async (req, res) => {

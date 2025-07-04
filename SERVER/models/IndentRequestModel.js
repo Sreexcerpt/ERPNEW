@@ -7,7 +7,8 @@ const IndentItemSchema = new mongoose.Schema({
   orderUnit: String,
   qty: Number,
   deliveryDate: String,
-
+  location: String,
+  buyerGroup: String,
   materialgroup: String,
 });
 
@@ -15,12 +16,7 @@ const IndentRequestSchema = new mongoose.Schema({
   indentId: String,
   categoryId: String,
   categoryName: String,
-  location: { type: String, required: true },
-  buyerGroup: { type: String, required: true },
-  documentDate: { type: Date, default: Date.now },
   items: [IndentItemSchema],
-    isDeleted: { type: Boolean, default: false },
-  isBlocked: { type: Boolean, default: false },
 }, { timestamps: true });
 
 module.exports = mongoose.model('IndentRequest', IndentRequestSchema);

@@ -43,12 +43,10 @@ const PurchaseCategory = require('../models/purchaserequestmodel');
 
 exports.createIndent = async (req, res) => {
   try {
-    const { categoryId, items, location, buyerGroup, documentDate } = req.body;
+    const { categoryId, items } = req.body;
 
     console.log('Received categoryId:', categoryId);
     console.log('Received items:', items);
-    console.log('Received location:', location);
-    console.log('Received buyerGroup:', buyerGroup);
 
     const category = await PurchaseCategory.findById(categoryId);
     if (!category) return res.status(404).json({ message: 'Category not found' });
@@ -72,9 +70,6 @@ exports.createIndent = async (req, res) => {
       indentId,
       categoryId,
       categoryName: category.categoryName,
-      location,
-      buyerGroup,
-      documentDate: documentDate || new Date(), // Use provided date or current date
       items,
     });
 
@@ -89,6 +84,7 @@ exports.createIndent = async (req, res) => {
 
 
 
+
 // controllers/indentController.js
 exports.getAllIndents = async (req, res) => {
   try {
@@ -97,32 +93,4 @@ exports.getAllIndents = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch indents' });
   }
-};
-
-
-// Add this to your indent routes
-exports.updateIndentStatus = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { isDeleted, isBlocked } = req.body;
-        
-        const updateData = {};
-        if (typeof isDeleted === 'boolean') {
-            updateData.isDeleted = isDeleted;
-        }
-        if (typeof isBlocked === 'boolean') {
-            updateData.isBlocked = isBlocked;
-        }
-        
-        const updated = await IndentRequest.findByIdAndUpdate(id, updateData, { new: true });
-        
-        if (!updated) {
-            return res.status(404).json({ error: 'Indent not found' });
-        }
-        
-        res.json({ message: 'Indent status updated', indent: updated });
-    } catch (err) {
-        console.error('Error updating indent status:', err);
-        res.status(500).json({ error: 'Failed to update indent status' });
-    }
 };

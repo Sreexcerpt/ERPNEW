@@ -10,7 +10,6 @@ const ItemSchema = new mongoose.Schema({
   price: Number,
   priceUnit: String,
   deliveryDate: String,
-    note: { type: String, maxlength: 250 }, 
 });
 
 const SalesOrderSchema = new mongoose.Schema({
@@ -20,24 +19,15 @@ const SalesOrderSchema = new mongoose.Schema({
   categoryId: { type: mongoose.Schema.Types.ObjectId, ref: 'SalesOrderCategory' },
   category: String,
   date: String,
-  customer: String,
+  customerName: String,
   deliveryLocation: String,
   deliveryAddress: String,
-  salesGroup: String,  
-
-
-   contactPerson: String,                 // ✅ NEW - Contact person field
-  payTerms: { type: String, maxlength: 250 },  // ✅ NEW - Payment terms
-  validityDate: String, 
   items: [ItemSchema],
-   total: Number,
+  total: Number,
   taxName: String,
   cgst: Number,
-  cgstAmount: Number,                    // ✅ NEW - CGST calculated amount
   sgst: Number,
-  sgstAmount: Number,                    // ✅ NEW - SGST calculated amount
   igst: Number,
-  igstAmount: Number,                    // ✅ NEW - IGST calculated amount
   taxDiscount: Number,
   finalTotal: Number,
 }, { timestamps: true });

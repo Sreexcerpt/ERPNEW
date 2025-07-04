@@ -7,18 +7,14 @@ const SalesItemSchema = new mongoose.Schema({
   orderUnit: String,
   qty: Number,
   deliveryDate: String,
- 
+  location: String,
+  salesGroup: String,
   materialgroup: String,
 })
 const SaleRequestSchema = new mongoose.Schema({
   indentId: String,
   categoryId: String,
   categoryName: String,
-    location: { type: String, required: true },
-  salesGroup: { type: String, required: true },
-  documentDate: { type: Date, default: Date.now },
-    isDeleted: { type: Boolean, default: false },
-  isBlocked: { type: Boolean, default: false },
   items: [SalesItemSchema],
 }, { timestamps: true });
 

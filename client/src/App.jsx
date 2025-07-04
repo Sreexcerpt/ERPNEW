@@ -37,6 +37,8 @@ import CustomerBilling from './Pages/Accounts/Billing';
 import EWayBillForm from './Pages/Accounts/EWayBill';
 import StockListERP from './Pages/Inventory/Stocklist';
 import DashboardERP from './Pages/dashboard';
+import GoodsReceiptCategory from './Pages/Inventory/GoodsReceiptCategory';
+import GoodsReceiptList from './Pages/Inventory/GoodsReceiptList';
 function App() {
   return (
     <Router>
@@ -79,6 +81,8 @@ function App() {
           <Route path='/CustomerBilling' element={<CustomerBilling />} />
           <Route path='/EWayBillForm' element={<EWayBillForm />} />
           <Route path="/StockListERP" element={<StockListERP />} />
+          <Route path="/GoodsReceiptCategory" element={<GoodsReceiptCategory />} />
+          <Route path="/GoodsReceiptList" element={<GoodsReceiptList />} />
         </Routes>
       </div>
     </Router>
