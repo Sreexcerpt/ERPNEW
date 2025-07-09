@@ -2,6 +2,7 @@
 const GoodsIssue = require('../models/GoodsIssue');
 const GoodsIssueCategory = require('../models/GoodsIssueCategory'); // ensure this model exists
 const mongoose = require('mongoose');
+const StockItem = require('../models/StockItemModel'); // Assuming you have a StockItem model
 // POST /api/goodsissue
 const createGoodsIssue = async (req, res) => {
   try {
@@ -35,6 +36,25 @@ const createGoodsIssue = async (req, res) => {
       ...data,
       docnumber
     });
+    console.log("New Goods Issue Data:", newIssue);
+    console.log("data:", data);
+    if (Array.isArray(data.items)) {
+      for (const item of data.items) {
+      const filter = { 
+        materialId: item.materialId, 
+        location: data.location, 
+        lotNumber: item.lotNo || undefined
+      };
+      let stockItem = await StockItem.findOne(filter);
+
+      if (stockItem) {
+        // If material is present in that location, subtract the quantity
+        stockItem.quantityAvailable = Number(stockItem.quantityAvailable) - Number(item.quantity);
+        stockItem.updatedAt = new Date();
+        await stockItem.save();
+      } 
+      }
+    }
 
     await newIssue.save();
     res.status(201).json({ message: "Goods issue created", docnumber });

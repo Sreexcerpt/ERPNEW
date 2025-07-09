@@ -4,12 +4,12 @@
 //   materialId: String,
 //   description: String,
 //   quantity: Number,
-  
+
 // baseUnit: String,
 //   orderUnit: String,
 //   unit: String,
 //   price: Number,
-  
+
 // materialgroup:String,
 // buyerGroup: String,
 //   deliveryDate: String,
@@ -39,7 +39,7 @@ const ItemSchema = new mongoose.Schema({
   orderUnit: String,
   unit: String,
   price: Number,
-    priceUnit: String,               // ✅ NEW
+  priceUnit: String,    
   materialgroup: String,
   buyerGroup: String,
   deliveryDate: String,

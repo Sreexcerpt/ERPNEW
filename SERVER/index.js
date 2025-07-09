@@ -35,7 +35,9 @@ const invoiceCategoryRoutes = require('./routes/invoiceCategoryRoutes');
 const billingCategoryRoutes = require('./routes/billingCategoryRoutes');
 const invoiceRoutes = require('./routes/invoiceRoutes');
 const billingRoutes = require('./routes/billingRoutes');
-
+const stockRoutes = require('./routes/stockRoute'); // Ensure this is the correct path
+const userRoutes = require('./routes/userRoutes'); // Ensure this is the correct path
+const companyRoutes = require('./routes/companyRoutes'); // Ensure this is the correct path
 const app = express();
 app.use(cors());
 
@@ -77,9 +79,10 @@ app.use('/api/locations', locationRoutes);
 app.use('/api/invoicecategory', invoiceCategoryRoutes);
 app.use('/api/billingcategory', billingCategoryRoutes);
 app.use('/api', invoiceRoutes);
-
+app.use('/api', stockRoutes); // Ensure this is the correct path for stock routes
 app.use('/api', billingRoutes);
-
+app.use('/api/users', userRoutes);
+app.use('/api/companies', companyRoutes); // Ensure this is the correct path for company routes
 const PORT = 8080;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

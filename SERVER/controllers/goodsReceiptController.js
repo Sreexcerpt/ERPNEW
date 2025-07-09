@@ -1,6 +1,6 @@
 const GoodsReceipt = require('../models/GoodsReceipt');
 const GoodsReceiptCategory =require('../models/GoodsReceiptCategory')// reused for receipt category
-
+const StockItem = require('../models/StockItemModel'); // Assuming you have a StockItem model
 // POST /api/goodsreceipt
 const createGoodsReceipt = async (req, res) => {
   try {
@@ -29,6 +29,29 @@ const createGoodsReceipt = async (req, res) => {
       ...data,
       docnumber
     });
+
+    // Update stock for each item in the receipt
+    if (Array.isArray(data.items)) {
+      for (const item of data.items) {
+      const filter = { materialId: item.materialId, location: data.location || newReceipt.location, lotNumber: item.lotNo || undefined };
+      let stockItem = await StockItem.findOne(filter);
+
+      if (stockItem) {
+        stockItem.quantityAvailable = Number(stockItem.quantityAvailable) + Number(item.quantity);
+        stockItem.updatedAt = new Date();
+        await stockItem.save();
+      } else {
+        await StockItem.create({
+        materialId: item.materialId,
+        description: item.description,
+        baseUnit: item.baseUnit,
+        location: data.location || newReceipt.location,
+        quantityAvailable: item.quantity,
+        lotNumber: item.lotNo || undefined
+        });
+      }
+      }
+    }
 
     await newReceipt.save();
     res.status(201).json({ message: "Goods receipt created", docnumber });

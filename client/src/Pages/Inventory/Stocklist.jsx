@@ -1,21 +1,29 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { useEffect } from "react";
 
-const sampleStock = [
-  { matno: "RM001", matdesc: "Steel Rod", category: "Raw Material", uom: "KG", quantity: 500, status: "In Stock" },
-  { matno: "RM002", matdesc: "Aluminum Sheet", category: "Raw Material", uom: "PCS", quantity: 30, status: "Low Stock" },
-  { matno: "CON001", matdesc: "Paint", category: "Consumable", uom: "LTR", quantity: 5, status: "Out of Stock" },
-  { matno: "HW001", matdesc: "Bolts", category: "Hardware", uom: "PCS", quantity: 1000, status: "In Stock" },
-];
+
 
 function StockListERP() {
-  const [stock, setStock] = useState(sampleStock);
+  const [stock, setStock] = useState([]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
 
-  const filtered = stock.filter((item) =>
-    item.matdesc.toLowerCase().includes(search.toLowerCase()) &&
-    (category === "" || item.category === category)
-  );
+  const filtered = stock
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/api/stock");
+        setStock(response.data);
+        console.log("Stock data fetched:", response.data);
+      } catch (error) {
+        console.error("Failed to fetch stock:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div className="content">
@@ -58,34 +66,57 @@ function StockListERP() {
               <th>UOM</th>
               <th>Quantity</th>
               <th>Status</th>
+              <th>Location</th>
+              <th>Lot Number</th>
+              <th>Created At</th>
             </tr>
           </thead>
           <tbody>
-            {filtered.length === 0 ? (
+            {stock.length === 0 ? (
               <tr>
-                <td colSpan="8" className="text-center">No stock found.</td>
+                <td colSpan="10" className="text-center">No stock found.</td>
               </tr>
             ) : (
-              filtered.map((item, i) => (
+              stock.map((item, i) => (
                 <tr key={i}>
                   <td className="text-center">{i + 1}</td>
-                  <td>{item.matno}</td>
-                  <td>{item.matdesc}</td>
+                  <td>{item.materialId || item.matno}</td>
+                  <td>{item.description || item.matdesc}</td>
                   <td>{item.category}</td>
-                  <td className="text-center">{item.uom}</td>
-                  <td className="text-end">{item.quantity}</td>
+                  <td className="text-center">{item.baseUnit || item.uom}</td>
+                  <td className="text-end">{item.quantityAvailable ?? item.quantity}</td>
                   <td className="text-center">
                     <span
-                      className={`badge ${
-                        item.status === "In Stock" ? "bg-success" :
-                        item.status === "Low Stock" ? "bg-warning text-dark" :
-                        "bg-danger"
-                      }`}
+                      className={`badge ${(item.status ||
+                          (item.quantityAvailable ?? item.quantity) > 10
+                          ? "In Stock"
+                          : (item.quantityAvailable ?? item.quantity) > 0
+                            ? "Low Stock"
+                            : "Out of Stock") === "In Stock"
+                          ? "bg-success"
+                          : (item.status ||
+                            (item.quantityAvailable ?? item.quantity) > 0
+                            ? "Low Stock"
+                            : "Out of Stock") === "Low Stock"
+                            ? "bg-warning text-dark"
+                            : "bg-danger"
+                        }`}
                     >
-                      {item.status}
+                      {item.status ||
+                        ((item.quantityAvailable ?? item.quantity) > 10
+                          ? "In Stock"
+                          : (item.quantityAvailable ?? item.quantity) > 0
+                            ? "Low Stock"
+                            : "Out of Stock")}
                     </span>
                   </td>
-                 
+                  <td>{item.location || "-"}</td>
+                  <td>{item.lotNumber || "-"}</td>
+                  <td>
+                    {item.createdAt
+                      ? new Date(item.createdAt).toLocaleString()
+                      : "-"}
+                  </td>
                 </tr>
               ))
             )}
